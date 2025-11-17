@@ -6,7 +6,7 @@ const DBPASS = "";
 const DBCHARSET = "utf8mb4";
 const DBHOST = "127.0.0.1";
 
-const BASE_URL = "http://localhost/da_an1/base/";
+const BASE_URL = "http://localhost/du_an1/base/";
 
 function redirect($key = "",$msg = "",$url ="") {
     $_SESSION[$key] = $msg;

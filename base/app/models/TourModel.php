@@ -27,7 +27,7 @@ class TourModel extends BaseModel
         $sql = "UPDATE $this->table SET 
         `tour_id`=?,`tour_name`=?,`category`=?,`price`=?,`duration`=?,`description`=?,`thumbnail`=? WHERE id =? ";
         $this->setQuery($sql);
-        return $this->execute([$tour_name,$category,$price,$duration,$description,$thumbnail,,$tour_id]);
+        return $this->execute([$tour_name,$category,$price,$duration,$description,$thumbnail,$tour_id]);
     }
     public function deleteTour($id)
     {
