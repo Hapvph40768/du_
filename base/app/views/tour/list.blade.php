@@ -10,8 +10,8 @@
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
         <span>{{$_SESSION['success']}}</span>
     @endif
-    <a href="{{route('add-student')}}">
-        <button>Thêm sinh viên</button>
+    <a href="{{route('add-tour')}}">
+        <button>Thêm tour</button>
     </a>
 <table border="1">
     <thead>

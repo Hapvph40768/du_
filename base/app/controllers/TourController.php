@@ -13,4 +13,8 @@ class TourController extends BaseController
         $tours = $this->tour->getListTours();
         $this->render("tour.list", ['tours' => $tours]);
     }
+    public function createTour()
+    {
+        
+    }
 }
