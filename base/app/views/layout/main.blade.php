@@ -22,6 +22,7 @@
     <section class="content">
         @yield('content-tour')
         @yield('content-departure')
+        @yield('content-itinerary')
     </section>
     <footer>
         <span>FPT POLYTECHNIC</span>

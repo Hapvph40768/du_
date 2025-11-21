@@ -18,6 +18,9 @@ $router->filter('auth', function(){
 $router->get('/', function(){
     return "trang chủ";
 });
+
+//TOURS: Tour du lịch
+
 //danh sách tour
 $router->get('list-tours', [App\Controllers\TourController::class, 'getTours']);
 //them tour
@@ -29,6 +32,9 @@ $router->post('edit-tour/{id}', [App\Controllers\TourController::class, 'editTou
 //xoa tour
 $router->get('delete-tour/{id}', [App\Controllers\TourController::class, 'deleteTour']);
 
+
+// DEPARTURES: Lịch khởi hành của tour
+
 //Danh sách đợt khởi hành
 $router->get('list-departure', [App\Controllers\DepartureController::class, 'getDepartures']);
 //Thêm đợt khởi hành
@@ -39,6 +45,19 @@ $router->get('detail-departure/{id}', [App\Controllers\DepartureController::clas
 $router->post('edit-departure/{id}', [App\Controllers\DepartureController::class, 'editDeparture']);
 //xoa đợt khởi hành
 $router->get('delete-departure/{id}', [App\Controllers\DepartureController::class, 'deleteDeparture']);
+
+//ITINERARY: Lịch trình theo ngày
+
+// danh sach
+$router->get('list-itinerary', [App\Controllers\ItineraryController::class, 'getItinerary']);
+// them moi
+$router->get('add-itinerary', [App\Controllers\ItineraryController::class, 'createItinerary']);
+$router->post('post-itinerary', [App\Controllers\ItineraryController::class, 'postItinerary']);
+// sửa 
+$router->get('detail-itinerary/{id}', [App\Controllers\ItineraryController::class, 'detailItinerary']);
+$router->post('edit-itinerary/{id}', [App\Controllers\ItineraryController::class, 'editItinerary']);
+//xoa
+$router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::class, 'deleteItinerary']);
 # NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 
