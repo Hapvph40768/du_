@@ -15,19 +15,19 @@ class TourModel extends BaseModel
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
-    public function addTour($tour_id,$tour_name,$category,$price,$duration,$description,$thumbnail)
+    public function addTour($id,$name,$description,$price,$days,$status)
     {
         $sql = "INSERT INTO $this->table VALUES 
-        (?,?,?,?,?,?,?)";
+        (?,?,?,?,?,?)";
         $this->setQuery($sql);
-        return $this->execute([$tour_id,$tour_name,$category,$price,$duration,$description,$thumbnail]);
+        return $this->execute([$id,$name,$description,$price,$days,$status]);
     }
-        public function editTour($tour_id,$tour_name,$category,$price,$duration,$description,$thumbnail)
+        public function editTour($id,$name,$description,$price,$days,$status)
     {
         $sql = "UPDATE $this->table SET 
-        `tour_id`=?,`tour_name`=?,`category`=?,`price`=?,`duration`=?,`description`=?,`thumbnail`=? WHERE id =? ";
+        `name`=?,`description`=?,`price`=?,`days`=?,`status`=? WHERE id =? ";
         $this->setQuery($sql);
-        return $this->execute([$tour_name,$category,$price,$duration,$description,$thumbnail,$tour_id]);
+        return $this->execute([$name,$description,$price,$days,$status,$id]);
     }
     public function deleteTour($id)
     {
