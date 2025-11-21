@@ -32,7 +32,7 @@ class TourController extends BaseController
         if(empty($_POST['days'])){
             $error['days'] = "so ngay không được để trống";
         }
-        if(empty($_POST['status'])){
+        if(!isset($_POST['status']) || $_POST['status'] === ""){
             $error['status'] = "trang thai không được để trống";
         }
         if(count($error)>=1){

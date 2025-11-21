@@ -38,8 +38,9 @@
         {{-- trang thai tour --}}
         <div>
             <select name="status" class="form-select" aria-label="Default select example">
-                <option value="0">Đã đóng</option>
+                <option value="">--Trang thai--</option>
                 <option value="1">Còn mở</option>
+                <option value="0">Đã đóng</option>
             </select>
         </div>
 
