@@ -39,6 +39,22 @@ $router->get('detail-departure/{id}', [App\Controllers\DepartureController::clas
 $router->post('edit-departure/{id}', [App\Controllers\DepartureController::class, 'editDeparture']);
 //xoa đợt khởi hành
 $router->get('delete-departure/{id}', [App\Controllers\DepartureController::class, 'deleteDeparture']);
+
+//================================================================
+// QUẢN LÝ NHÀ CUNG CẤP (SUPPLIER)
+//================================================================
+// Danh sách nhà cung cấp
+$router->get('list-supplier', [App\Controllers\SupplierController::class, 'getSuppliers']);
+// Thêm nhà cung cấp
+$router->get('add-supplier', [App\Controllers\SupplierController::class, 'createSupplier']);
+$router->post('post-supplier', [App\Controllers\SupplierController::class, 'postSupplier']);
+// Sửa nhà cung cấp (Hiển thị chi tiết và xử lý POST)
+$router->get('detail-supplier/{id}', [App\Controllers\SupplierController::class, 'detailSupplier']);
+$router->post('edit-supplier/{id}', [App\Controllers\SupplierController::class, 'editSupplier']);
+// Xóa nhà cung cấp
+$router->get('delete-supplier/{id}', [App\Controllers\SupplierController::class, 'deleteSupplier']);
+
+
 # NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 
@@ -46,6 +62,5 @@ $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $url);
 
 // Print out the value returned from the dispatched function
 echo $response;
-
 
 ?>

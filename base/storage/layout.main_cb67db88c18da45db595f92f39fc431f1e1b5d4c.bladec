@@ -22,6 +22,7 @@
  <section class="content">
  <?php echo $this->yieldContent('content-tour'); ?>
  <?php echo $this->yieldContent('content-departure'); ?>
+ <?php echo $this->yieldContent('content-supplier'); ?>
  </section>
  <footer>
  <span>FPT POLYTECHNIC</span>
