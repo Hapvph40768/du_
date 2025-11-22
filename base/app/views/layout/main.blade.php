@@ -23,6 +23,10 @@
         @yield('content-tour')
         @yield('content-departure')
         @yield('content-itinerary')
+        @yield('content-booking')
+        @yield('content-roles')
+        @yield('content-user')
+        @yield('content-login')
     </section>
     <footer>
         <span>FPT POLYTECHNIC</span>

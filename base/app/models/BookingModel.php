@@ -26,5 +26,38 @@ class BookingModel extends BaseModel
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
+    public function addBooking($data)
+    {
+        $sql = "INSERT INTO $this->table (departure_id, customer_name, customer_phone, people, total_price, status)VALUES (?, ?, ?, ?, ?, ?)";
+        $this->setQuery($sql);
+        return $this->execute([
+            $data['departure_id'],
+            $data['customer_name'],
+            $data['customer_phone'],
+            $data['people'],
+            $data['total_price'],
+            $data['status'],
+        ]);
+    }
+    public function updateBooking($id, $data)
+    {
+        $sql = "UPDATE $this->table SET 'departure_id' = ?, 'customer_name' = ?, 'customer_phone' = ?, 'people' = ?, 'total_price' = ?, 'status' = ? WHERE id = ?";
+        $this->setQuery($sql);
+        return $this->execute([
+            $data['departure_id'],
+            $data['customer_name'],
+            $data['customer_phone'],
+            $data['people'],
+            $data['total_price'],
+            $data['status'],
+            $id,
+        ]);
+    }
+    public function deleteBooking($id)
+    {
+        $sql = "DELETE FROM $this->table WHERE id = ?";
+        $this->setQuery($sql);
+        return $this->execute([$id]);
+    }
 }
 ?>
