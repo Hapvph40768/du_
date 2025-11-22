@@ -22,6 +22,7 @@
     <section class="content">
         @yield('content-tour')
         @yield('content-departure')
+        @yield('content-supplier')
         @yield('content-itinerary')
         @yield('content-booking')
         @yield('content-roles')
