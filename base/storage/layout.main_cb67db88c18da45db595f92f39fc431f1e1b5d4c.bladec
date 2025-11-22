@@ -23,6 +23,11 @@
  <?php echo $this->yieldContent('content-tour'); ?>
  <?php echo $this->yieldContent('content-departure'); ?>
  <?php echo $this->yieldContent('content-supplier'); ?>
+ <?php echo $this->yieldContent('content-itinerary'); ?>
+ <?php echo $this->yieldContent('content-booking'); ?>
+ <?php echo $this->yieldContent('content-roles'); ?>
+ <?php echo $this->yieldContent('content-user'); ?>
+ <?php echo $this->yieldContent('content-login'); ?>
  </section>
  <footer>
  <span>FPT POLYTECHNIC</span>
