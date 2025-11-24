@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-supplier')
+@extends('admin.dashboard')
+@section('title')
+
+@section('active-supplier', 'active')
+@section('content')
     <h3>Danh Sách Nhà Cung Cấp</h3>
 
     {{-- Hiển thị thông báo lỗi (errors) --}}

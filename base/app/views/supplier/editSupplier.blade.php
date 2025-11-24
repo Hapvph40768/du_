@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-supplier')
+@extends('admin.dashboard')
+@section('title')
+
+@section('active-supplier', 'active')
+@section('content')
     <h3>Cập Nhật Nhà Cung Cấp: {{ $detail->name ?? 'Không tìm thấy' }}</h3>
 
     {{-- Hiển thị thông báo lỗi (errors) --}}
