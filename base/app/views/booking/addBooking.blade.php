@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-booking')
+@extends('admin.dashboard')
+@section('title', 'Thêm booking')
+
+@section('active-booking', 'active')
+@section('content')
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)
@@ -11,7 +14,7 @@
         <span>{{$_SESSION['success']}}</span>
     @endif
     <a href="{{route('list-booking')}}">
-        <button>Quay lai</button>
+        <button type="button" class="btn btn-warning">Quay lai</button>
     </a>
     <form action="{{route('post-booking')}}" method="post">
 

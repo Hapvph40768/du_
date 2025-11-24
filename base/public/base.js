@@ -1,5 +1,5 @@
 function confirmDelete(delUrl) {
-    if (confirm("Are you sure you want to delete")) {
+    if (confirm("Bạn chắc chắn muốn xóa ?")) {
     document.location = delUrl;
 }
 }

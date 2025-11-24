@@ -1,6 +1,10 @@
-@extends('layout.main')
+@extends('admin.dashboard')
 
-@section('content-user')
+@section('title', 'Sửa người dùng')
+
+@section('active-user', 'active')
+
+@section('content')
 <h2>Chỉnh sửa người dùng</h2>
 
 @if(isset($_SESSION['errors']) && isset($_GET['msg']))
@@ -12,7 +16,9 @@
         </ul>
     </div>
 @endif
-
+    <a href="{{route('list-user')}}">
+        <button type="button" class="btn btn-warning">Quay lai</button>
+    </a>
 <form action="{{ route('edit-user/' . $detail->id) }}" method="post">
     {{-- Chọn role --}}
     <div class="mb-3">

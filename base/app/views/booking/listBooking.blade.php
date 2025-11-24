@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-booking')
+@extends('admin.dashboard')
+@section('title', 'danh sách booking')
+
+@section('active-booking', 'active')
+@section('content')
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)
@@ -11,7 +14,7 @@
         <span>{{$_SESSION['success']}}</span>
     @endif
     <a href="{{route('add-booking')}}">
-        <button>Thêm tour</button>
+        <button type="button" class="btn btn-info">Thêm booking</button>
     </a>
     <table class="table">
         <thead>
@@ -38,8 +41,8 @@
                     <td>{{ $b->total_price }}</td>
                     <td>{{ $b->status }}</td>
                     <td>
-                        <button><a href="{{route('detail-booking/' . $b->id)}}">Sửa</a></button>
-                        <button onclick="confirmDelete('{{route('delete-booking/' . $b->id)}}')">Xóa</button>
+                        <button type="button" class="btn btn-warning"><a href="{{route('detail-booking/' . $b->id)}}">Sửa</a></button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{route('delete-booking/' . $b->id)}}')">Xóa</button>
                     </td>
                 </tr>
             @endforeach

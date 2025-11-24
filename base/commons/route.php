@@ -19,23 +19,17 @@ $router->get('/', function(){
     return "trang chủ";
 });
 
-$router->get('dashboard', function() {
-    echo "Chào mừng bạn đến Dashboard!";
-});
 //Login, logout
-
 $router->get('login', [App\Controllers\AuthController::class, 'login']);
-$router->post('loginPost', [App\Controllers\AuthController::class, 'loginPost']);
-
+$router->post('login', [App\Controllers\AuthController::class, 'loginPost']); 
 $router->get('register', [App\Controllers\AuthController::class, 'register']);
-$router->post('registerPost', [App\Controllers\AuthController::class, 'registerPost']);
+$router->post('register', [App\Controllers\AuthController::class, 'registerPost']); 
+//admin
+$router->get('dashboard', [App\Controllers\AuthController::class, 'dashboard']);
 
-$router->get('logout', [App\Controllers\AuthController::class, 'logout']);
+$router->get('logout', [App\Controllers\AuthController::class, 'logout']);//user
 
-
-//user
-
-//dannh sach
+//danh sach
 $router->get('list-user', [App\Controllers\UserController::class, 'getUser']);
 //them
 $router->get('add-user', [App\Controllers\UserController::class, 'createUser']);
@@ -122,6 +116,16 @@ $router->get('list-booking',[App\Controllers\BookingController::class,'getBookin
 //them
 $router->get('add-booking',[App\Controllers\BookingController::class,'createBooking']);
 $router->post('post-booking',[App\Controllers\BookingController::class, 'postBooking']);
+//sua
+$router->get('detail-booking/{id}', [App\Controllers\BookingController::class, 'detailBooking']);
+$router->post('edit-booking/{id}', [App\Controllers\BookingController::class, 'editBooking']);
+//xoa
+$router->get('delete-booking/{id}',[App\Controllers\BookingController::class,'deleteBooking']);
+
+//booking_customers
+//danh sach
+$router->get('list-bookingCus/{booking_id}',[App\Controllers\BookingCustomerController::class,'getBookId']);
+
 # NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 

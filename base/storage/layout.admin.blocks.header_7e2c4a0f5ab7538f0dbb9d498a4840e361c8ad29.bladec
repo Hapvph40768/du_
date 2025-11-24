@@ -1,0 +1,7 @@
+<nav class="navbar navbar-dark">
+ <span class="navbar-brand">🛠️ Admin Dashboard</span>
+ <div class="ms-auto d-flex align-items-center">
+ <span class="me-3 text-light">Admin</span>
+ <img src="https://via.placeholder.com/35" class="rounded-circle" alt="avatar">
+ </div>
+</nav>
