@@ -28,6 +28,7 @@
         @yield('content-roles')
         @yield('content-user')
         @yield('content-login')
+        @yield('content-guides')
     </section>
     <footer>
         <span>FPT POLYTECHNIC</span>

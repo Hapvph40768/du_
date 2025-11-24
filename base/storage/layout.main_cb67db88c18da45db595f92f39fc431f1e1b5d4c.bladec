@@ -28,6 +28,7 @@
  <?php echo $this->yieldContent('content-roles'); ?>
  <?php echo $this->yieldContent('content-user'); ?>
  <?php echo $this->yieldContent('content-login'); ?>
+ <?php echo $this->yieldContent('content-guides'); ?>
  </section>
  <footer>
  <span>FPT POLYTECHNIC</span>

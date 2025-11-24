@@ -115,6 +115,10 @@ $router->post('edit-itinerary/{id}', [App\Controllers\ItineraryController::class
 //xoa
 $router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::class, 'deleteItinerary']);
 
+// GUIDES:HDV
+$router->get('list-guides', [App\Controllers\GuidesController::class, 'getGuides']);
+$router->get('add-guide', [App\Controllers\GuidesController::class, 'createGuides']);
+
 //BOOKINGS: Đặt tour
 
 //danh sach
