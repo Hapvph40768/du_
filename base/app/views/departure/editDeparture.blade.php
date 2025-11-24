@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-departure')
+@extends('admin.dashboard')
+@section('title', 'Sửa Lịch khởi hành của tour')
+
+@section('active-departure', 'active')
+@section('content')
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)
@@ -10,6 +13,9 @@
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
         <span>{{$_SESSION['success']}}</span>
     @endif
+    <a href="{{route('list-departure')}}">
+        <button type="button" class="btn btn-warning">Quay lai</button>
+    </a>
     <form action="{{route('edit-departure/' . $detail->id)}}" method="post">
 
         {{-- ten tour --}}

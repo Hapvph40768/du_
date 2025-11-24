@@ -1,0 +1,26 @@
+<div class="sidebar">
+ <?php /* user */ ?>
+ <a href="<?php echo \htmlentities(route('list-user')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-user'); ?>">
+ <i class="bi bi-person-fill me-2"></i> Quản lý Tài khoản người dùng
+ </a>
+ <?php /* Tour */ ?>
+ <a href="<?php echo \htmlentities(route('list-tours')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-tour'); ?>">
+ <i class="bi bi-geo-alt-fill me-2"></i> Quản lý Tour
+ </a>
+ <?php /* departure */ ?>
+ <a href="<?php echo \htmlentities(route('list-departure')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-departure'); ?>">
+ <i class="bi bi-calendar-event-fill me-2"></i> Quản lý Lịch khởi hành
+ </a>
+ <?php /* itinerary */ ?>
+ <a href="<?php echo \htmlentities(route('list-itinerary')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-itinerary'); ?>">
+ <i class="bi bi-list-task me-2"></i> Quản lý Lịch trình theo ngày
+ </a>
+ <?php /* booking */ ?>
+ <a href="<?php echo \htmlentities(route('list-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-booking'); ?>">
+ <i class="bi bi-journal-check me-2"></i> Quản lý Booking
+ </a>
+ <?php /* roles */ ?>
+ <a href="<?php echo \htmlentities(route('list-roles')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="<?php echo $this->yieldContent('active-roles'); ?>">
+ <i class="bi bi-people-fill me-2"></i> Quản lý Vai trò người dùng
+ </a>
+</div>

@@ -1,5 +1,11 @@
-@extends('layout.main')
-@section('content-tour')
+@extends('admin.dashboard')
+
+@section('title', 'Danh sách Tour')
+
+@section('active-tours', 'active')
+
+@section('content')
+<h1>Danh sách Tour</h1>
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)
@@ -11,7 +17,7 @@
         <span>{{$_SESSION['success']}}</span>
     @endif
     <a href="{{route('add-tour')}}">
-        <button>Thêm tour</button>
+        <button type="button" class="btn btn-success">Thêm tour</button>
     </a>
     <table class="table">
         <thead>
@@ -36,8 +42,8 @@
                     <td>{{ $st->days }}</td>
                     <td>{{ $st->status == 1 ? 'còn mở' : 'đã đóng'  }}</td>
                     <td>
-                        <button><a href="{{route('detail-tour/' . $st->id)}}">Sửa</a></button>
-                        <button onclick="confirmDelete('{{route('delete-tour/' . $st->id)}}')">Xóa</button>
+                        <button type="button" class="btn btn-warning"><a href="{{route('detail-tour/' . $st->id)}}">Sửa</a></button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{route('delete-tour/' . $st->id)}}')">Xóa</button>
                     </td>
                 </tr>
             @endforeach

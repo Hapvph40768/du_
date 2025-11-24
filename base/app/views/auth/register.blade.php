@@ -1,42 +1,60 @@
-@extends('layout.main')
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-@section('content-tour')
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Đăng ký tài khoản</h3>
 
-    <h2>Đăng ký</h2>
+                    @if(isset($_SESSION["success"]))
+                        <div class="alert alert-success">
+                            {{ $_SESSION["success"] }}
+                        </div>
+                        <?php unset($_SESSION["success"]); ?>
+                    @endif
 
-    {{-- HIỂN THỊ LỖI --}}
-    @if(isset($_SESSION['error_register']))
-        <ul style="color: red;">
-            @foreach($_SESSION['error_register'] as $err)
-                <li>{{ $err }}</li>
-            @endforeach
-        </ul>
-        <?php unset($_SESSION['error_register']); ?>
-    @endif
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" name="fullname" class="form-control" required>
+                        </div>
 
-    {{-- HIỂN THỊ THÔNG BÁO --}}
-    @if(isset($_SESSION['success']))
-        <p style="color:green;">{{ $_SESSION['success'] }}</p>
-        <?php unset($_SESSION['success']); ?>
-    @endif
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" name="phone" class="form-control" required>
+                        </div>
 
-    <form action="{{ BASE_URL }}registerPost" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
 
-        <label>Họ và tên</label>
-        <input type="text" name="fullname" placeholder="Nhập họ tên">
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
 
-        <label>Số điện thoại</label>
-        <input type="text" name="phone" placeholder="Nhập số điện thoại">
+                        <button type="submit" class="btn btn-success w-100">Đăng ký</button>
 
-        <label>Tên đăng nhập</label>
-        <input type="text" name="username" placeholder="Nhập tên đăng nhập">
+                        <p class="mt-3 text-center">
+                            Đã có tài khoản? <a href="{{ BASE_URL }}login">Đăng nhập</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <label>Mật khẩu</label>
-        <input type="password" name="password" placeholder="Nhập mật khẩu">
-
-        <button type="submit">Đăng ký</button>
-    </form>
-
-    <p>Bạn đã có tài khoản? <a href="{{ BASE_URL }}login">Đăng nhập</a></p>
-
-@endsection
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

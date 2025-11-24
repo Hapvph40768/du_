@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-itinerary')
+@extends('admin.dashboard')
+@section('title', 'Lịch trình theo ngày')
+
+@section('active-itinerary', 'active')
+@section('content')
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)
@@ -11,7 +14,7 @@
         <span>{{$_SESSION['success']}}</span>
     @endif
     <a href="{{route('add-itinerary')}}">
-        <button>Thêm tour</button>
+        <button type="button" class="btn btn-success">Thêm tour</button>
     </a>
     <table class="table">
         <thead>
@@ -34,8 +37,8 @@
                     <td>{{ $it->title }}</td>
                     <td>{{ $it->content }}</td>
                     <td>
-                        <button><a href="{{route('detail-itinerary/' . $it->id)}}">Sửa</a></button>
-                        <button onclick="confirmDelete('{{route('delete-itinerary/' . $it->id)}}')">Xóa</button>
+                        <button type="button" class="btn btn-warning"><a href="{{route('detail-itinerary/' . $it->id)}}">Sửa</a></button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{route('delete-itinerary/' . $it->id)}}')">Xóa</button>
                     </td>
                 </tr>
             @endforeach
