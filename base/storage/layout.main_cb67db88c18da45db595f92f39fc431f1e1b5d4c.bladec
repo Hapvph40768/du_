@@ -23,6 +23,7 @@
  <?php echo $this->yieldContent('content-tour'); ?>
  <?php echo $this->yieldContent('content-departure'); ?>
  <?php echo $this->yieldContent('content-supplier'); ?>
+ <?php echo $this->yieldContent('content-toursupplier'); ?>
  <?php echo $this->yieldContent('content-itinerary'); ?>
  <?php echo $this->yieldContent('content-booking'); ?>
  <?php echo $this->yieldContent('content-roles'); ?>

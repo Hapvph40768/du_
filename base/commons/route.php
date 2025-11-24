@@ -122,6 +122,23 @@ $router->get('list-booking',[App\Controllers\BookingController::class,'getBookin
 //them
 $router->get('add-booking',[App\Controllers\BookingController::class,'createBooking']);
 $router->post('post-booking',[App\Controllers\BookingController::class, 'postBooking']);
+
+//================================================================
+// TOUR SUPPLIER: Gán Nhà Cung Cấp cho Tour
+//================================================================
+// Danh sách gán NCC cho Tour
+$router->get('list-tour-supplier', [App\Controllers\TourSupplierController::class, 'getTourSuppliers']);
+// Thêm gán NCC cho Tour (Hiển thị form)
+$router->get('add-tour-supplier', [App\Controllers\TourSupplierController::class, 'createTourSupplier']);
+// Xử lý thêm mới
+$router->post('post-tour-supplier', [App\Controllers\TourSupplierController::class, 'postTourSupplier']);
+// Sửa gán NCC cho Tour (Hiển thị chi tiết)
+$router->get('detail-tour-supplier/{id}', [App\Controllers\TourSupplierController::class, 'detailTourSupplier']);
+// Xử lý cập nhật
+$router->post('edit-tour-supplier/{id}', [App\Controllers\TourSupplierController::class, 'editTourSupplier']);
+// Xóa gán NCC cho Tour
+$router->get('delete-tour-supplier/{id}', [App\Controllers\TourSupplierController::class, 'deleteTourSupplier']);
+
 # NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 

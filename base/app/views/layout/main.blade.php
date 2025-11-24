@@ -23,6 +23,7 @@
         @yield('content-tour')
         @yield('content-departure')
         @yield('content-supplier')
+        @yield('content-toursupplier')
         @yield('content-itinerary')
         @yield('content-booking')
         @yield('content-roles')
