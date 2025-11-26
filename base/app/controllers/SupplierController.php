@@ -20,7 +20,7 @@ class SupplierController extends BaseController
     // 1. Xem Danh sách Nhà cung cấp
     public function getSuppliers()
     {
-        $suppliers = $this->supplier->getListSuppliers();
+        $suppliers = $this->supplier->getAll();
         // Giả định view là 'supplier.listSupplier'
         $this->render("supplier.listSupplier", ['suppliers' => $suppliers]);
     }
@@ -60,10 +60,14 @@ class SupplierController extends BaseController
             redirect('errors', $error, 'add-supplier');
         } else {
             // Thực hiện thêm vào CSDL
-            $check = $this->supplier->addSupplier(
-                $name,
-                $type,
-                $phone,
+            $check = $this->supplier->insert(
+                [
+                    'name' => $name,
+                    'type' => $type,
+                    'phone' => $phone,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]
             );
 
             if ($check) {
@@ -77,16 +81,8 @@ class SupplierController extends BaseController
     // 4. Hiển thị Form Chỉnh sửa Nhà cung cấp (chi tiết)
     public function detailSupplier($id)
     {
-        $detail = $this->supplier->getSupplierById($id);
-
-        if (!$detail) {
-            // Xử lý nếu không tìm thấy ID
-            redirect('errors', "Nhà cung cấp không tồn tại.", 'list-supplier');
-            return;
-        }
-
-        // Giả định view là 'supplier.editSupplier'
-        return $this->render('supplier.editSupplier', ['detail' => $detail]);
+        $detail = $this->supplier->getById($id);
+        return $this->render('supplier.editSpupplier', ['detail' => $detail]);
     }
 
     // 5. Xử lý logic Chỉnh sửa Nhà cung cấp
@@ -121,11 +117,15 @@ class SupplierController extends BaseController
                 redirect('errors', $error, $route);
             } else {
                 // Thực hiện cập nhật vào CSDL
-                $check = $this->supplier->editSupplier(
+                $check = $this->supplier->update(
                     $id,
-                    $name,
-                    $type,
-                    $phone,
+                    [
+                        'name' => $name,
+                        'type' => $type,
+                        'phone' => $phone,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]
                 );
 
                 if ($check) {
@@ -143,7 +143,7 @@ class SupplierController extends BaseController
     // 6. Xử lý logic Xóa Nhà cung cấp
     public function deleteSupplier($id)
     {
-        $check = $this->supplier->deleteSupplier($id); // Hoặc dùng $this->supplier->updateStatus($id, 0); cho Soft Delete
+        $check = $this->supplier->delete($id); 
 
         if ($check) {
             redirect('success', "Xóa nhà cung cấp thành công", 'list-supplier');

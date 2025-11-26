@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Controllers;
+
 use App\Models\ItineraryModel;
 use App\Models\TourModel;
+
 class ItineraryController extends BaseController
 {
     public $itinerary;
@@ -11,13 +14,13 @@ class ItineraryController extends BaseController
     }
     public function getItinerary()
     {
-        $itineraries = $this->itinerary->getAllItinerary();
+        $itineraries = $this->itinerary->getAllItineraries();
         $this->render("itinerary.listItinerary", ['itinerary' => $itineraries]);
     }
     public function createItinerary()
     {
         $tourModel = new TourModel();
-        $tours = $tourModel->getListTours();
+        $tours = $tourModel->getAllTours();
         $this->render("itinerary.addItinerary", ['tours' => $tours]);
     }
     public function postItinerary()
@@ -50,15 +53,15 @@ class ItineraryController extends BaseController
                 'day_number' => $day_number,
                 'title' => $title,
                 'content' => $content,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
             if ($check) {
                 redirect('success', "Thêm thành công", 'list-itinerary');
             } else {
                 redirect('errors', "Thêm thất bại, vui lòng thử lại", 'add-itinerary');
             }
-
         }
-
     }
     public function deleteItinerary($id)
     {
@@ -71,7 +74,7 @@ class ItineraryController extends BaseController
     {
         $detail = $this->itinerary->getItineraryById($id);
         $tour = new TourModel();
-        $tours = $tour->getListTours();
+        $tours = $tour->getAllTours();
         return $this->render('itinerary.editItinerary', ['detail' => $detail, 'tours' => $tours]);
     }
     public function editItinerary($id)
@@ -102,6 +105,7 @@ class ItineraryController extends BaseController
                         'day_number' => $_POST['day_number'],
                         'title' => $_POST['title'],
                         'content' => $_POST['content'],
+                        'updated_at' => date('Y-m-d H:i:s'),
                     ]
                 );
                 if ($check) {

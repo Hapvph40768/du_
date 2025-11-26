@@ -1,55 +1,49 @@
 <?php
 namespace App\Models;
 
-class TourModel extends BaseModel
+class ServiceModel extends BaseModel
 {
-    protected $table = "tours";
+    protected $table = "services";
 
-    public function getAllTours()
+    public function getAllServices()
     {
         $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
 
-    public function getTourById($id)
+    public function getServiceById($id)
     {
         $sql = "SELECT * FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
 
-    public function addTour($data)
+    public function addService($data)
     {
-        $sql = "INSERT INTO {$this->table} (`name`, `description`, `price`, `days`, `status`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} (`name`, `default_price`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['name'],
-            $data['description'],
-            $data['price'],
-            $data['days'],
-            $data['status'] ?? 1,
+            $data['default_price'],
             $data['created_at'],
             $data['updated_at']
         ]);
     }
 
-    public function updateTour($id, $data)
+    public function updateService($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `name`=?, `description`=?, `price`=?, `days`=?, `status`=?, `updated_at`=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET `name`=?, `default_price`=?, `updated_at`=? WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['name'],
-            $data['description'],
-            $data['price'],
-            $data['days'],
-            $data['status'] ?? 1,
+            $data['default_price'],
             $data['updated_at'],
             $id
         ]);
     }
 
-    public function deleteTour($id)
+    public function deleteService($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);

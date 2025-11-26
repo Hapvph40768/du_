@@ -12,7 +12,7 @@ class BookingController extends BaseController
     }
     public function getBookings()
     {
-        $bookings = $this->booking->getAllBooking();
+        $bookings = $this->booking->getAllBookings();
         $this->render("booking.listBooking", ['bookings' => $bookings]);
     }
     public function createBooking()
@@ -55,6 +55,8 @@ class BookingController extends BaseController
                 'people' => $_POST['people'],
                 'total_price' => $_POST['total_price'],
                 'status' => $_POST['status'],
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s"),
             ]);
             if ($check) {
                 redirect('success', "them thanh cong", 'list-booking');
@@ -108,7 +110,8 @@ class BookingController extends BaseController
                         'customer_phone' => $_POST['customer_phone'],
                         'people' => $_POST['people'],
                         'total_price' => $_POST['total_price'],
-                        'status' => $_POST['status'],
+                        'status' => $status,
+                        'updated_at' => date("Y-m-d H:i:s"),
                     ]
                 );
                 if ($check) {

@@ -3,70 +3,55 @@ namespace App\Models;
 
 class UserModel extends BaseModel
 {
-    protected $table = "users";
-
-    public function findByUsername($username)
-    {
-        $sql = "SELECT * FROM $this->table WHERE username = ?";
-        $this->setQuery($sql);
-        return $this->loadRow([$username]);
-    }
+    protected $table = 'users';
 
     public function getAll()
     {
-        $sql = "
-        SELECT u.*, r.name AS role_name
-        FROM $this->table u
-        JOIN roles r ON u.role_id = r.id
-        ORDER BY u.id DESC";
-        $this->setQuery($sql);
+        $this->setQuery("SELECT * FROM {$this->table}");
         return $this->loadAllRows();
     }
-    public function getByID($id)
+
+    public function getById($id)
     {
-        $sql = "SELECT * FROM $this->table WHERE id = ?";
-        $this->setQuery($sql);
+        $this->setQuery("SELECT * FROM {$this->table} WHERE id = ?");
         return $this->loadRow([$id]);
     }
-    public function getPhone($phone)
+
+    public function insert($data)
     {
-        $sql = "SELECT * FROM $this->table WHERE phone = ?";
-        $this->setQuery($sql);
-        return $this->loadRow([$phone]);
-    }
-    public function addUser($data)
-    {
-        $sql = "INSERT INTO $this->table (`role_id`, `username`, `password`, `fullname`, `phone`, `status`) 
-        VALUE (?,?,?,?,?,?)";
+        $sql = "INSERT INTO {$this->table} (`username`, `password`, `fullname`, `phone`, `status`, `created_at`, `updated_at`)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
-            $data['role_id'],
-            $data['username'],
-            $data['password'],
-            $data['fullname'],
-            $data['phone'],
-            $data['status']
+            $data['username'], 
+            $data['password'], 
+            $data['fullname'], 
+            $data['phone'] ?? null, 
+            $data['status'] ?? 1,
+            $data['created_at'],
+            $data['updated_at']
         ]);
     }
-    public function updateUser($id,$data)
+
+    public function update($id, $data)
     {
-        $sql = "UPDATE $this->table SET `role_id` = ?, `username` = ?, `password` = ?, `fullname` = ?, `phone` = ?, `status` = ? WHERE id =?";
+        $sql = "UPDATE {$this->table} SET  `username`=?, `password`=?, `fullname`=?, `phone`=?, `status`=?, `updated_at`=? WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
-            $data['role_id'],
-            $data['username'],
-            $data['password'],
-            $data['fullname'],
-            $data['phone'],
-            $data['status'],
+            $data['username'], 
+            $data['password'], 
+            $data['fullname'], 
+            $data['phone'] ?? null, 
+            $data['status'] ?? 1,
+            $data['updated_at'],
             $id
         ]);
     }
-    public function deleteUser($id)
+
+    public function delete($id)
     {
-        $sql = "DELETE FROM $this->table WHERE id = ?";
-        $this->setQuery($sql);
+        $this->setQuery("DELETE FROM {$this->table} WHERE id=?");
         return $this->execute([$id]);
     }
-
 }
+?>

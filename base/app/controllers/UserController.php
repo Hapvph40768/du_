@@ -1,125 +1,106 @@
 <?php
 namespace App\Controllers;
 use App\Models\UserModel;
-use App\Models\RolesModel;
 
 class UserController extends BaseController
 {
-    public $user;
+    private $user;
+
     public function __construct()
     {
         $this->user = new UserModel();
     }
-    public function getUser()
+    public function index()
     {
         $users = $this->user->getAll();
-        $this->render('user.listUser', ['users' => $users]);
+        $this->render('user.listUser', compact($users));
     }
-
-    public function createUser()
+    public function create()
     {
-        $rolesModel = new RolesModel();
-        $roles = $rolesModel->getAllRoles();
-        $this->render('user.addUser', ['roles' => $roles]);
+        $this->render('user.addUser');
     }
     public function postUser()
     {
         $error = [];
-        $role_id = trim($_POST['role_id']);
-        $username = trim($_POST['username']);
-        $password = trim($_POST['password']);
-        $fullname = trim($_POST['fullname']);
-        $phone = trim($_POST['phone']);
-        $status = trim($_POST['status']);
 
-        if (empty($role_id)) {
-            $error['role_id'] = "chuc nang khong duoc de trong";
+        if (empty($_POST['username'])) {
+            $error['username'] = "Username không được để trống";
         }
-        if (empty($username)) {
-            $error['username'] = "ten dang nhap khong duoc de trong";
-        } else {
-            $checkUser = $this->user->findByUsername($username);
-            if ($checkUser) {
-                $error['username'] = "Tên đăng nhập đã tồn tại";
-            }
+        if (empty($_POST['password'])) {
+            $error['password'] = "Password không được để trống";
         }
-        if (empty($password)) {
-            $error['password'] = "mat khau khong duoc de trong";
+        if (empty($_POST['fullname'])) {
+            $error['fullname'] = "Họ tên không được để trống";
         }
-        if (empty($fullname)) {
-            $error['fullname'] = "ho ten  khong duoc de trong";
+        if (!empty($_POST['phone']) && !preg_match('/^[0-9]{9,11}$/', $_POST['phone'])) {
+            $error['phone'] = "Số điện thoại không hợp lệ";
         }
-        if (empty($phone)) {
-            $error['phone'] = "sdt khong duoc de trong";
-        }
-        if (!isset($_POST['status']) || $_POST['status'] === "") {
-            $error['status'] = "trang thai không được để trống";
-        }
+        $roleFixed = in_array($_POST['username'], ['admin', 'guide']) ? $_POST['username'] : 'customer';
         if (count($error) >= 1) {
-            redirect('error', $error, 'register');
+            redirect('error', $error, 'add-user');
         } else {
-            $check = $this->user->addUser([
-                'role_id' => $role_id,
-                'username' => $username,
-                'password' => $password,
-                'fullname' => $fullname,
-                'phone' => $phone,
-                'status' => $status
+            $check = $this->user->insert([
+                'username' => $_POST['username'],
+                'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+                'fullname' => $_POST['fullname'],
+                'phone' => $_POST['phone'] ?? null,
+                'status' => 1,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s"),
+                'role_fixed' => $roleFixed,
             ]);
+
             if ($check) {
-                redirect('success', 'Them thanh cong', 'list-user');
+                redirect('success', 'Thêm user thành công', 'list-users');
+            } else {
+                redirect('error', 'Thêm user thất bại', 'add-user');
             }
         }
     }
 
-    public function detailUser($id)
+    public function updateUser($id)
     {
-        $detail = $this->user->getByID($id);
-        $role = new RolesModel();
-        $roles = $role->getAllRoles();
-        return $this->render('user.editUser', ['detail' => $detail, 'roles' => $roles]);
-    }
-    public function editUser($id)
-    {
-        if (isset($_POST['btn-submit'])) {
+        if (!isset($_POST['btn-submit'])) {
             $error = [];
-            if (empty($_POST['role_id'])) {
-                $error['role_id'] = "chuc nang khong duoc de trong";
-            }
+
             if (empty($_POST['username'])) {
-                $error['username'] = "ten dang nhap khong duoc de trong";
+                $error['username'] = "Username không được để trống";
             }
-            if (empty($_POST['password'])) {
-                $error['password'] = "mat khau khong duoc de trong";
+            if (!empty($_POST['password']) && strlen($_POST['password']) < 6) {
+                $error['password'] = "Password phải ít nhất 6 ký tự";
             }
             if (empty($_POST['fullname'])) {
-                $error['fullname'] = "ho ten  khong duoc de trong";
+                $error['fullname'] = "Họ tên không được để trống";
             }
-            if (empty($_POST['phone'])) {
-                $error['phone'] = "sdt khong duoc de trong";
+            if (!empty($_POST['phone']) && !preg_match('/^[0-9]{9,11}$/', $_POST['phone'])) {
+                $error['phone'] = "Số điện thoại không hợp lệ";
             }
-            if (empty($_POST['status'])) {
-                $error['status'] = "trang thai khong duoc de trong";
-            }
-            $route = 'detail-user/' . $id;
+
+            $route = 'edit-user/' . $id;
+
             if (count($error) >= 1) {
-                redirect('error', $error, $route);
+                redirect('errors', $error, $route);
+            }
+            $updateData = [
+                'username' => $_POST['username'],
+                'fullname' => $_POST['fullname'],
+                'phone' => $_POST['phone'] ?? null,
+                'status' => 1,
+                'updated_at' => date("Y-m-d H:i:s"),
+            ];
+
+            if (!empty($_POST['password'])) {
+                $updateData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            }
+            $check = $this->user->update($id, $updateData);
+
+            if ($check) {
+                redirect('success', 'Cập nhật user thành công', 'list-user');
             } else {
-                $check = $this->user->updateUser(
-                    $id,
-                    [
-                        'role_id' => $_POST['role_id'],
-                        'username' => $_POST['username'],
-                        'password' => $_POST['password'],
-                        'fullname' => $_POST['fullname'],
-                        'phone' => $_POST['phone'],
-                        'status' => $_POST['status']
-                    ]
-                );
-                if($check){
-                    redirect('success', 'cap nhat thanh cong', 'list-user');
-                }
+                redirect('error', 'Cập nhật user thất bại', $route);
             }
         }
+
     }
+
 }

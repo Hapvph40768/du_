@@ -11,7 +11,7 @@ class TourController extends BaseController
     }
     public function getTours()
     {
-        $tours = $this->tour->getListTours();
+        $tours = $this->tour->getAllTours();
         $this->render("tour.listTour", ['tours' => $tours]);
     }
     public function CreateTour()
@@ -37,17 +37,22 @@ class TourController extends BaseController
 
             $error['status'] = "trang thai không được để trống";
         }
+        $status = $_POST['status'] ?? 1;
+
         if (count($error) >= 1) {
             redirect('errors', $error, 'add-tour');
         } else {
 
             $check = $this->tour->addTour(
-                null,
-                $_POST['name'],
-                $_POST['description'],
-                $_POST['price'],
-                $_POST['days'],
-                $_POST['status'],
+                [
+                    'name' => $_POST['name'],
+                    'description' => $_POST['description'],
+                    'price' => $_POST['price'],
+                    'days' => $_POST['days'],
+                    'status' => $status,
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s"),
+                ]
             );
             if ($check) {
                 redirect('success', "Thêm thành công", 'list-tours');
@@ -73,7 +78,7 @@ class TourController extends BaseController
     {
         if (isset($_POST['btn-submit'])) {
             $error = [];
-            //            echo 123;
+            // echo 123;
             // validate rỗng
             if (empty($_POST['name'])) {
                 $error['name'] = "Tên tour không được để trống";
@@ -87,17 +92,21 @@ class TourController extends BaseController
             if (empty($_POST['days'])) {
                 $error['days'] = "so ngay không được để trống";
             }
+            $status = $_POST['status'] ?? 1;
             $route = 'detail-tour/' . $id;
             if (count($error) >= 1) {
                 redirect('errors', $error, $route);
             } else {
-                $check = $this->tour->editTour(
+                $check = $this->tour->updateTour(
                     $id,
-                    $_POST['tour_name'],
-                    $_POST['description'],
-                    $_POST['price'],
-                    $_POST['days'],
-                    $_POST['status']
+                    [
+                        'name' => $_POST['name'],
+                        'description' => $_POST['description'],
+                        'price' => $_POST['price'],
+                        'days' => $_POST['days'],
+                        'status' => $status,
+                        'updated_at' => date("Y-m-d H:i:s"),
+                    ]
                 );
                 if ($check) {
                     redirect('success', "Sửa thành công", 'list-tours');

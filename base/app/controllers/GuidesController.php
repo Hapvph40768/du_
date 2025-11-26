@@ -17,115 +17,88 @@ class GuidesController extends BaseController
     }
     public function createGuides()
     {
-        $guidesModel = new GuidesModel();
-        $guides = $guidesModel->getAllGuides();
-        $this->render("guides.addGuides", ['guides' => $guides]);
+        $tour = new TourModel();
+        $tours = $tour->getAllTours();
+        $this->render("guides.addGuides", ['tours' => $tours]);
     }
     public function postGuides()
     {
         $error = [];
-
-        // validate
-        $user_id = $_POST['user_id'] ?? '';
-        $dob = $_POST['dob'] ?? '';
-        $avatar = $_POST['avatar'] ?? '';
-        $certificates = $_POST['certificates'] ?? '';
-        $languages = $_POST['languages'] ?? '';
-        $experience_years = $_POST['experience_years'] ?? '';
         if (empty($_POST['user_id'])) {
-            $error['user_id'] = "Tên User không được để trống";
+            $error['user_id'] = "vui long dien vao cho trong";
         }
-        if (empty($_POST['dob'])) {
-            $error['dob'] = "Ngay Sinh không được để trống";
+        if (empty($_POST['experience_years'])) {
+            $error['experience_years'] = "vui long dien vao cho trong";
         }
-        if (empty($_POST['avatar'])) {
-            $error['avatar'] = "Ảnh không được để trống";
+        if (empty($_POST['certificate'])) {
+            $error['certificate'] = "vui long dien vao cho trong";
         }
-        if (!empty($_POST['certificates'])) {
-            $error['certificates'] = "Chứng Chỉ Chuyên Môn Không được để trống";
+        if (empty($_POST['status'])) {
+            $error['status'] = "vui long dien vao cho trong";
         }
-        if (empty($_POST['languages']) ) {
-            $error['languages'] = "Ngôn Ngữ không được để trống";
-        }
-        if (empty($_POST['experience_years']) ) {
-            $error['experience_years'] = "Năm Kinh Nghiêm không được để trống";
-        }
+        $experience_years = $_POST['experience_years'] ?? 0;
+        $status = $_POST['status'] ?? 1;
         if (count($error) >= 1) {
-            redirect('errors', $error, 'add-guide');
+            redirect('error', $error, 'add-guide');
         } else {
-
-            $check = $this->guides->addGuides([
-                'user_id' => $user_id,
-                'dob' => $dob,
-                'avatar' => $avatar,
-                'certificates' => $certificates,
-                'languages' => $languages,
+            $check = $this->guides->addGuide([
+                'user_id' => $_POST['user_id'],
                 'experience_years' => $experience_years,
+                'certificate' => $_POST['certificate'],
+                'status' => $status,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
             if ($check) {
-                redirect('success', "Thêm thành công", 'list-guide');
-            } else {
-                redirect('errors', "Thêm thất bại, vui lòng thử lại", 'add-guide');
+                redirect('success', 'Them thanh cong', 'list-guide');
             }
-
         }
-
-    }
-    public function deleteGuides($id)
-    {
-        $check = $this->guides->deleteGuides($id);
-        if ($check) {
-            redirect('success', "Xóa thành công", 'list-guide');
-        }
-    }
-    public function detailDeparture($id)
-    {
-        $detail = $this->departure->getDepartureById($id);
-        $tour = new TourModel();
-        $tours = $tour->getListTours();
-        return $this->render('departure.editDeparture', ['detail' => $detail, 'tours' => $tours]);
     }
     public function editGuides($id)
     {
         if (isset($_POST['btn-submit'])) {
             $error = [];
-            // validate rỗng
-             if (empty($_POST['user_id'])) {
-            $error['user_id'] = "Tên User không được để trống";
-        }
-        if (empty($_POST['dob'])) {
-            $error['dob'] = "Ngay Sinh không được để trống";
-        }
-        if (empty($_POST['avatar'])) {
-            $error['avatar'] = "Ảnh không được để trống";
-        }
-        if (!empty($_POST['certificates'])) {
-            $error['certificates'] = "Chứng Chỉ Chuyên Môn Không được để trống";
-        }
-        if (empty($_POST['languages']) ) {
-            $error['languages'] = "Ngôn Ngữ không được để trống";
-        }
-        if (empty($_POST['experience_years']) ) {
-            $error['experience_years'] = "Năm Kinh Nghiêm không được để trống";
-        }
-            if(count($error) >=1 ){
-                redirect('errors',  $error, $route);
-            }else{
-                $check = $this->guides->updateGuides(
+            if (empty($_POST['user_id'])) {
+                $error['user_id'] = "vui long dien vao cho trong";
+            }
+            if (empty($_POST['experience_years'])) {
+                $error['experience_years'] = "vui long dien vao cho trong";
+            }
+            if (empty($_POST['certificate'])) {
+                $error['certificate'] = "vui long dien vao cho trong";
+            }
+            if (empty($_POST['status'])) {
+                $error['status'] = "vui long dien vao cho trong";
+            }
+            $experience_years = $_POST['experience_years'] ?? 0;
+            $status = $_POST['status'] ?? 1;
+            $route = 'detail-guide' . $id;
+            if (count($error) >= 1) {
+                redirect('error', $error, $route);
+            } else {
+                $check = $this->guides->updateGuide(
                     $id,
-                      [
+                    [
                         'user_id' => $_POST['user_id'],
-                        'dob' => $_POST['dob'],
-                        'avatar' => $_POST['avatar'],
-                        'certificates' => $_POST['certificates'],
-                        'languages' => $_POST['languages'],
-                        'experience_years' => $_POST['experience_years'],
+                        'experience_years' => $experience_years,
+                        'certificate' => $_POST['certificate'],
+                        'status' => $status,
+                        'updated_at' => date('Y-m-d H:i:s'),
+
                     ]
-                    );
-                    if($check){
-                        redirect('success',  "Sửa thành công", 'list-guide');
-                    }
+                );
+                if($check){
+                    redirect('success', 'sua thanh cong', 'list-guide');
+                }else{
+                    redirect('error', 'sua that bai', 'detail-guide');
+                }
             }
         }
     }
- }
+    public function deleteGuide($id){
+        $check = $this->guides->deleteGuide([$id]);
+        if($check){
+            redirect('success', 'xoa thanh cong', 'list-guide');
+        }
+    }
+}

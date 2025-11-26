@@ -4,14 +4,15 @@ namespace App\Models;
 class DepartureModel extends BaseModel
 {
     protected $table = "departures";
+
     public function getAllDepartures()
     {
         $sql = "
         SELECT d.*, t.name AS tour_name
-        FROM $this->table d
+        FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
         ORDER BY d.date_start DESC
-    ";
+        ";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
@@ -20,25 +21,17 @@ class DepartureModel extends BaseModel
     {
         $sql = "
         SELECT d.*, t.name AS tour_name
-        FROM $this->table d
+        FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
-        WHERE d.id = ?";
+        WHERE d.id=?
+        ";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
-    public function addDeparture($data){
-        $sql = "INSERT INTO $this->table (tour_id, date_start, date_end, seats_total, seats_remaining) VALUES (?, ?, ?, ?, ?)"; 
-        $this->setQuery($sql);
-        return $this->execute([
-            $data['tour_id'],
-            $data['date_start'],
-            $data['date_end'],
-            $data['seats_total'],
-            $data['seats_remaining']
-        ]);
-    }
-    public function updateDeparture($id, $data){
-        $sql = "UPDATE $this->table SET tour_id = ?, date_start = ?, date_end = ?, seats_total = ?, seats_remaining = ? WHERE id = ?"; 
+
+    public function addDeparture($data)
+    {
+        $sql = "INSERT INTO {$this->table} (tour_id, date_start, date_end, seats_total, seats_remaining, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
@@ -46,14 +39,31 @@ class DepartureModel extends BaseModel
             $data['date_end'],
             $data['seats_total'],
             $data['seats_remaining'],
+            $data['created_at'],
+            $data['updated_at']
+        ]);
+    }
+
+    public function updateDeparture($id, $data)
+    {
+        $sql = "UPDATE {$this->table} SET tour_id=?, date_start=?, date_end=?, seats_total=?, seats_remaining=?, updated_at=? WHERE id=?";
+        $this->setQuery($sql);
+        return $this->execute([
+            $data['tour_id'],
+            $data['date_start'],
+            $data['date_end'],
+            $data['seats_total'],
+            $data['seats_remaining'],
+            $data['updated_at'],
             $id
         ]);
     }
-    public function deleteDeparture($id){
-        $sql = "DELETE FROM $this->table WHERE id = ?"; 
+
+    public function deleteDeparture($id)
+    {
+        $sql = "DELETE FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([$id]);
     }
-
-
 }
+?>
