@@ -2,7 +2,7 @@
 //điều chỉnh kết nối db ở đây
 const DBNAME = "du_an1";
 const DBUSER = "root";
-const DBPASS = "";
+const DBPASS = "hoankbpkk";
 const DBCHARSET = "utf8mb4";
 const DBHOST = "127.0.0.1";
 

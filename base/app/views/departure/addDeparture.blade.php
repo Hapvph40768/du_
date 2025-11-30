@@ -23,19 +23,14 @@
             <label>Chọn Tour:</label><br>
             <select name="tour_id" required>
                 @foreach($tours as $tour)
-                    <option value="{{ $tour->id }}">{{ $tour->name }}</option>
+                    <option value="{{ $tour->id }}">{{ $tour->title ?? $tour->name ?? 'Untitled' }}</option>
                 @endforeach
             </select>
         </div>
         {{-- thoi gian tour --}}
         <div class="mb-3">
-            <label for="date_start" class="form-label">Ngay bat dau</label>
-            <input type="date" class="form-control" name="date_start">
-        </div>
-        {{-- thoi gian tour --}}
-        <div class="mb-3">
-            <label for="date_end" class="form-label">Ngay ket thuc</label>
-            <input type="date" class="form-control" name="date_end">
+            <label for="depart_date" class="form-label">Ngày khởi hành</label>
+            <input type="date" class="form-control" name="depart_date">
         </div>
 
         {{-- Tong cho --}}
@@ -45,8 +40,8 @@
         </div>
         {{-- Cho con lai --}}
         <div class="mb-3">
-            <label for="seats_remaining" class="form-label">Cho con lai</label>
-            <input type="number" class="form-control" name="seats_remaining">
+            <label for="seats_booked" class="form-label">Số chỗ đã đặt</label>
+            <input type="number" class="form-control" name="seats_booked" value="0">
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary mb-3" name="btn-submit" value="them">Confirm</button>

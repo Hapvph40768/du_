@@ -21,8 +21,7 @@
             <tr>
                 <th scope="col">STT</th>
                 <th scope="col">Tour</th>
-                <th scope="col">Bắt đầu tour</th>
-                <th scope="col">Kết thúc tour</th>
+                <th scope="col">Ngày khởi hành</th>
                 <th scope="col">Tổng chỗ</th>
                 <th scope="col">Chỗ trống</th>
                 <th scope="col">Hành động</th>
@@ -33,11 +32,10 @@
             @foreach($departures as $dp)
                 <tr>
                     <td scope="col">{{ $dp->id }}</td>
-                    <td>{{ $dp->tour_name }}</td>
-                    <td>{{ $dp->date_start }}</td>
-                    <td>{{ $dp->date_end }}</td>
+                    <td>{{ $dp->tour_title ?? $dp->tour_name ?? '' }}</td>
+                    <td>{{ $dp->depart_date }}</td>
                     <td>{{ $dp->seats_total }}</td>
-                    <td>{{ $dp->seats_remaining }}</td>
+                    <td>{{ ($dp->seats_total ?? 0) - ($dp->seats_booked ?? 0) }}</td>
                     <td>
                         <button type="button" class="btn btn-warning"><a href="{{route('detail-departure/' . $dp->id)}}">Sửa</a></button>
                         <button type="button" class="btn btn-danger" onclick="confirmDelete('{{route('delete-departure/' . $dp->id)}}')">Xóa</button>

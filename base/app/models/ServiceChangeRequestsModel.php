@@ -8,9 +8,10 @@ class ServiceChangeRequestsModel extends BaseModel
     public function getAllRequests()
     {
         $sql = "
-        SELECT scr.*, b.customer_name
+        SELECT scr.*, b.booking_code, c.full_name AS customer_name
         FROM {$this->table} scr
         JOIN bookings b ON scr.booking_id = b.id
+        LEFT JOIN customers c ON b.customer_primary_id = c.id
         ORDER BY scr.id DESC
         ";
         $this->setQuery($sql);
@@ -20,9 +21,10 @@ class ServiceChangeRequestsModel extends BaseModel
     public function getRequestById($id)
     {
         $sql = "
-        SELECT scr.*, b.customer_name
+        SELECT scr.*, b.booking_code, c.full_name AS customer_name
         FROM {$this->table} scr
         JOIN bookings b ON scr.booking_id = b.id
+        LEFT JOIN customers c ON b.customer_primary_id = c.id
         WHERE scr.id=?
         ";
         $this->setQuery($sql);

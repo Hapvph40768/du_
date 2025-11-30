@@ -24,20 +24,19 @@
             <select name="tour_id">
                 @foreach($tours as $tour)
                     <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
-                        {{ $tour->name }}
+                        {{ $tour->title ?? $tour->name ?? 'Untitled' }}
                     </option>
                 @endforeach
             </select>
         </div>
         {{-- thoi gian tour --}}
         <div class="mb-3">
-            <label for="date_start" class="form-label">Ngay bat dau</label>
-            <input type="date" class="form-control" name="date_start" value="{{ $detail->date_start }}">
+            <label for="depart_date" class="form-label">Ngày khởi hành</label>
+            <input type="date" class="form-control" name="depart_date" value="{{ $detail->depart_date ?? $detail->date_start ?? '' }}">
         </div>
         {{-- thoi gian tour --}}
         <div class="mb-3">
-            <label for="date_end" class="form-label">Ngay ket thuc</label>
-            <input type="date" class="form-control" name="date_end" value="{{ $detail->date_end }}">
+            <!-- end date removed from schema; legacy compatibility fields ignored -->
         </div>
 
         {{-- Tong cho --}}
@@ -47,8 +46,8 @@
         </div>
         {{-- Cho con lai --}}
         <div class="mb-3">
-            <label for="seats_remaining" class="form-label">Cho con lai</label>
-            <input type="number" class="form-control" name="seats_remaining" value="{{ $detail->seats_remaining }}">
+            <label for="seats_booked" class="form-label">Số chỗ đã đặt</label>
+            <input type="number" class="form-control" name="seats_booked" value="{{ $detail->seats_booked ?? 0 }}">
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary mb-3" name="btn-submit" value="them">Confirm</button>

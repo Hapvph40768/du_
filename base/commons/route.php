@@ -67,6 +67,22 @@ $router->post('edit-tour/{id}', [App\Controllers\TourController::class, 'editTou
 //xoa tour
 $router->get('delete-tour/{id}', [App\Controllers\TourController::class, 'deleteTour']);
 
+// TOUR IMAGES
+$router->get('list-tour-img', [App\Controllers\TourImgController::class, 'getImages']);
+$router->get('add-tour-img', [App\Controllers\TourImgController::class, 'createImage']);
+$router->post('post-tour-img', [App\Controllers\TourImgController::class, 'postImage']);
+$router->get('detail-tour-img/{id}', [App\Controllers\TourImgController::class, 'detailImage']);
+$router->post('edit-tour-img/{id}', [App\Controllers\TourImgController::class, 'editImage']);
+$router->get('delete-tour-img/{id}', [App\Controllers\TourImgController::class, 'deleteImage']);
+
+// TOUR LOGS
+$router->get('list-tour-log', [App\Controllers\TourLogController::class, 'getLogs']);
+$router->get('add-tour-log', [App\Controllers\TourLogController::class, 'createLog']);
+$router->post('post-tour-log', [App\Controllers\TourLogController::class, 'postLog']);
+$router->get('detail-tour-log/{id}', [App\Controllers\TourLogController::class, 'detailLog']);
+$router->post('edit-tour-log/{id}', [App\Controllers\TourLogController::class, 'editLog']);
+$router->get('delete-tour-log/{id}', [App\Controllers\TourLogController::class, 'deleteLog']);
+
 
 // DEPARTURES: Lịch khởi hành của tour
 
@@ -108,6 +124,22 @@ $router->get('detail-itinerary/{id}', [App\Controllers\ItineraryController::clas
 $router->post('edit-itinerary/{id}', [App\Controllers\ItineraryController::class, 'editItinerary']);
 //xoa
 $router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::class, 'deleteItinerary']);
+
+// SERVICES: Dịch vụ
+$router->get('list-service', [App\Controllers\ServiceController::class, 'getServices']);
+$router->get('add-service', [App\Controllers\ServiceController::class, 'createService']);
+$router->post('post-service', [App\Controllers\ServiceController::class, 'postService']);
+$router->get('detail-service/{id}', [App\Controllers\ServiceController::class, 'detailService']);
+$router->post('edit-service/{id}', [App\Controllers\ServiceController::class, 'editService']);
+$router->get('delete-service/{id}', [App\Controllers\ServiceController::class, 'deleteService']);
+
+// SERVICE CHANGE REQUESTS
+$router->get('list-service-change-requests', [App\Controllers\ServiceChangeRequestController::class, 'getRequests']);
+$router->get('add-service-change-request', [App\Controllers\ServiceChangeRequestController::class, 'createRequest']);
+$router->post('post-service-change-request', [App\Controllers\ServiceChangeRequestController::class, 'postRequest']);
+$router->get('detail-service-change-request/{id}', [App\Controllers\ServiceChangeRequestController::class, 'detailRequest']);
+$router->post('edit-service-change-request/{id}', [App\Controllers\ServiceChangeRequestController::class, 'editRequest']);
+$router->get('delete-service-change-request/{id}', [App\Controllers\ServiceChangeRequestController::class, 'deleteRequest']);
 
 // GUIDES:HDV
 $router->get('list-guides', [App\Controllers\GuidesController::class, 'getGuides']);

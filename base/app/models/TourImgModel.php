@@ -8,7 +8,7 @@ class TourImgModel extends BaseModel
     public function getAllImages()
     {
         $sql = "
-        SELECT ti.*, t.name AS tour_name
+        SELECT ti.*, t.name AS tour_title
         FROM {$this->table} ti
         JOIN tours t ON ti.tour_id = t.id
         ORDER BY ti.id DESC
@@ -20,7 +20,7 @@ class TourImgModel extends BaseModel
     public function getImageById($id)
     {
         $sql = "
-        SELECT ti.*, t.name AS tour_name
+        SELECT ti.*, t.name AS tour_title
         FROM {$this->table} ti
         JOIN tours t ON ti.tour_id = t.id
         WHERE ti.id=?

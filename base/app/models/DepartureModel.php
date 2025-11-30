@@ -8,10 +8,10 @@ class DepartureModel extends BaseModel
     public function getAllDepartures()
     {
         $sql = "
-        SELECT d.*, t.name AS tour_name
+        SELECT d.*, t.name AS tour_title
         FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
-        ORDER BY d.date_start DESC
+        ORDER BY d.depart_date DESC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
@@ -20,7 +20,7 @@ class DepartureModel extends BaseModel
     public function getDepartureById($id)
     {
         $sql = "
-        SELECT d.*, t.name AS tour_name
+        SELECT d.*, t.name AS tour_title
         FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
         WHERE d.id=?
@@ -31,14 +31,14 @@ class DepartureModel extends BaseModel
 
     public function addDeparture($data)
     {
-        $sql = "INSERT INTO {$this->table} (tour_id, date_start, date_end, seats_total, seats_remaining, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} (tour_id, depart_date, seats_total, seats_booked, note, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['date_start'],
-            $data['date_end'],
+            $data['depart_date'],
             $data['seats_total'],
-            $data['seats_remaining'],
+            $data['seats_booked'],
+            $data['note'],
             $data['created_at'],
             $data['updated_at']
         ]);
@@ -46,14 +46,14 @@ class DepartureModel extends BaseModel
 
     public function updateDeparture($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET tour_id=?, date_start=?, date_end=?, seats_total=?, seats_remaining=?, updated_at=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET tour_id=?, depart_date=?, seats_total=?, seats_booked=?, note=?, updated_at=? WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['date_start'],
-            $data['date_end'],
+            $data['depart_date'],
             $data['seats_total'],
-            $data['seats_remaining'],
+            $data['seats_booked'],
+            $data['note'],
             $data['updated_at'],
             $id
         ]);

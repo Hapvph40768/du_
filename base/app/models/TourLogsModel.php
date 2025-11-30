@@ -8,9 +8,9 @@ class TourLogsModel extends BaseModel
     public function getAllLogs()
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*, ds.depart_date
         FROM {$this->table} tl
-        JOIN departures d ON tl.departure_id = d.id
+        JOIN departure_schedules ds ON tl.departure_id = ds.id
         ORDER BY tl.day_number ASC
         ";
         $this->setQuery($sql);
@@ -20,9 +20,9 @@ class TourLogsModel extends BaseModel
     public function getLogById($id)
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*, ds.depart_date
         FROM {$this->table} tl
-        JOIN departures d ON tl.departure_id = d.id
+        JOIN departure_schedules ds ON tl.departure_id = ds.id
         WHERE tl.id=?
         ";
         $this->setQuery($sql);

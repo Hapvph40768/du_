@@ -26,4 +26,20 @@
     <a href="{{ route('list-supplier') }}" class="@yield('active-supplier')">
         <i class="bi bi-people-fill me-2"></i> Quản lý nha cung cap
     </a>
+    {{-- services --}}
+    <a href="{{ route('list-service') }}" class="@yield('active-service')">
+        <i class="bi bi-gear-fill me-2"></i> Quản lý Dịch vụ (Packages)
+    </a>
+    {{-- service change requests --}}
+    <a href="{{ route('list-service-change-requests') }}" class="@yield('active-service-change-request')">
+        <i class="bi bi-pencil-square me-2"></i> Yêu cầu thay đổi dịch vụ
+    </a>
+    {{-- tour images --}}
+    <a href="{{ route('list-tour-img') }}" class="@yield('active-tour-img')">
+        <i class="bi bi-image-fill me-2"></i> Quản lý Hình ảnh Tour
+    </a>
+    {{-- tour logs --}}
+    <a href="{{ route('list-tour-log') }}" class="@yield('active-tour-log')">
+        <i class="bi bi-journal-text me-2"></i> Nhật ký Tour / Logs
+    </a>
 </div>

@@ -27,40 +27,36 @@ class DepartureController extends BaseController
 
         // validate
         $tour_id = $_POST['tour_id'] ?? '';
-        $date_start = $_POST['date_start'] ?? '';
-        $date_end = $_POST['date_end'] ?? '';
+        $depart_date = $_POST['depart_date'] ?? '';
         $seats_total = $_POST['seats_total'] ?? '';
         $seats_remaining = $_POST['seats_remaining'] ?? '';
         if (empty($_POST['tour_id'])) {
             $error['tour_id'] = "Tên tour không được để trống";
         }
-        if (empty($_POST['date_start'])) {
-            $error['date_start'] = "Ngày khởi hành không được để trống";
-        }
-        if (empty($_POST['date_end'])) {
-            $error['date_end'] = "Ngày kết thúc không được để trống";
-        }
-        if (!empty($_POST['date_start']) && !empty($_POST['date_end']) && $date_start > $date_end) {
-            $error['date_invalid'] = "Ngày kết thúc phải sau ngày khởi hành";
+        if (empty($_POST['depart_date'])) {
+            $error['depart_date'] = "Ngày khởi hành không được để trống";
         }
         if (empty($_POST['seats_total']) || !is_numeric($seats_total)) {
             $error['seats_total'] = "Tổng số chỗ không được để trống";
         }
-        if (empty($_POST['seats_remaining']) || !is_numeric($seats_remaining)) {
-            $error['seats_remaining'] = "Số chỗ còn lại không được để trống";
+        // seats_booked can be zero
+        $seats_booked = $_POST['seats_booked'] ?? 0;
+        if ($seats_booked === '' || !is_numeric($seats_booked)) {
+            $error['seats_booked'] = "Số chỗ đã đặt phải là số";
         }
-        if ($seats_remaining > $seats_total)
-            $error['seats_remaining'] = "Số chỗ còn lại không được lớn hơn tổng số chỗ";
+        if ($seats_booked > $seats_total) {
+            $error['seats_booked'] = "Số chỗ đã đặt không được lớn hơn tổng số chỗ";
+        }
         if (count($error) >= 1) {
             redirect('errors', $error, 'add-departure');
         } else {
 
             $check = $this->departure->addDeparture([
                 'tour_id' => $tour_id,
-                'date_start' => $date_start,
-                'date_end' => $date_end,
+                'depart_date' => $depart_date,
                 'seats_total' => $seats_total,
-                'seats_remaining' => $seats_remaining,
+                'seats_booked' => $seats_booked,
+                'note' => $_POST['note'] ?? '',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
@@ -95,11 +91,8 @@ class DepartureController extends BaseController
             if (empty($_POST['tour_id'])) {
                 $error['tour_id'] = "Tên tour không được để trống";
             }
-            if (empty($_POST['date_start'])) {
-                $error['date_start'] = "Ngày khởi hành không được để trống";
-            }
-            if (empty($_POST['date_end'])) {
-                $error['date_end'] = "Ngày kết thúc không được để trống";
+            if (empty($_POST['depart_date'])) {
+                $error['depart_date'] = "Ngày khởi hành không được để trống";
             }
             if (empty($_POST['seats_total'])) {
                 $error['seats_total'] = "Tổng số chỗ không được để trống";
@@ -115,10 +108,10 @@ class DepartureController extends BaseController
                     $id,
                     [
                         'tour_id' => $_POST['tour_id'],
-                        'date_start' => $_POST['date_start'],
-                        'date_end' => $_POST['date_end'],
+                        'depart_date' => $_POST['depart_date'],
                         'seats_total' => $_POST['seats_total'],
-                        'seats_remaining' => $_POST['seats_remaining'],
+                        'seats_booked' => $_POST['seats_booked'] ?? 0,
+                        'note' => $_POST['note'] ?? '',
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]
                 );
