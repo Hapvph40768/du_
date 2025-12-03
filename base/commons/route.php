@@ -96,6 +96,24 @@ $router->post('edit-supplier/{id}', [App\Controllers\SupplierController::class, 
 $router->get('delete-supplier/{id}', [App\Controllers\SupplierController::class, 'deleteSupplier']);
 
 
+
+// TOUR LOGS: Lịch theo ngày trên mỗi đợt khởi hành (tour logs)
+$router->get('list-tourlog', [App\Controllers\TourLogController::class, 'getLogs']);
+$router->get('add-tourlog', [App\Controllers\TourLogController::class, 'createLog']);
+$router->post('post-tourlog', [App\Controllers\TourLogController::class, 'postLog']);
+$router->get('detail-tourlog/{id}', [App\Controllers\TourLogController::class, 'detailLog']);
+$router->post('edit-tourlog/{id}', [App\Controllers\TourLogController::class, 'editLog']);
+$router->get('delete-tourlog/{id}', [App\Controllers\TourLogController::class, 'deleteLog']);
+
+// TOUR IMAGES: quản lý ảnh tour
+$router->get('list-tourimg', [App\Controllers\TourImgController::class, 'getImages']);
+$router->get('add-tourimg', [App\Controllers\TourImgController::class, 'createImage']);
+$router->post('post-tourimg', [App\Controllers\TourImgController::class, 'postImage']);
+$router->get('detail-tourimg/{id}', [App\Controllers\TourImgController::class, 'detailImage']);
+$router->post('edit-tourimg/{id}', [App\Controllers\TourImgController::class, 'editImage']);
+$router->get('delete-tourimg/{id}', [App\Controllers\TourImgController::class, 'deleteImage']);
+
+
 //ITINERARY: Lịch trình theo ngày
 
 // danh sach

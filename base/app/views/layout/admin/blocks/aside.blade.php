@@ -26,4 +26,10 @@
     <a href="{{ route('list-supplier') }}" class="@yield('active-supplier')">
         <i class="bi bi-people-fill me-2"></i> Quản lý nha cung cap
     </a>
+    <a href="{{ route('list-tourlog') }}" class="@yield('active-tourlog')">
+        <i class="bi bi-book-fill me-2"></i> Quản lý Tour Logs  
+    </a>
+    <a href="{{ route('list-tourimg') }}" class="@yield('active-tourimg')">
+        <i class="bi bi-book-fill me-2"></i> Quản lý Tour Images  
+    </a>
 </div>
