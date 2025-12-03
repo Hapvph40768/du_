@@ -5,28 +5,24 @@ class GuidesModel extends BaseModel
 {
     protected $table = "guides";
 
-    // Lấy tất cả hướng dẫn viên kèm thông tin user
+    // Lấy tất cả hướng dẫn viên
     public function getAllGuides()
     {
-        $sql = "
-        SELECT g.*, u.username, u.fullname, u.phone
-        FROM {$this->table} g
-        JOIN users u ON g.user_id = u.id
-        ORDER BY g.id DESC
-        ";
+        $sql = "SELECT g.*, u.username 
+                FROM {$this->table} g
+                JOIN users u ON g.user_id = u.id
+                ORDER BY g.id DESC";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
 
-    // Lấy thông tin hướng dẫn viên theo id
+    // Lấy hướng dẫn viên theo ID
     public function getGuideById($id)
     {
-        $sql = "
-        SELECT g.*, u.username, u.fullname, u.phone
-        FROM {$this->table} g
-        JOIN users u ON g.user_id = u.id
-        WHERE g.id = ?
-        ";
+        $sql = "SELECT g.*, u.username 
+                FROM {$this->table} g
+                JOIN users u ON g.user_id = u.id
+                WHERE g.id = ?";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
@@ -34,29 +30,47 @@ class GuidesModel extends BaseModel
     // Thêm hướng dẫn viên
     public function addGuide($data)
     {
-        $sql = "INSERT INTO {$this->table} (user_id, experience_years, certificate, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} 
+        (`user_id`, `fullname`, `phone`, `email`, `gender`, `languages`, `experience_years`, `experience`, `certificate_url`, `avatar`, `status`, `created_at`, `updated_at`)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['user_id'],
+            $data['fullname'] ?? null,
+            $data['phone'] ?? null,
+            $data['email'] ?? null,
+            $data['gender'] ?? null,
+            $data['languages'] ?? null, // JSON string
             $data['experience_years'] ?? 0,
-            $data['certificate'] ?? '',
-            $data['status'] ?? 1,
-            $data['created_at'],
-            $data['updated_at']
+            $data['experience'] ?? null,
+            $data['certificate_url'] ?? null,
+            $data['avatar'] ?? null,
+            $data['status'] ?? 'active',
+            $data['created_at'] ?? date("Y-m-d H:i:s"),
+            $data['updated_at'] ?? date("Y-m-d H:i:s")
         ]);
     }
 
-    // Cập nhật thông tin hướng dẫn viên
+    // Cập nhật hướng dẫn viên
     public function updateGuide($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET user_id=?, experience_years=?, certificate=?, status=?, updated_at=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET 
+        `user_id`=?, `fullname`=?, `phone`=?, `email`=?, `gender`=?, `languages`=?, `experience_years`=?, `experience`=?, `certificate_url`=?, `avatar`=?, `status`=?, `updated_at`=?
+        WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['user_id'],
+            $data['fullname'] ?? null,
+            $data['phone'] ?? null,
+            $data['email'] ?? null,
+            $data['gender'] ?? null,
+            $data['languages'] ?? null,
             $data['experience_years'] ?? 0,
-            $data['certificate'] ?? '',
-            $data['status'] ?? 1,
-            $data['updated_at'],
+            $data['experience'] ?? null,
+            $data['certificate_url'] ?? null,
+            $data['avatar'] ?? null,
+            $data['status'] ?? 'active',
+            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }

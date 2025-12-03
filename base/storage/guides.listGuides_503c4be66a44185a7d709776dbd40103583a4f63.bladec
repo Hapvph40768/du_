@@ -1,5 +1,8 @@
 <?php $_shouldextend[1]=1; ?>
-<?php $this->startSection('content-guides'); ?>
+<?php $this->startSection('title', 'danh sách hướng dẫn viên'); ?>
+
+<?php $this->startSection('active-guides', 'active'); ?>
+<?php $this->startSection('content'); ?>
  <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
  <ul>
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
@@ -47,4 +50,4 @@
  </tbody>
  </table>
 <?php $this->stopSection(); ?>
-<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.main'); } ?>
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('admin.dashboard'); } ?>

@@ -5,18 +5,20 @@ class DepartureModel extends BaseModel
 {
     protected $table = "departures";
 
+    // Lấy tất cả departures
     public function getAllDepartures()
     {
         $sql = "
         SELECT d.*, t.name AS tour_name
         FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
-        ORDER BY d.date_start DESC
+        ORDER BY d.start_date DESC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
 
+    // Lấy departure theo ID
     public function getDepartureById($id)
     {
         $sql = "
@@ -29,36 +31,47 @@ class DepartureModel extends BaseModel
         return $this->loadRow([$id]);
     }
 
+    // Thêm departure mới
     public function addDeparture($data)
     {
-        $sql = "INSERT INTO {$this->table} (tour_id, date_start, date_end, seats_total, seats_remaining, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} 
+        (tour_id, start_date, end_date, price, available_seats, status, guide_price, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['date_start'],
-            $data['date_end'],
-            $data['seats_total'],
-            $data['seats_remaining'],
-            $data['created_at'],
-            $data['updated_at']
+            $data['start_date'],
+            $data['end_date'],
+            $data['price'] ?? null,
+            $data['available_seats'] ?? 0,
+            $data['status'] ?? 'open',
+            $data['guide_price'] ?? null,
+            $data['created_at'] ?? date("Y-m-d H:i:s"),
+            $data['updated_at'] ?? null
         ]);
     }
 
+    // Cập nhật departure
     public function updateDeparture($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET tour_id=?, date_start=?, date_end=?, seats_total=?, seats_remaining=?, updated_at=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET 
+        tour_id=?, start_date=?, end_date=?, price=?, available_seats=?, status=?, guide_price=?, updated_at=? 
+        WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['date_start'],
-            $data['date_end'],
-            $data['seats_total'],
-            $data['seats_remaining'],
-            $data['updated_at'],
+            $data['start_date'],
+            $data['end_date'],
+            $data['price'] ?? null,
+            $data['available_seats'] ?? 0,
+            $data['status'] ?? 'open',
+            $data['guide_price'] ?? null,
+            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }
 
+    // Xóa departure
     public function deleteDeparture($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";

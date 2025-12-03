@@ -5,6 +5,7 @@ class TourModel extends BaseModel
 {
     protected $table = "tours";
 
+    // Lấy tất cả tour
     public function getAllTours()
     {
         $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
@@ -12,6 +13,7 @@ class TourModel extends BaseModel
         return $this->loadAllRows();
     }
 
+    // Lấy tour theo ID
     public function getTourById($id)
     {
         $sql = "SELECT * FROM {$this->table} WHERE id=?";
@@ -19,36 +21,53 @@ class TourModel extends BaseModel
         return $this->loadRow([$id]);
     }
 
+    // Thêm tour mới
     public function addTour($data)
     {
-        $sql = "INSERT INTO {$this->table} (`name`, `description`, `price`, `days`, `status`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} 
+        (`name`, `slug`, `description`, `price`, `days`, `start_location`, `destination`, `thumbnail`, `status`, `category`, `created_at`, `updated_at`) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['name'],
-            $data['description'],
-            $data['price'],
-            $data['days'],
-            $data['status'] ?? 1,
-            $data['created_at'],
-            $data['updated_at']
+            $data['slug'] ?? null,
+            $data['description'] ?? null,
+            $data['price'] ?? 0.00,
+            $data['days'] ?? 1,
+            $data['start_location'] ?? null,
+            $data['destination'] ?? null,
+            $data['thumbnail'] ?? null,
+            $data['status'] ?? 'active',
+            $data['category'] ?? null,
+            $data['created_at'] ?? date("Y-m-d H:i:s"),
+            $data['updated_at'] ?? null
         ]);
     }
 
+    // Cập nhật tour
     public function updateTour($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `name`=?, `description`=?, `price`=?, `days`=?, `status`=?, `updated_at`=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET 
+        `name`=?, `slug`=?, `description`=?, `price`=?, `days`=?, `start_location`=?, `destination`=?, `thumbnail`=?, `status`=?, `category`=?, `updated_at`=? 
+        WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['name'],
-            $data['description'],
-            $data['price'],
-            $data['days'],
-            $data['status'] ?? 1,
-            $data['updated_at'],
+            $data['slug'] ?? null,
+            $data['description'] ?? null,
+            $data['price'] ?? 0.00,
+            $data['days'] ?? 1,
+            $data['start_location'] ?? null,
+            $data['destination'] ?? null,
+            $data['thumbnail'] ?? null,
+            $data['status'] ?? 'active',
+            $data['category'] ?? null,
+            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }
 
+    // Xóa tour
     public function deleteTour($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";

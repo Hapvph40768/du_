@@ -1,57 +1,36 @@
 <?php
-
 use Phroute\Phroute\RouteCollector;
 
 $url = !isset($_GET['url']) ? "/" : $_GET['url'];
-
 $router = new RouteCollector();
 
-// filter check đăng nhập
-$router->filter('auth', function(){
-    if(!isset($_SESSION['auth']) || empty($_SESSION['auth'])){
-        header('location: ' . BASE_URL . 'login');die;
-    }
+// -------------------
+// Trang chủ
+// -------------------
+$router->get('/', function () {
+    return "Trang chủ";
 });
 
+// -------------------
+// AUTH
+// -------------------
+$router->get('login', [App\Controllers\AuthController::class, 'showLogin']);
+$router->post('login', [App\Controllers\AuthController::class, 'login']);
 
-// bắt đầu định nghĩa ra các đường dẫn
-$router->get('/', function(){
-    return "trang chủ";
-});
+$router->get('register', [App\Controllers\AuthController::class, 'showRegister']);
+$router->post('register', [App\Controllers\AuthController::class, 'register']);
 
-//Login, logout
-$router->get('login', [App\Controllers\AuthController::class, 'login']);
-$router->post('login', [App\Controllers\AuthController::class, 'loginPost']); 
-$router->get('register', [App\Controllers\AuthController::class, 'register']);
-$router->post('register', [App\Controllers\AuthController::class, 'registerPost']); 
-//admin
+$router->get('logout', [App\Controllers\AuthController::class, 'logout']);
 $router->get('dashboard', [App\Controllers\AuthController::class, 'dashboard']);
 
-$router->get('logout', [App\Controllers\AuthController::class, 'logout']);//user
+// //USER
 
-//danh sach
-$router->get('list-user', [App\Controllers\UserController::class, 'getUser']);
-//them
-$router->get('add-user', [App\Controllers\UserController::class, 'createUser']);
-$router->post('post-user',[App\Controllers\UserController::class,'postUser']);
-$router->get('detail-user/{id}', [App\Controllers\UserController::class, 'detailUser']);
-$router->post('edit-user/{id}', [App\Controllers\UserController::class, 'editUser']);
-//xoa
-$router->get('delete-user/{id}',[App\Controllers\UserController::class,'deleteUser']);
-
-
-//ROLES: Chuc nang
-
-//danh sach chu nang
-$router->get('list-roles',[App\Controllers\RolesController::class,'getRoles']);
-//them chuc nang
-$router->get('add-roles',[App\Controllers\RolesController::class,'createRoles']);
-$router->post('post-roles',[App\Controllers\RolesController::class,'postRoles']);
-//cap nhat
-$router->get('detail-roles/{id}',[App\Controllers\RolesController::class,'detailRoles']);
-$router->post('edit-roles/{id}',[App\Controllers\RolesController::class,'editRoles']);
-//xoa
-$router->get('delete-roles/{id}',[App\Controllers\RolesController::class,'deleteRoles']);
+// $router->get('list-user', [App\Controllers\UserController::class, 'index']);
+// $router->get('add-user', [App\Controllers\UserController::class, 'create']);
+// $router->post('store-user', [App\Controllers\UserController::class, 'store']);
+// $router->get('edit-user/{id}', [App\Controllers\UserController::class, 'edit']);
+// $router->post('update-user/{id}', [App\Controllers\UserController::class, 'update']);
+// $router->get('delete-user/{id}', [App\Controllers\UserController::class, 'delete']);
 
 
 //TOURS: Tour du lịch
@@ -112,6 +91,10 @@ $router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::clas
 // GUIDES:HDV
 $router->get('list-guides', [App\Controllers\GuidesController::class, 'getGuides']);
 $router->get('add-guide', [App\Controllers\GuidesController::class, 'createGuides']);
+$router->post('add-guide', [App\Controllers\GuidesController::class, 'postGuides']);
+$router->get('detail-guide/{id}', [App\Controllers\GuidesController::class, 'detailGuides']);
+$router->get('edit-guide/{id}', [App\Controllers\GuidesController::class, 'editGuides']);
+$router->get('delete-guid/{id}', [App\Controllers\GuidesController::class, 'deleteGuide']);
 
 //BOOKINGS: Đặt tour
 
@@ -129,13 +112,9 @@ $router->get('delete-booking/{id}',[App\Controllers\BookingController::class,'de
 //booking_customers
 //danh sach
 $router->get('list-bookingCus/{booking_id}',[App\Controllers\BookingCustomerController::class,'getBookId']);
-
-# NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
+// -------------------
+// Dispatcher
+// -------------------
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
-
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $url);
-
-// Print out the value returned from the dispatched function
 echo $response;
-
-?>

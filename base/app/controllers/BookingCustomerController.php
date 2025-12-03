@@ -3,61 +3,71 @@ namespace App\Controllers;
 
 use App\Models\BookingCustomerModel;
 use App\Models\BookingModel;
+use App\Models\CustomerModel;
 
 class BookingCustomerController extends BaseController
 {
-    public $customerModel;
+    protected $customerModel;
 
     public function __construct()
     {
         $this->customerModel = new BookingCustomerModel();
     }
 
+    // Danh sách khách trong booking
     public function listCustomers()
     {
         $customers = $this->customerModel->getAllCustomers();
         return $this->render('bookingCustomer.list', ['customers' => $customers]);
     }
 
+    // Form thêm khách
     public function createCustomer()
     {
-        $booking = new BookingModel();
-        $bookings = $booking->getAllBookings();
+        $bookingModel = new BookingModel();
+        $bookings = $bookingModel->getAllBookings();
 
-        return $this->render('bookingCustomer.add', ['bookings' => $bookings]);
+        $customerModel = new CustomerModel();
+        $customers = $customerModel->getAllCustomers();
+
+        return $this->render('bookingCustomer.add', [
+            'bookings'  => $bookings,
+            'customers' => $customers
+        ]);
     }
 
+    // Xử lý thêm khách
     public function postCustomer()
     {
         $error = [];
 
         if (empty($_POST['booking_id'])) {
-            $error['booking_id'] = "booking_id không được để trống";
+            $error['booking_id'] = "Booking không được để trống";
         }
-
+        if (empty($_POST['customer_id'])) {
+            $error['customer_id'] = "Customer không được để trống";
+        }
         if (empty($_POST['fullname'])) {
             $error['fullname'] = "Tên khách hàng không được để trống";
         }
-
         if (empty($_POST['gender']) || !in_array($_POST['gender'], ['male', 'female', 'other'])) {
             $error['gender'] = "Giới tính không hợp lệ";
         }
-
         if (empty($_POST['dob'])) {
             $error['dob'] = "Ngày sinh không được để trống";
         }
 
-        // Nếu có lỗi → redirect
         if (!empty($error)) {
             redirect('error', $error, 'add-customer');
         }
 
-        // Nếu không lỗi → thêm mới
         $check = $this->customerModel->addCustomer([
             'booking_id' => $_POST['booking_id'],
-            'fullname' => $_POST['fullname'],
-            'gender' => $_POST['gender'],
-            'dob' => $_POST['dob'],
+            'customer_id'=> $_POST['customer_id'],
+            'fullname'   => $_POST['fullname'],
+            'gender'     => $_POST['gender'],
+            'dob'        => $_POST['dob'],
+            'note'       => $_POST['note'] ?? null,
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s")
         ]);
@@ -69,41 +79,43 @@ class BookingCustomerController extends BaseController
         }
     }
 
+    // Chi tiết khách để sửa
     public function detailCustomer($id)
     {
         $customer = $this->customerModel->getCustomerById($id);
 
-        $booking = new BookingModel();
-        $bookings = $booking->getAllBookings();
+        $bookingModel = new BookingModel();
+        $bookings = $bookingModel->getAllBookings();
 
-        return $this->render(
-            'bookingCustomer.edit',
-            [
-                'customer' => $customer,
-                'bookings' => $bookings
-            ]
-        );
+        $customerModel = new CustomerModel();
+        $customers = $customerModel->getAllCustomers();
+
+        return $this->render('bookingCustomer.edit', [
+            'customer'  => $customer,
+            'bookings'  => $bookings,
+            'customers' => $customers
+        ]);
     }
 
+    // Xử lý sửa khách
     public function updateCustomer($id)
     {
-        if (!isset($_POST['btn-submit']))
-            return;
+        if (!isset($_POST['btn-submit'])) return;
 
         $error = [];
 
         if (empty($_POST['booking_id'])) {
-            $error['booking_id'] = "booking_id không được để trống";
+            $error['booking_id'] = "Booking không được để trống";
         }
-
+        if (empty($_POST['customer_id'])) {
+            $error['customer_id'] = "Customer không được để trống";
+        }
         if (empty($_POST['fullname'])) {
             $error['fullname'] = "Tên khách hàng không được để trống";
         }
-
         if (empty($_POST['gender']) || !in_array($_POST['gender'], ['male', 'female', 'other'])) {
             $error['gender'] = "Giới tính không hợp lệ";
         }
-
         if (empty($_POST['dob'])) {
             $error['dob'] = "Ngày sinh không được để trống";
         }
@@ -115,9 +127,11 @@ class BookingCustomerController extends BaseController
 
         $check = $this->customerModel->updateCustomer($id, [
             'booking_id' => $_POST['booking_id'],
-            'fullname' => $_POST['fullname'],
-            'gender' => $_POST['gender'],
-            'dob' => $_POST['dob'],
+            'customer_id'=> $_POST['customer_id'],
+            'fullname'   => $_POST['fullname'],
+            'gender'     => $_POST['gender'],
+            'dob'        => $_POST['dob'],
+            'note'       => $_POST['note'] ?? null,
             'updated_at' => date("Y-m-d H:i:s")
         ]);
 
@@ -128,6 +142,7 @@ class BookingCustomerController extends BaseController
         }
     }
 
+    // Xóa khách
     public function deleteCustomer($id)
     {
         $check = $this->customerModel->deleteCustomer($id);

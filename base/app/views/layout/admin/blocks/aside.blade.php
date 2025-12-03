@@ -19,11 +19,10 @@
     <a href="{{ route('list-booking') }}" class="@yield('active-booking')">
         <i class="bi bi-journal-check me-2"></i> Quản lý Booking
     </a>
-    {{-- roles --}}
-    <a href="{{ route('list-roles') }}" class="@yield('active-roles')">
-        <i class="bi bi-people-fill me-2"></i> Quản lý Vai trò người dùng
-    </a>
     <a href="{{ route('list-supplier') }}" class="@yield('active-supplier')">
         <i class="bi bi-people-fill me-2"></i> Quản lý nha cung cap
+    </a>
+    <a href="{{ route('list-guides') }}" class="@yield('active-guides')">
+        <i class="bi bi-people-fill me-2"></i> Quản lý hdv
     </a>
 </div>

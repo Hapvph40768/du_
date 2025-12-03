@@ -1,106 +1,68 @@
 <?php
 namespace App\Controllers;
+
 use App\Models\UserModel;
 
-class UserController extends BaseController
+class AuthController extends BaseController
 {
-    private $user;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->user = new UserModel();
+        $this->userModel = new UserModel();
     }
-    public function index()
-    {
-        $users = $this->user->getAll();
-        $this->render('user.listUser', compact($users));
-    }
-    public function create()
-    {
-        $this->render('user.addUser');
-    }
-    public function postUser()
-    {
-        $error = [];
 
-        if (empty($_POST['username'])) {
-            $error['username'] = "Username không được để trống";
+    // Hiển thị form đăng ký
+    public function showRegister()
+    {
+        $this->render("auth.register");
+    }
+
+    // Xử lý đăng ký
+    public function register()
+    {
+        $username = $_POST["username"];
+        $email    = $_POST["email"];
+        $password = $_POST["password"];
+
+        // Kiểm tra trùng username
+        if ($this->userModel->getUserByUsername($username)) {
+            echo "Username đã tồn tại!";
+            return;
         }
-        if (empty($_POST['password'])) {
-            $error['password'] = "Password không được để trống";
-        }
-        if (empty($_POST['fullname'])) {
-            $error['fullname'] = "Họ tên không được để trống";
-        }
-        if (!empty($_POST['phone']) && !preg_match('/^[0-9]{9,11}$/', $_POST['phone'])) {
-            $error['phone'] = "Số điện thoại không hợp lệ";
-        }
-        $roleFixed = in_array($_POST['username'], ['admin', 'guide']) ? $_POST['username'] : 'customer';
-        if (count($error) >= 1) {
-            redirect('error', $error, 'add-user');
+
+        $this->userModel->register($username, $email, $password);
+        echo "Đăng ký thành công!";
+    }
+
+    // Hiển thị form đăng nhập
+    public function showLogin()
+    {
+        $this->render("auth.login");
+    }
+
+    // Xử lý đăng nhập
+    public function login()
+    {
+        session_start();
+        $username = $_POST["username"];
+        $password = $_POST["password"];
+
+        $user = $this->userModel->getUserByUsername($username);
+
+        if ($user && password_verify($password, $user->password)) {
+            $_SESSION["user_id"] = $user->id;
+            $_SESSION["username"] = $user->username;
+            $_SESSION["role"] = $user->role;
+
+            $this->userModel->updateLastLogin($user->id);
+
+            echo "Đăng nhập thành công!";
+            // Ví dụ: chuyển hướng dashboard
+            header("Location: index.php?controller=dashboard");
+            exit;
         } else {
-            $check = $this->user->insert([
-                'username' => $_POST['username'],
-                'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
-                'fullname' => $_POST['fullname'],
-                'phone' => $_POST['phone'] ?? null,
-                'status' => 1,
-                'created_at' => date("Y-m-d H:i:s"),
-                'updated_at' => date("Y-m-d H:i:s"),
-                'role_fixed' => $roleFixed,
-            ]);
-
-            if ($check) {
-                redirect('success', 'Thêm user thành công', 'list-users');
-            } else {
-                redirect('error', 'Thêm user thất bại', 'add-user');
-            }
+            echo "Sai username hoặc password!";
         }
     }
-
-    public function updateUser($id)
-    {
-        if (!isset($_POST['btn-submit'])) {
-            $error = [];
-
-            if (empty($_POST['username'])) {
-                $error['username'] = "Username không được để trống";
-            }
-            if (!empty($_POST['password']) && strlen($_POST['password']) < 6) {
-                $error['password'] = "Password phải ít nhất 6 ký tự";
-            }
-            if (empty($_POST['fullname'])) {
-                $error['fullname'] = "Họ tên không được để trống";
-            }
-            if (!empty($_POST['phone']) && !preg_match('/^[0-9]{9,11}$/', $_POST['phone'])) {
-                $error['phone'] = "Số điện thoại không hợp lệ";
-            }
-
-            $route = 'edit-user/' . $id;
-
-            if (count($error) >= 1) {
-                redirect('errors', $error, $route);
-            }
-            $updateData = [
-                'username' => $_POST['username'],
-                'fullname' => $_POST['fullname'],
-                'phone' => $_POST['phone'] ?? null,
-                'status' => 1,
-                'updated_at' => date("Y-m-d H:i:s"),
-            ];
-
-            if (!empty($_POST['password'])) {
-                $updateData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            }
-            $check = $this->user->update($id, $updateData);
-
-            if ($check) {
-                redirect('success', 'Cập nhật user thành công', 'list-user');
-            } else {
-                redirect('error', 'Cập nhật user thất bại', $route);
-            }
-        }
-
-    }
-
 }

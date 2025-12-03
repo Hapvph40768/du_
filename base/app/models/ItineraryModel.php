@@ -5,6 +5,7 @@ class ItineraryModel extends BaseModel
 {
     protected $table = "itinerary";
 
+    // Lấy tất cả itinerary
     public function getAllItineraries()
     {
         $sql = "
@@ -17,6 +18,7 @@ class ItineraryModel extends BaseModel
         return $this->loadAllRows();
     }
 
+    // Lấy itinerary theo ID
     public function getItineraryById($id)
     {
         $sql = "
@@ -29,34 +31,41 @@ class ItineraryModel extends BaseModel
         return $this->loadRow([$id]);
     }
 
+    // Thêm itinerary
     public function addItinerary($data)
     {
-        $sql = "INSERT INTO {$this->table} (`tour_id`, `day_number`, `title`, `content`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} 
+        (`tour_id`, `day_number`, `title`, `description`, `created_at`, `updated_at`) 
+        VALUES (?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
             $data['day_number'],
             $data['title'],
-            $data['content'],
-            $data['created_at'],
-            $data['updated_at']
+            $data['description'],
+            $data['created_at'] ?? date("Y-m-d H:i:s"),
+            $data['updated_at'] ?? null
         ]);
     }
 
+    // Cập nhật itinerary
     public function updateItinerary($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `tour_id`=?, `day_number`=?, `title`=?, `content`=?, `updated_at`=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET 
+        `tour_id`=?, `day_number`=?, `title`=?, `description`=?, `updated_at`=? 
+        WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
             $data['day_number'],
             $data['title'],
-            $data['content'],
-            $data['updated_at'],
+            $data['description'],
+            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }
 
+    // Xóa itinerary
     public function deleteItinerary($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";
