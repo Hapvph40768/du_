@@ -3,25 +3,36 @@
 
 @section('active-booking-customer', 'active')
 @section('content')
-    <h1>Thêm khách vào booking</h1>
+    <h3>Thêm khách vào booking</h3>
 
+    {{-- Thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-        <ul>
-            @foreach($_SESSION['errors'] as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($_SESSION['errors'] as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @php unset($_SESSION['errors']) @endphp
     @endif
 
-    <a href="{{ route('list-customer') }}">
-        <button type="button" class="btn btn-warning">Quay lại</button>
-    </a>
+    {{-- Thông báo thành công --}}
+    @if(isset($_SESSION['success']) && isset($_GET['msg']))
+        <div class="alert alert-success">
+            <span>{{ $_SESSION['success'] }}</span>
+        </div>
+        @php unset($_SESSION['success']) @endphp
+    @endif
 
-    <form action="{{ route('post-customer') }}" method="post">
+    <a href="{{ route('list-booking-customer') }}" class="btn btn-warning mb-3">Quay lại danh sách</a>
+
+    <form action="{{ route('post-booking-customer') }}" method="post">
         {{-- chọn booking --}}
         <div class="mb-3">
-            <label>Booking</label>
-            <select name="booking_id" required>
+            <label class="form-label">Booking</label>
+            <select name="booking_id" class="form-select" required>
+                <option value="">-- Chọn Booking --</option>
                 @foreach($bookings as $b)
                     <option value="{{ $b->id }}">Booking #{{ $b->id }} - Tour {{ $b->tour_name }}</option>
                 @endforeach
@@ -30,8 +41,9 @@
 
         {{-- chọn customer --}}
         <div class="mb-3">
-            <label>Khách hàng</label>
-            <select name="customer_id" required>
+            <label class="form-label">Khách hàng</label>
+            <select name="customer_id" class="form-select" required>
+                <option value="">-- Chọn Khách hàng --</option>
                 @foreach($customers as $cus)
                     <option value="{{ $cus->id }}">{{ $cus->fullname }} - {{ $cus->phone }}</option>
                 @endforeach

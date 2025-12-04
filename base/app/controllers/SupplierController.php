@@ -20,13 +20,13 @@ class SupplierController extends BaseController
     public function getSuppliers()
     {
         $suppliers = $this->supplier->getAll();
-        $this->render("supplier.listSupplier", ['suppliers' => $suppliers]);
+        $this->render("admin.supplier.listSupplier", ['suppliers' => $suppliers]);
     }
 
     // 2. Hiển thị form thêm mới
     public function createSupplier()
     {
-        $this->render("supplier.addSupplier");
+        $this->render("admin.supplier.addSupplier");
     }
 
     // 3. Xử lý thêm mới
@@ -79,7 +79,7 @@ class SupplierController extends BaseController
     public function detailSupplier($id)
     {
         $detail = $this->supplier->getById($id);
-        return $this->render('supplier.editSupplier', ['detail' => $detail]);
+        return $this->render('admin.supplier.editSupplier', ['detail' => $detail]);
     }
 
     // 5. Xử lý chỉnh sửa

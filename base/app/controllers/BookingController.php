@@ -17,7 +17,7 @@ class BookingController extends BaseController
     public function getBookings()
     {
         $bookings = $this->booking->getAllBookings();
-        $this->render("booking.listBooking", ['bookings' => $bookings]);
+        $this->render("admin.booking.listBooking", ['bookings' => $bookings]);
     }
 
     // Form thêm booking
@@ -29,7 +29,7 @@ class BookingController extends BaseController
         $customerModel = new CustomerModel();
         $customers = $customerModel->getAllCustomers();
 
-        $this->render("booking.addBooking", [
+        $this->render("admin.booking.addBooking", [
             'departures' => $departures,
             'customers'  => $customers
         ]);
@@ -98,7 +98,7 @@ class BookingController extends BaseController
         $customerModel = new CustomerModel();
         $customers = $customerModel->getAllCustomers();
 
-        return $this->render('booking.editBooking', [
+        return $this->render('admin.booking.editBooking', [
             'departures' => $departures,
             'customers'  => $customers,
             'detail'     => $detail

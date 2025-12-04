@@ -16,13 +16,13 @@ class CustomerController extends BaseController
     public function getCustomers()
     {
         $customers = $this->customer->getAllCustomers();
-        $this->render("customer.listCustomer", ['customers' => $customers]);
+        $this->render("admin.customer.listCustomer", ['customers' => $customers]);
     }
 
     // Hiển thị form thêm khách hàng
     public function createCustomer()
     {
-        $this->render("customer.addCustomer");
+        $this->render("admin.customer.addCustomer");
     }
 
     // Xử lý thêm khách hàng
@@ -66,7 +66,7 @@ class CustomerController extends BaseController
     public function detailCustomer($id)
     {
         $detail = $this->customer->getCustomerById($id);
-        return $this->render('customer.editCustomer', ['detail' => $detail]);
+        return $this->render('admin.customer.editCustomer', ['detail' => $detail]);
     }
 
     // Xử lý sửa khách hàng

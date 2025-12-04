@@ -8,8 +8,8 @@ class GuidesModel extends BaseModel
     // Lấy tất cả hướng dẫn viên
     public function getAllGuides()
     {
-        $sql = "SELECT g.*, u.username 
-                FROM {$this->table} g
+        $sql = "SELECT g.*, u.username AS account_name 
+                FROM {$this->table} g 
                 JOIN users u ON g.user_id = u.id
                 ORDER BY g.id DESC";
         $this->setQuery($sql);
@@ -19,10 +19,10 @@ class GuidesModel extends BaseModel
     // Lấy hướng dẫn viên theo ID
     public function getGuideById($id)
     {
-        $sql = "SELECT g.*, u.username 
-                FROM {$this->table} g
+        $sql = "SELECT g.*, u.username AS account_name 
+                FROM {$this->table} g 
                 JOIN users u ON g.user_id = u.id
-                WHERE g.id = ?";
+                WHERE g.id=?";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
@@ -31,7 +31,7 @@ class GuidesModel extends BaseModel
     public function addGuide($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (`user_id`, `fullname`, `phone`, `email`, `gender`, `languages`, `experience_years`, `experience`, `certificate_url`, `avatar`, `status`, `created_at`, `updated_at`)
+        (user_id, fullname, phone, email, gender, languages, experience_years, experience, certificate_url, avatar, status, created_at, updated_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
@@ -47,7 +47,7 @@ class GuidesModel extends BaseModel
             $data['avatar'] ?? null,
             $data['status'] ?? 'active',
             $data['created_at'] ?? date("Y-m-d H:i:s"),
-            $data['updated_at'] ?? date("Y-m-d H:i:s")
+            $data['updated_at'] ?? null
         ]);
     }
 
@@ -55,7 +55,7 @@ class GuidesModel extends BaseModel
     public function updateGuide($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        `user_id`=?, `fullname`=?, `phone`=?, `email`=?, `gender`=?, `languages`=?, `experience_years`=?, `experience`=?, `certificate_url`=?, `avatar`=?, `status`=?, `updated_at`=?
+        user_id=?, fullname=?, phone=?, email=?, gender=?, languages=?, experience_years=?, experience=?, certificate_url=?, avatar=?, status=?, updated_at=? 
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([

@@ -18,7 +18,7 @@ class ItineraryController extends BaseController
     public function getItinerary()
     {
         $itineraries = $this->itinerary->getAllItineraries();
-        $this->render("itinerary.listItinerary", ['itinerary' => $itineraries]);
+        $this->render("admin.itinerary.listItinerary", ['itinerary' => $itineraries]);
     }
 
     // Form thêm itinerary
@@ -26,7 +26,7 @@ class ItineraryController extends BaseController
     {
         $tourModel = new TourModel();
         $tours = $tourModel->getAllTours();
-        $this->render("itinerary.addItinerary", ['tours' => $tours]);
+        $this->render("admin.itinerary.addItinerary", ['tours' => $tours]);
     }
 
     // Xử lý thêm itinerary
@@ -89,7 +89,7 @@ class ItineraryController extends BaseController
         $detail = $this->itinerary->getItineraryById($id);
         $tourModel = new TourModel();
         $tours = $tourModel->getAllTours();
-        return $this->render('itinerary.editItinerary', ['detail' => $detail, 'tours' => $tours]);
+        return $this->render('admin.itinerary.editItinerary', ['detail' => $detail, 'tours' => $tours]);
     }
 
     // Xử lý sửa itinerary

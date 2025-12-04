@@ -1,0 +1,95 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Sửa Booking'); ?>
+
+<?php $this->startSection('active-booking', 'active'); ?>
+<?php $this->startSection('content'); ?>
+ <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <ul>
+ <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </ul>
+ <?php endif; ?>
+
+ <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <span><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ <?php endif; ?>
+
+ <a href="<?php echo \htmlentities(route('list-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <button type="button" class="btn btn-warning">Quay lại</button>
+ </a>
+
+ <form action="<?php echo \htmlentities(route('edit-booking/' . $detail->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post">
+ <?php /* chọn lịch khởi hành */ ?>
+ <div class="mb-3">
+ <label>Chọn lịch khởi hành</label><br>
+ <select name="departure_id" required>
+ <?php $__currentLoopData = $departures; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $d): $loop = $this->incrementLoopIndices();  ?>
+ <option value="<?php echo \htmlentities($d->id??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities($d->id == $detail->departure_id ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ <?php echo \htmlentities($d->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities($d->start_date??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($d->end_date??'', ENT_QUOTES, 'UTF-8', false); ?>)
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* chọn khách hàng */ ?>
+ <div class="mb-3">
+ <label for="customer_id" class="form-label">Khách hàng</label>
+ <select name="customer_id">
+ <option value="">-- Không liên kết --</option>
+ <?php $__currentLoopData = $customers; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $c): $loop = $this->incrementLoopIndices();  ?>
+ <option value="<?php echo \htmlentities($c->id??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities($c->id == $detail->customer_id ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ <?php echo \htmlentities($c->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($c->phone??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* số lượng người */ ?>
+ <div class="mb-3">
+ <label for="num_people" class="form-label">Số lượng người</label>
+ <input type="number" class="form-control" name="num_people" min="1" value="<?php echo \htmlentities($detail->num_people??'', ENT_QUOTES, 'UTF-8', false); ?>" required>
+ </div>
+
+ <?php /* tổng tiền */ ?>
+ <div class="mb-3">
+ <label for="total_price" class="form-label">Tổng tiền</label>
+ <input type="number" class="form-control" name="total_price" step="0.01" value="<?php echo \htmlentities($detail->total_price??'', ENT_QUOTES, 'UTF-8', false); ?>" required>
+ </div>
+
+ <?php /* trạng thái thanh toán */ ?>
+ <div class="mb-3">
+ <label for="payment_status" class="form-label">Trạng thái thanh toán</label>
+ <select name="payment_status" class="form-select" required>
+ <option value="unpaid" <?php echo \htmlentities($detail->payment_status === 'unpaid' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Chưa thanh toán</option>
+ <option value="partial" <?php echo \htmlentities($detail->payment_status === 'partial' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Thanh toán một phần</option>
+ <option value="paid" <?php echo \htmlentities($detail->payment_status === 'paid' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Đã thanh toán</option>
+ </select>
+ </div>
+
+ <?php /* trạng thái booking */ ?>
+ <div class="mb-3">
+ <label for="status" class="form-label">Trạng thái booking</label>
+ <select name="status" class="form-select" required>
+ <option value="pending" <?php echo \htmlentities($detail->status === 'pending' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Đang chờ</option>
+ <option value="confirmed" <?php echo \htmlentities($detail->status === 'confirmed' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Đã xác nhận</option>
+ <option value="cancelled" <?php echo \htmlentities($detail->status === 'cancelled' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Đã hủy</option>
+ </select>
+ </div>
+
+ <?php /* ghi chú */ ?>
+ <div class="mb-3">
+ <label for="note" class="form-label">Ghi chú</label>
+ <textarea class="form-control" name="note" rows="3"><?php echo \htmlentities($detail->note??'', ENT_QUOTES, 'UTF-8', false); ?></textarea>
+ </div>
+
+ <div class="col-auto">
+ <button type="submit" class="btn btn-primary mb-3" name="btn-submit">Xác nhận</button>
+ </div>
+ </form>
+<?php $this->stopSection(); ?>
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

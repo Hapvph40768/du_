@@ -16,7 +16,7 @@ class DepartureController extends BaseController
     public function getDepartures()
     {
         $departures = $this->departure->getAllDepartures();
-        $this->render("departure.listDeparture", ['departures' => $departures]);
+        $this->render("admin.departure.listDeparture", ['departures' => $departures]);
     }
 
     // Form thêm departure
@@ -24,7 +24,7 @@ class DepartureController extends BaseController
     {
         $tourModel = new TourModel();
         $tours = $tourModel->getAllTours();
-        $this->render("departure.addDeparture", ['tours' => $tours]);
+        $this->render("admin.departure.addDeparture", ['tours' => $tours]);
     }
 
     // Xử lý thêm departure
@@ -35,7 +35,7 @@ class DepartureController extends BaseController
         $tour_id        = $_POST['tour_id'] ?? '';
         $start_date     = $_POST['start_date'] ?? '';
         $end_date       = $_POST['end_date'] ?? '';
-        $price          = $_POST['price'] ?? null;
+        $price_input    = $_POST['price'] ?? '';
         $available_seats= $_POST['available_seats'] ?? '';
         $status         = $_POST['status'] ?? 'open';
         $guide_price    = $_POST['guide_price'] ?? null;
@@ -60,6 +60,11 @@ class DepartureController extends BaseController
             $error['status'] = "Trạng thái không hợp lệ";
         }
 
+        // lấy giá tour nếu price để trống
+        $tourModel = new TourModel();
+        $tour = $tourModel->getTourById($tour_id);
+        $price = ($price_input === '' || $price_input === null) ? $tour->price : $price_input;
+
         if (count($error) > 0) {
             redirect('errors', $error, 'add-departure');
         } else {
@@ -70,7 +75,7 @@ class DepartureController extends BaseController
                 'price'          => $price,
                 'available_seats'=> $available_seats,
                 'status'         => $status,
-                'guide_price'    => $guide_price,
+                'guide_price'    => ($guide_price === '' ? null : $guide_price),
                 'created_at'     => date('Y-m-d H:i:s'),
                 'updated_at'     => date('Y-m-d H:i:s'),
             ]);
@@ -99,7 +104,7 @@ class DepartureController extends BaseController
         $detail = $this->departure->getDepartureById($id);
         $tour = new TourModel();
         $tours = $tour->getAllTours();
-        return $this->render('departure.editDeparture', ['detail' => $detail, 'tours' => $tours]);
+        return $this->render('admin.departure.editDeparture', ['detail' => $detail, 'tours' => $tours]);
     }
 
     // Xử lý sửa departure
@@ -111,7 +116,7 @@ class DepartureController extends BaseController
             $tour_id        = $_POST['tour_id'] ?? '';
             $start_date     = $_POST['start_date'] ?? '';
             $end_date       = $_POST['end_date'] ?? '';
-            $price          = $_POST['price'] ?? null;
+            $price_input    = $_POST['price'] ?? '';
             $available_seats= $_POST['available_seats'] ?? '';
             $status         = $_POST['status'] ?? 'open';
             $guide_price    = $_POST['guide_price'] ?? null;
@@ -137,6 +142,11 @@ class DepartureController extends BaseController
 
             $route = 'detail-departure/' . $id;
 
+            // lấy giá tour nếu price để trống
+            $tourModel = new TourModel();
+            $tour = $tourModel->getTourById($tour_id);
+            $price = ($price_input === '' || $price_input === null) ? $tour->price : $price_input;
+
             if (count($error) > 0) {
                 redirect('errors', $error, $route);
             } else {
@@ -147,7 +157,7 @@ class DepartureController extends BaseController
                     'price'          => $price,
                     'available_seats'=> $available_seats,
                     'status'         => $status,
-                    'guide_price'    => $guide_price,
+                    'guide_price'    => ($guide_price === '' ? null : $guide_price),
                     'updated_at'     => date('Y-m-d H:i:s'),
                 ]);
                 if ($check) {

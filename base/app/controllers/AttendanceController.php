@@ -19,7 +19,7 @@ class AttendanceController extends BaseController
     public function listAttendance()
     {
         $attendances = $this->attendance->getAllAttendance();
-        return $this->render('attendance.list', ['attendances' => $attendances]);
+        return $this->render('admin.attendance.listAttendance', ['attendances' => $attendances]);
     }
 
     // Form thêm attendance
@@ -32,9 +32,9 @@ class AttendanceController extends BaseController
         $customers = $customerModel->getAllCustomers();
 
         $bookingCustomerModel = new BookingCustomerModel();
-        $bookingCustomers = $bookingCustomerModel->getAllCustomers();
+        $bookingCustomers = $bookingCustomerModel->getAllBookingCustomers();
 
-        return $this->render('attendance.add', [
+        return $this->render('admin.attendance.addAttendance', [
             'departures'       => $departures,
             'customers'        => $customers,
             'bookingCustomers' => $bookingCustomers
@@ -98,9 +98,9 @@ class AttendanceController extends BaseController
         $customers = $customerModel->getAllCustomers();
 
         $bookingCustomerModel = new BookingCustomerModel();
-        $bookingCustomers = $bookingCustomerModel->getAllCustomers();
+        $bookingCustomers = $bookingCustomerModel->getAllBookingCustomers();
 
-        return $this->render('attendance.edit', [
+        return $this->render('admin.attendance.editAttendance', [
             'detail'           => $detail,
             'departures'       => $departures,
             'customers'        => $customers,

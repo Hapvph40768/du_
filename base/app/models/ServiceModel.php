@@ -5,44 +5,83 @@ class ServiceModel extends BaseModel
 {
     protected $table = "services";
 
+    // Lấy tất cả dịch vụ
     public function getAllServices()
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+        $sql = "
+        SELECT s.*, sup.name AS supplier_name, t.name AS tour_name
+        FROM {$this->table} s
+        LEFT JOIN suppliers sup ON s.supplier_id = sup.id
+        LEFT JOIN tours t ON s.tour_id = t.id
+        ORDER BY s.id DESC
+        ";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
 
+    // Lấy dịch vụ theo ID
     public function getServiceById($id)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id=?";
+        $sql = "
+        SELECT s.*, sup.name AS supplier_name, t.name AS tour_name
+        FROM {$this->table} s
+        LEFT JOIN suppliers sup ON s.supplier_id = sup.id
+        LEFT JOIN tours t ON s.tour_id = t.id
+        WHERE s.id=?
+        ";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
 
+    // Thêm dịch vụ
     public function addService($data)
     {
-        $sql = "INSERT INTO {$this->table} (`name`, `default_price`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} 
+        (tour_id, package_name, name, description, type, supplier_id, price, default_price, currency, is_optional, is_active, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
+            $data['tour_id'] ?? null,
+            $data['package_name'] ?? null,
             $data['name'],
-            $data['default_price'],
-            $data['created_at'],
-            $data['updated_at']
+            $data['description'] ?? null,
+            $data['type'] ?? null,
+            $data['supplier_id'] ?? null,
+            $data['price'] ?? 0.00,
+            $data['default_price'] ?? 0.00,
+            $data['currency'] ?? 'VND',
+            $data['is_optional'] ?? 0,
+            $data['is_active'] ?? 1,
+            $data['created_at'] ?? date("Y-m-d H:i:s"),
+            $data['updated_at'] ?? null
         ]);
     }
 
+    // Cập nhật dịch vụ
     public function updateService($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `name`=?, `default_price`=?, `updated_at`=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET 
+        tour_id=?, package_name=?, name=?, description=?, type=?, supplier_id=?, price=?, default_price=?, currency=?, is_optional=?, is_active=?, updated_at=? 
+        WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
+            $data['tour_id'] ?? null,
+            $data['package_name'] ?? null,
             $data['name'],
-            $data['default_price'],
-            $data['updated_at'],
+            $data['description'] ?? null,
+            $data['type'] ?? null,
+            $data['supplier_id'] ?? null,
+            $data['price'] ?? 0.00,
+            $data['default_price'] ?? 0.00,
+            $data['currency'] ?? 'VND',
+            $data['is_optional'] ?? 0,
+            $data['is_active'] ?? 1,
+            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }
 
+    // Xóa dịch vụ
     public function deleteService($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";
