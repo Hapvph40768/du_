@@ -18,7 +18,9 @@ class BookingServiceController extends BaseController
     public function listBookingServices()
     {
         $bookingServices = $this->bookingService->getAllBookingServices();
-        return $this->render("admin.booking_service.listBookingService", ['bookingServices' => $bookingServices]);
+        return $this->render("admin.booking_service.listBookingService", [
+            'bookingServices' => $bookingServices
+        ]);
     }
 
     // 2. Form thêm mới
@@ -36,9 +38,13 @@ class BookingServiceController extends BaseController
     // 3. Xử lý thêm mới
     public function postBookingService()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('errors', "Yêu cầu không hợp lệ", 'list-booking-service');
+        }
+
         $data = [
-            'booking_id' => $_POST['booking_id'] ?? '',
-            'service_id' => $_POST['service_id'] ?? '',
+            'booking_id' => trim($_POST['booking_id'] ?? ''),
+            'service_id' => trim($_POST['service_id'] ?? ''),
             'quantity'   => $_POST['quantity'] ?? 1,
             'price'      => $_POST['price'] ?? 0.00,
         ];
@@ -54,9 +60,11 @@ class BookingServiceController extends BaseController
 
         $check = $this->bookingService->addBookingService($data);
 
-        $check
-            ? redirect('success', "Thêm dịch vụ vào booking thành công", 'list-booking-service')
-            : redirect('errors', "Thêm thất bại", 'add-booking-service');
+        if ($check) {
+            redirect('success', "Thêm dịch vụ vào booking thành công", 'list-booking-service');
+        } else {
+            redirect('errors', "Thêm thất bại", 'add-booking-service');
+        }
     }
 
     // 4. Chi tiết để sửa
@@ -76,11 +84,13 @@ class BookingServiceController extends BaseController
     // 5. Xử lý sửa
     public function editBookingService($id)
     {
-        if (!isset($_POST['btn-submit'])) return;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['btn-submit'])) {
+            redirect('errors', "Yêu cầu không hợp lệ", 'list-booking-service');
+        }
 
         $data = [
-            'booking_id' => $_POST['booking_id'] ?? '',
-            'service_id' => $_POST['service_id'] ?? '',
+            'booking_id' => trim($_POST['booking_id'] ?? ''),
+            'service_id' => trim($_POST['service_id'] ?? ''),
             'quantity'   => $_POST['quantity'] ?? 1,
             'price'      => $_POST['price'] ?? 0.00,
         ];
@@ -96,9 +106,11 @@ class BookingServiceController extends BaseController
 
         $check = $this->bookingService->updateBookingService($id, $data);
 
-        $check
-            ? redirect('success', "Cập nhật dịch vụ thành công", 'list-booking-service')
-            : redirect('errors', "Cập nhật thất bại", $route);
+        if ($check) {
+            redirect('success', "Cập nhật dịch vụ thành công", 'list-booking-service');
+        } else {
+            redirect('errors', "Cập nhật thất bại", $route);
+        }
     }
 
     // 6. Xóa
@@ -106,9 +118,11 @@ class BookingServiceController extends BaseController
     {
         $check = $this->bookingService->deleteBookingService($id);
 
-        $check
-            ? redirect('success', "Xóa dịch vụ khỏi booking thành công", 'list-booking-service')
-            : redirect('errors', "Xóa thất bại", 'list-booking-service');
+        if ($check) {
+            redirect('success', "Xóa dịch vụ khỏi booking thành công", 'list-booking-service');
+        } else {
+            redirect('errors', "Xóa thất bại", 'list-booking-service');
+        }
     }
 
     // Hàm validate chung

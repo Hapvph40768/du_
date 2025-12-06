@@ -6,7 +6,7 @@ class SpecialRequestsModel extends BaseModel
     protected $table = "special_requests";
 
     // Lấy tất cả yêu cầu đặc biệt
-    public function getAllRequests()
+    public function getAllSpecialRequests()
     {
         $sql = "SELECT sr.*, c.fullname AS customer_name
                 FROM {$this->table} sr
@@ -17,7 +17,7 @@ class SpecialRequestsModel extends BaseModel
     }
 
     // Lấy yêu cầu theo ID
-    public function getRequestById($id)
+    public function getSpecialRequestById($id)
     {
         $sql = "SELECT sr.*, c.fullname AS customer_name
                 FROM {$this->table} sr
@@ -28,7 +28,7 @@ class SpecialRequestsModel extends BaseModel
     }
 
     // Lấy tất cả yêu cầu theo customer_id
-    public function getRequestsByCustomer($customer_id)
+    public function getSpecialRequestsByCustomer($customer_id)
     {
         $sql = "SELECT * FROM {$this->table} WHERE customer_id=? ORDER BY created_at DESC";
         $this->setQuery($sql);
@@ -36,7 +36,7 @@ class SpecialRequestsModel extends BaseModel
     }
 
     // Thêm yêu cầu mới
-    public function addRequest($data)
+    public function addSpecialRequest($data)
     {
         $sql = "INSERT INTO {$this->table} 
         (customer_id, request, created_at, updated_at) 
@@ -51,7 +51,7 @@ class SpecialRequestsModel extends BaseModel
     }
 
     // Cập nhật yêu cầu
-    public function updateRequest($id, $data)
+    public function updateSpecialRequest($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
         customer_id=?, request=?, updated_at=? 
@@ -66,7 +66,7 @@ class SpecialRequestsModel extends BaseModel
     }
 
     // Xóa yêu cầu
-    public function deleteRequest($id)
+    public function deleteSpecialRequest($id)
     {
         $sql = "DELETE FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);

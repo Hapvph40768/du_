@@ -6,17 +6,17 @@ use App\Models\CustomerModel;
 
 class SpecialRequestController extends BaseController
 {
-    protected $request;
+    protected $requestModel;
 
     public function __construct()
     {
-        $this->request = new SpecialRequestsModel();
+        $this->requestModel = new SpecialRequestsModel();
     }
 
     // 1. Danh sách yêu cầu đặc biệt
     public function listSpecialRequests()
     {
-        $requests = $this->request->getAllRequests();
+        $requests = $this->requestModel->getAllSpecialRequests();
         return $this->render("admin.special_request.listSpecialRequest", ['requests' => $requests]);
     }
 
@@ -42,7 +42,7 @@ class SpecialRequestController extends BaseController
             redirect('errors', $error, 'add-special-request');
         }
 
-        $check = $this->request->addRequest([
+        $check = $this->requestModel->addSpecialRequest([
             'customer_id' => $customer_id,
             'request'     => $request,
             'created_at'  => date("Y-m-d H:i:s"),
@@ -52,14 +52,14 @@ class SpecialRequestController extends BaseController
         if ($check) {
             redirect('success', "Thêm yêu cầu đặc biệt thành công", 'list-special-request');
         } else {
-            redirect('errors', "Thêm thất bại", 'add-request');
+            redirect('errors', "Thêm thất bại", 'add-special-request');
         }
     }
 
     // 4. Chi tiết để sửa
     public function detailSpecialRequest($id)
     {
-        $detail = $this->request->getRequestById($id);
+        $detail = $this->requestModel->getSpecialRequestById($id);
         $customerModel = new CustomerModel();
         $customers = $customerModel->getAllCustomers();
         return $this->render("admin.special_request.editSpecialRequest", [
@@ -85,7 +85,7 @@ class SpecialRequestController extends BaseController
             redirect('errors', $error, $route);
         }
 
-        $check = $this->request->updateRequest($id, [
+        $check = $this->requestModel->updateSpecialRequest($id, [
             'customer_id' => $customer_id,
             'request'     => $request,
             'updated_at'  => date("Y-m-d H:i:s")
@@ -101,12 +101,11 @@ class SpecialRequestController extends BaseController
     // 6. Xóa
     public function deleteSpecialRequest($id)
     {
-        $check = $this->request->deleteRequest($id);
+        $check = $this->requestModel->deleteSpecialRequest($id);
         if ($check) {
             redirect('success', "Xóa yêu cầu thành công", 'list-special-request');
         } else {
-            redirect('errors', "Xóa thất bại", 'list-request');
+            redirect('errors', "Xóa thất bại", 'list-special-request');
         }
     }
 }
-?>

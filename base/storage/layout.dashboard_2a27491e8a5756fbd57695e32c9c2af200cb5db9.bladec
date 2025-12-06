@@ -1,5 +1,5 @@
-<?php $_shouldextend[2]=1; ?>
+<?php $_shouldextend[1]=1; ?>
 <?php $this->startSection('content-main'); ?>
  <?php echo $this->yieldContent('content'); ?>
 <?php $this->stopSection(); ?>
-<?php if (isset($_shouldextend[2])) { echo $this->runChild('layout.admin.AdminLayout'); } ?>
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.admin.AdminLayout'); } ?>

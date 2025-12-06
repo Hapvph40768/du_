@@ -1,7 +1,7 @@
 @extends('layout.dashboard')
-@section('title', 'Sửa Lịch khởi hành của tour')
+@section('title','Sửa Lịch khởi hành')
 
-@section('active-departure', 'active')
+@section('active-departure','active')
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -24,12 +24,10 @@
 
     {{-- Thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success">
-            {{ $_SESSION['success'] }}
-        </div>
+        <div class="alert alert-success">{{ $_SESSION['success'] }}</div>
     @endif
 
-    <form action="{{ route('edit-departure/' . $detail->id) }}" method="post" class="bg-light p-4 rounded shadow-sm">
+    <form action="{{ route('edit-departure/'.$detail->id) }}" method="post" class="bg-light p-4 rounded shadow-sm">
         {{-- chọn tour --}}
         <div class="mb-3">
             <label for="tour_id" class="form-label fw-bold">Chọn Tour</label>
@@ -40,18 +38,30 @@
                     </option>
                 @endforeach
             </select>
+            @if(isset($_SESSION['errors']['tour_id']))
+                <small class="text-danger">{{ $_SESSION['errors']['tour_id'] }}</small>
+            @endif
         </div>
 
         {{-- ngày bắt đầu --}}
         <div class="mb-3">
             <label for="start_date" class="form-label fw-bold">Ngày bắt đầu</label>
             <input type="date" class="form-control" name="start_date" value="{{ $detail->start_date }}" required>
+            @if(isset($_SESSION['errors']['start_date']))
+                <small class="text-danger">{{ $_SESSION['errors']['start_date'] }}</small>
+            @endif
         </div>
 
         {{-- ngày kết thúc --}}
         <div class="mb-3">
             <label for="end_date" class="form-label fw-bold">Ngày kết thúc</label>
             <input type="date" class="form-control" name="end_date" value="{{ $detail->end_date }}" required>
+            @if(isset($_SESSION['errors']['end_date']))
+                <small class="text-danger">{{ $_SESSION['errors']['end_date'] }}</small>
+            @endif
+            @if(isset($_SESSION['errors']['date_invalid']))
+                <small class="text-danger">{{ $_SESSION['errors']['date_invalid'] }}</small>
+            @endif
         </div>
 
         {{-- giá riêng cho departure --}}
@@ -60,10 +70,20 @@
             <input type="number" class="form-control" name="price" step="1000" value="{{ $detail->price }}" placeholder="Ví dụ: 2000000">
         </div>
 
-        {{-- số ghế trống --}}
+        {{-- tổng số ghế --}}
         <div class="mb-3">
-            <label for="available_seats" class="form-label fw-bold">Số ghế trống</label>
-            <input type="number" class="form-control" name="available_seats" min="0" value="{{ $detail->available_seats }}" required placeholder="Ví dụ: 20">
+            <label for="total_seats" class="form-label fw-bold">Tổng số ghế</label>
+            <input type="number" class="form-control" name="total_seats" min="1" value="{{ $detail->total_seats }}" required placeholder="Ví dụ: 20">
+            @if(isset($_SESSION['errors']['total_seats']))
+                <small class="text-danger">{{ $_SESSION['errors']['total_seats'] }}</small>
+            @endif
+        </div>
+
+        {{-- số ghế còn lại (readonly) --}}
+        <div class="mb-3">
+            <label class="form-label fw-bold">Số ghế còn lại</label>
+            <input type="number" class="form-control" value="{{ $detail->remaining_seats }}" readonly>
+            <small class="text-muted">Giá trị này được cập nhật tự động khi có booking.</small>
         </div>
 
         {{-- chi phí guide --}}
@@ -79,7 +99,11 @@
                 <option value="open" {{ $detail->status === 'open' ? 'selected' : '' }}>Đang mở</option>
                 <option value="closed" {{ $detail->status === 'closed' ? 'selected' : '' }}>Đã đóng</option>
                 <option value="full" {{ $detail->status === 'full' ? 'selected' : '' }}>Đầy chỗ</option>
+                <option value="completed" {{ $detail->status === 'completed' ? 'selected' : '' }}>Hoàn thành</option>
             </select>
+            @if(isset($_SESSION['errors']['status']))
+                <small class="text-danger">{{ $_SESSION['errors']['status'] }}</small>
+            @endif
         </div>
 
         <div class="text-end">

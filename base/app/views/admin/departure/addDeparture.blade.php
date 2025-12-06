@@ -1,7 +1,7 @@
 @extends('layout.dashboard')
-@section('title', 'Thêm Lịch khởi hành của tour')
+@section('title','Thêm Lịch khởi hành')
 
-@section('active-departure', 'active')
+@section('active-departure','active')
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -11,7 +11,7 @@
         </a>
     </div>
 
-    {{-- Thông báo lỗi --}}
+    {{-- Thông báo --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -21,19 +21,14 @@
             </ul>
         </div>
     @endif
-
-    {{-- Thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success">
-            {{ $_SESSION['success'] }}
-        </div>
+        <div class="alert alert-success">{{ $_SESSION['success'] }}</div>
     @endif
 
     <form action="{{ route('post-departure') }}" method="post" class="bg-light p-4 rounded shadow-sm">
-        {{-- chọn tour --}}
         <div class="mb-3">
-            <label for="tour_id" class="form-label fw-bold">Chọn Tour</label>
-            <select name="tour_id" id="tour_id" class="form-select" required>
+            <label class="fw-bold">Chọn Tour</label>
+            <select name="tour_id" class="form-select" required>
                 <option value="">-- Chọn tour --</option>
                 @foreach($tours as $tour)
                     <option value="{{ $tour->id }}">{{ $tour->name }}</option>
@@ -41,39 +36,34 @@
             </select>
         </div>
 
-        {{-- ngày bắt đầu --}}
         <div class="mb-3">
-            <label for="start_date" class="form-label fw-bold">Ngày bắt đầu</label>
-            <input type="date" class="form-control" name="start_date" required>
+            <label class="fw-bold">Ngày bắt đầu</label>
+            <input type="date" name="start_date" class="form-control" required>
         </div>
 
-        {{-- ngày kết thúc --}}
         <div class="mb-3">
-            <label for="end_date" class="form-label fw-bold">Ngày kết thúc</label>
-            <input type="date" class="form-control" name="end_date" required>
+            <label class="fw-bold">Ngày kết thúc</label>
+            <input type="date" name="end_date" class="form-control" required>
         </div>
 
-        {{-- giá riêng cho departure --}}
         <div class="mb-3">
-            <label for="price" class="form-label fw-bold">Giá (nếu khác giá tour)</label>
-            <input type="number" class="form-control" name="price" step="1000" placeholder="Ví dụ: 2000000">
+            <label class="fw-bold">Giá (nếu khác giá tour)</label>
+            <input type="number" name="price" class="form-control" step="1000" placeholder="Ví dụ: 2000000">
         </div>
 
-        {{-- số ghế trống --}}
         <div class="mb-3">
-            <label for="available_seats" class="form-label fw-bold">Số ghế trống</label>
-            <input type="number" class="form-control" name="available_seats" min="0" required placeholder="Ví dụ: 20">
+            <label class="fw-bold">Tổng số ghế</label>
+            <input type="number" name="total_seats" class="form-control" min="1" required placeholder="Ví dụ: 20">
+            <small class="text-muted">Khi tạo mới, số ghế còn lại = tổng số ghế.</small>
         </div>
 
-        {{-- chi phí guide --}}
         <div class="mb-3">
-            <label for="guide_price" class="form-label fw-bold">Chi phí cho hướng dẫn viên</label>
-            <input type="number" class="form-control" name="guide_price" step="1000" placeholder="Ví dụ: 500000">
+            <label class="fw-bold">Chi phí hướng dẫn viên</label>
+            <input type="number" name="guide_price" class="form-control" step="1000" placeholder="Ví dụ: 500000">
         </div>
 
-        {{-- trạng thái --}}
         <div class="mb-3">
-            <label for="status" class="form-label fw-bold">Trạng thái</label>
+            <label class="fw-bold">Trạng thái</label>
             <select name="status" class="form-select" required>
                 <option value="">-- Chọn trạng thái --</option>
                 <option value="open">Đang mở</option>
@@ -83,7 +73,7 @@
         </div>
 
         <div class="text-end">
-            <button type="submit" class="btn btn-primary" name="btn-submit" value="them">
+            <button type="submit" class="btn btn-primary" name="btn-submit">
                 <i class="fas fa-check-circle"></i> Xác nhận
             </button>
         </div>

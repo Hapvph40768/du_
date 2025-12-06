@@ -31,8 +31,9 @@ class CustomerModel extends BaseModel
     public function addCustomer($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (`user_id`, `fullname`, `phone`, `email`, `nationality`, `dob`, `gender`, `address`, `note`, `created_at`, `updated_at`)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (`user_id`, `fullname`, `phone`, `email`, `nationality`, `dob`, `gender`, `address`, `note`) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
         $this->setQuery($sql);
         return $this->execute([
             $data['user_id'] ?? null,
@@ -43,9 +44,7 @@ class CustomerModel extends BaseModel
             $data['dob'] ?? null,
             $data['gender'] ?? null,
             $data['address'] ?? null,
-            $data['note'] ?? null,
-            $data['created_at'] ?? date("Y-m-d H:i:s"),
-            $data['updated_at'] ?? null
+            $data['note'] ?? null
         ]);
     }
 
@@ -53,8 +52,9 @@ class CustomerModel extends BaseModel
     public function updateCustomer($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        `user_id`=?, `fullname`=?, `phone`=?, `email`=?, `nationality`=?, `dob`=?, `gender`=?, `address`=?, `note`=?, `updated_at`=?
+        `user_id`=?, `fullname`=?, `phone`=?, `email`=?, `nationality`=?, `dob`=?, `gender`=?, `address`=?, `note`=? 
         WHERE id=?";
+        
         $this->setQuery($sql);
         return $this->execute([
             $data['user_id'] ?? null,
@@ -66,7 +66,6 @@ class CustomerModel extends BaseModel
             $data['gender'] ?? null,
             $data['address'] ?? null,
             $data['note'] ?? null,
-            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }

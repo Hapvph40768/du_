@@ -36,7 +36,7 @@
 
         <li>
             <a href="{{ route('list-booking-customer') }}" class="@yield('active-booking-customer')">
-                <i class="bi bi-people-fill me-2"></i> Khách đi kèm trong Booking
+                <i class="bi bi-people-fill me-2"></i> Khách Booking
             </a>
         </li>
 
@@ -93,6 +93,13 @@
         <li>
             <a href="{{ route('list-guides') }}" class="@yield('active-guides')">
                 <i class="bi bi-person-badge-fill me-2"></i> Quản lý Hướng dẫn viên
+            </a>
+        </li>
+
+        {{-- Guide --}}
+        <li>
+            <a href="{{ route('list-attendance') }}" class="@yield('active-attendance')">
+                <i class="bi bi-person-badge-fill me-2"></i> Quản lý điểm danh
             </a>
         </li>
     </ul>

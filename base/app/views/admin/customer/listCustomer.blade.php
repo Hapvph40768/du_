@@ -1,11 +1,17 @@
 @extends('layout.dashboard')
 @section('title', 'Danh sách khách hàng')
-
 @section('active-customer', 'active')
-@section('content')
-    <h3 class="mb-4">Danh sách khách hàng</h3>
 
-    {{-- Thông báo lỗi --}}
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-primary"><i class="fas fa-users"></i> Danh sách khách hàng</h1>
+        <a href="{{ route('add-customer') }}" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Thêm khách hàng
+        </a>
+    </div>
+
+    {{-- Hiển thị thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -17,70 +23,72 @@
         @php unset($_SESSION['errors']) @endphp
     @endif
 
-    {{-- Thông báo thành công --}}
+    {{-- Hiển thị thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
         <div class="alert alert-success">
-            <span>{{ $_SESSION['success'] }}</span>
+            {{ $_SESSION['success'] }}
         </div>
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <a href="{{ route('add-customer') }}" class="btn btn-success mb-3">
-        <i class="bi bi-person-plus-fill me-1"></i> Thêm khách hàng
-    </a>
-
-    <table class="table table-hover table-bordered align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Họ tên</th>
-                <th>SĐT</th>
-                <th>Email</th>
-                <th>Quốc tịch</th>
-                <th>Ngày sinh</th>
-                <th>Giới tính</th>
-                <th>Địa chỉ</th>
-                <th>Ghi chú</th>
-                <th>Ngày tạo</th>
-                <th class="text-center">Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($customers as $c)
+    <div class="table-responsive shadow-sm">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-primary">
                 <tr>
-                    <td>{{ $c->id }}</td>
-                    <td>{{ $c->fullname }}</td>
-                    <td>{{ $c->phone }}</td>
-                    <td>{{ $c->email }}</td>
-                    <td>{{ $c->nationality }}</td>
-                    <td>{{ $c->dob }}</td>
-                    <td>{{ $c->gender }}</td>
-                    <td>{{ $c->address }}</td>
-                    <td>{{ $c->note }}</td>
-                    <td>{{ $c->created_at }}</td>
-                    <td class="text-center">
-                        <a href="{{ route('detail-customer/' . $c->id) }}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-square"></i> Sửa
-                        </a>
-                        <button type="button" class="btn btn-danger btn-sm"
-                                onclick="confirmDelete('{{ route('delete-customer/' . $c->id) }}', '{{ $c->fullname }}')">
-                            <i class="bi bi-trash"></i> Xóa
-                        </button>
-                    </td>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Quốc tịch</th>
+                    <th>Ngày sinh</th>
+                    <th>Giới tính</th>
+                    <th>Địa chỉ</th>
+                    <th>Ghi chú</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="11" class="text-center text-muted">Chưa có khách hàng nào</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($customers as $c)
+                    <tr>
+                        <td>{{ $c->id }}</td>
+                        <td class="fw-bold">{{ $c->fullname }}</td>
+                        <td>{{ $c->phone }}</td>
+                        <td>{{ $c->email }}</td>
+                        <td>{{ $c->nationality }}</td>
+                        <td>{{ $c->dob }}</td>
+                        <td>
+                            <span class="badge {{ $c->gender === 'Nam' ? 'bg-info' : 'bg-warning' }}">
+                                {{ $c->gender }}
+                            </span>
+                        </td>
+                        <td>{{ $c->address }}</td>
+                        <td>{{ $c->note ?: '—' }}</td>
+                        <td><span class="text-muted">{{ $c->created_at }}</span></td>
+                        <td>
+                            <a href="{{ route('detail-customer/' . $c->id) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-customer/' . $c->id) }}', '{{ $c->fullname }}')">
+                                <i class="fas fa-trash-alt"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="11" class="text-muted">Chưa có khách hàng nào</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <script>
-        function confirmDelete(deleteUrl, name) {
-            if (confirm(`Bạn có chắc chắn muốn xóa khách hàng: ${name}?`)) {
-                window.location.href = deleteUrl;
-            }
+<script>
+    function confirmDelete(deleteUrl, name) {
+        if (confirm(`Bạn có chắc chắn muốn xóa khách hàng: ${name}?`)) {
+            window.location.href = deleteUrl;
         }
-    </script>
+    }
+</script>
 @endsection

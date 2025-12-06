@@ -1,14 +1,20 @@
 @extends('layout.dashboard')
 @section('title', 'Danh sách Dịch vụ')
-
 @section('active-service', 'active')
-@section('content')
-    <h3>Danh sách Dịch vụ</h3>
 
-    {{-- Hiển thị thông báo --}}
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-primary"><i class="fas fa-cogs"></i> Danh sách Dịch vụ</h1>
+        <a href="{{ route('add-service') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Thêm Dịch vụ
+        </a>
+    </div>
+
+    {{-- Hiển thị thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <div class="alert alert-danger">
-            <ul>
+            <ul class="mb-0">
                 @foreach($_SESSION['errors'] as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -17,58 +23,76 @@
         @php unset($_SESSION['errors']) @endphp
     @endif
 
+    {{-- Hiển thị thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
         <div class="alert alert-success">
-            <span>{{ $_SESSION['success'] }}</span>
+            {{ $_SESSION['success'] }}
         </div>
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <a href="{{ route('add-service') }}" class="btn btn-success mb-3">Thêm Dịch vụ</a>
-
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên dịch vụ</th>
-                <th>Gói dịch vụ</th>
-                <th>Tour</th>
-                <th>Nhà cung cấp</th>
-                <th>Giá</th>
-                <th>Giá mặc định</th>
-                <th>Tiền tệ</th>
-                <th>Tùy chọn</th>
-                <th>Hoạt động</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($services as $s)
+    <div class="table-responsive shadow-sm">
+        <table class="table table-striped table-hover align-middle text-center">
+            <thead class="table-primary">
                 <tr>
-                    <td>{{ $s->id }}</td>
-                    <td>{{ $s->name }}</td>
-                    <td>{{ $s->package_name }}</td>
-                    <td>{{ $s->tour_name ?? '---' }}</td>
-                    <td>{{ $s->supplier_name ?? '---' }}</td>
-                    <td>{{ number_format($s->price, 0) }}</td>
-                    <td>{{ number_format($s->default_price, 0) }}</td>
-                    <td>{{ $s->currency }}</td>
-                    <td>{{ $s->is_optional ? 'Có' : 'Không' }}</td>
-                    <td>{{ $s->is_active ? 'Đang hoạt động' : 'Ngừng' }}</td>
-                    <td>
-                        <a href="{{ route('detail-service/' . $s->id) }}" class="btn btn-warning btn-sm">Sửa</a>
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ route('delete-service/' . $s->id) }}', '{{ $s->name }}')">Xóa</button>
-                    </td>
+                    <th>#</th>
+                    <th>Tên dịch vụ</th>
+                    <th>Gói dịch vụ</th>
+                    <th>Tour</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Giá</th>
+                    <th>Giá mặc định</th>
+                    <th>Tiền tệ</th>
+                    <th>Tùy chọn</th>
+                    <th>Hoạt động</th>
+                    <th>Hành động</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($services as $s)
+                    <tr>
+                        <td>{{ $s->id }}</td>
+                        <td class="fw-bold">{{ $s->name }}</td>
+                        <td>{{ $s->package_name }}</td>
+                        <td>{{ $s->tour_name ?? '---' }}</td>
+                        <td>{{ $s->supplier_name ?? '---' }}</td>
+                        <td class="text-success">{{ number_format($s->price, 0, ',', '.') }} đ</td>
+                        <td>{{ number_format($s->default_price, 0, ',', '.') }} đ</td>
+                        <td>{{ $s->currency }}</td>
+                        <td>
+                            <span class="badge {{ $s->is_optional ? 'bg-info' : 'bg-secondary' }}">
+                                {{ $s->is_optional ? 'Có' : 'Không' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {{ $s->is_active ? 'bg-success' : 'bg-danger' }}">
+                                {{ $s->is_active ? 'Đang hoạt động' : 'Ngừng' }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ route('detail-service/' . $s->id) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-service/' . $s->id) }}', '{{ $s->name }}')">
+                                <i class="fas fa-trash-alt"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="11" class="text-muted">Chưa có dịch vụ nào được thêm</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <script>
-        function confirmDelete(deleteUrl, serviceName) {
-            if (confirm(`Bạn có chắc chắn muốn xóa dịch vụ: ${serviceName}?`)) {
-                window.location.href = deleteUrl;
-            }
+<script>
+    function confirmDelete(deleteUrl, serviceName) {
+        if (confirm(`Bạn có chắc chắn muốn xóa dịch vụ: ${serviceName}?`)) {
+            window.location.href = deleteUrl;
         }
-    </script>
+    }
+</script>
 @endsection

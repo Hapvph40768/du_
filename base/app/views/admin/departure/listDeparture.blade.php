@@ -11,7 +11,7 @@
         </a>
     </div>
 
-    {{-- Thông báo lỗi --}}
+    {{-- Thông báo --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -21,12 +21,8 @@
             </ul>
         </div>
     @endif
-
-    {{-- Thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success">
-            {{ $_SESSION['success'] }}
-        </div>
+        <div class="alert alert-success">{{ $_SESSION['success'] }}</div>
     @endif
 
     <div class="table-responsive shadow-sm">
@@ -38,60 +34,48 @@
                     <th>Ngày bắt đầu</th>
                     <th>Ngày kết thúc</th>
                     <th>Giá</th>
-                    <th>Ghế trống</th>
+                    <th>Tổng số ghế</th>
+                    <th>Đã đặt</th>
+                    <th>Còn lại</th>
                     <th>Chi phí Guide</th>
                     <th>Trạng thái</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($departures as $dp)
+                @forelse($departures as $index => $dp)
                     <tr>
-                        <td>{{ $dp->id }}</td>
+                        <td>{{ $index+1 }}</td>
                         <td class="fw-bold">{{ $dp->tour_name }}</td>
                         <td>{{ date('d/m/Y', strtotime($dp->start_date)) }}</td>
                         <td>{{ date('d/m/Y', strtotime($dp->end_date)) }}</td>
-                        <td class="text-success">
-                            @if($dp->price)
-                                {{ number_format($dp->price, 0, ',', '.') }} đ
-                            @else
-                                {{ number_format($dp->tour_price ?? 0, 0, ',', '.') }} đ
-                            @endif
+                        <td class="text-success fw-bold">{{ number_format($dp->price,0,',','.') }} đ</td>
+                        <td>{{ $dp->total_seats }}</td>
+                        <td>{{ $dp->total_seats - $dp->remaining_seats }}</td>
+                        <td class="{{ $dp->remaining_seats>0?'text-success fw-bold':'text-danger fw-bold' }}">
+                            {{ $dp->remaining_seats }}
                         </td>
-                        <td>{{ $dp->available_seats }}</td>
-                        <td>
-                            @if($dp->guide_price)
-                                {{ number_format($dp->guide_price, 0, ',', '.') }} đ
-                            @else
-                                <span class="text-muted">Không có</span>
-                            @endif
-                        </td>
+                        <td>{{ $dp->guide_price ? number_format($dp->guide_price,0,',','.') . ' đ' : 'Không có' }}</td>
                         <td>
                             @switch($dp->status)
-                                @case('open')
-                                    <span class="badge bg-success">Đang mở</span>
-                                    @break
-                                @case('closed')
-                                    <span class="badge bg-secondary">Đã đóng</span>
-                                    @break
-                                @case('full')
-                                    <span class="badge bg-danger">Đầy chỗ</span>
-                                    @break
+                                @case('open') <span class="badge bg-success">Đang mở</span> @break
+                                @case('closed') <span class="badge bg-secondary">Đã đóng</span> @break
+                                @case('full') <span class="badge bg-danger">Đầy chỗ</span> @break
+                                @case('completed') <span class="badge bg-primary">Hoàn thành</span> @break
                             @endswitch
                         </td>
                         <td>
-                            <a href="{{ route('detail-departure/' . $dp->id) }}" class="btn btn-sm btn-warning me-1">
-                                <i class="fas fa-edit">Sửa</i>
+                            <a href="{{ route('detail-departure/'.$dp->id) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit"></i> Sửa
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-departure/' . $dp->id) }}')">
-                                <i class="fas fa-trash-alt">Xóa</i>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                onclick="confirmDelete('{{ route('delete-departure/'.$dp->id) }}')">
+                                <i class="fas fa-trash-alt"></i> Xóa
                             </button>
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="9" class="text-center text-muted">Chưa có lịch khởi hành nào</td>
-                    </tr>
+                    <tr><td colspan="11" class="text-muted">Chưa có lịch khởi hành nào</td></tr>
                 @endforelse
             </tbody>
         </table>

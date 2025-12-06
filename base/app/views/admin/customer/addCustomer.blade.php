@@ -33,8 +33,7 @@
 
         <div class="mb-3">
             <label class="form-label">Giới tính</label>
-            <select name="gender" class="form-select">
-                <option value="">-- Chọn giới tính --</option>
+            <select name="gender" class="form-select" required>
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
                 <option value="other">Khác</option>

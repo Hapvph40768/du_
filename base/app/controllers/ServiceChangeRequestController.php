@@ -2,46 +2,57 @@
 namespace App\Controllers;
 
 use App\Models\ServiceChangeRequestsModel;
+use App\Models\BookingModel;
 
 class ServiceChangeRequestController extends BaseController
 {
     protected $requestModel;
+    protected $booking;
 
     public function __construct()
     {
         $this->requestModel = new ServiceChangeRequestsModel();
+        $this->booking = new BookingModel();
     }
 
     // 1. Danh sách yêu cầu thay đổi dịch vụ
     public function listRequests()
     {
         $requests = $this->requestModel->getAllRequests();
-        return $this->render("admin.service_change_requests.listRequest", ['requests' => $requests]);
+        return $this->render("admin.service_change_requests.listRequest", [
+            'requests' => $requests
+        ]);
     }
 
     // 2. Form thêm yêu cầu mới
     public function createRequest()
     {
-        return $this->render("admin.service_change_requests.addRequest");
+        $bookings = $this->booking->getAllBookings();
+        return $this->render("admin.service_change_requests.addRequest", [
+            'bookings' => $bookings
+        ]);
     }
 
     // 3. Xử lý thêm yêu cầu mới
     public function postRequest()
     {
-        $error = [];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('errors', "Yêu cầu không hợp lệ", 'list-request');
+        }
 
-        $booking_id = $_POST['booking_id'] ?? '';
-        $request    = $_POST['request'] ?? '';
+        $booking_id = trim($_POST['booking_id'] ?? '');
+        $request    = trim($_POST['request'] ?? '');
         $status     = $_POST['status'] ?? 'pending';
 
-        // Validate
+        $error = [];
+
         if (empty($booking_id) || !is_numeric($booking_id)) {
             $error['booking_id'] = "Booking ID phải là số và không được để trống.";
         }
         if (empty($request)) {
             $error['request'] = "Nội dung yêu cầu không được để trống.";
         }
-        if (!in_array($status, ['pending','approved','rejected'])) {
+        if (!in_array($status, ['pending', 'approved', 'rejected'])) {
             $error['status'] = "Trạng thái không hợp lệ.";
         }
 
@@ -50,37 +61,41 @@ class ServiceChangeRequestController extends BaseController
         }
 
         $check = $this->requestModel->addRequest([
-            'booking_id' => $booking_id,
-            'request'    => $request,
-            'status'     => $status,
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s")
+            'booking_id'  => $booking_id,
+            'requester_id'=> $_SESSION['user']['id'] ?? null, // ai gửi yêu cầu
+            'request'     => $request,
+            'status'      => $status
         ]);
 
-        if ($check) {
-            redirect('success', "Thêm yêu cầu thành công", 'list-request');
-        } else {
-            redirect('errors', "Thêm yêu cầu thất bại", 'add-request');
-        }
+        $check
+            ? redirect('success', "Thêm yêu cầu thành công", 'list-request')
+            : redirect('errors', "Thêm yêu cầu thất bại", 'add-request');
     }
 
     // 4. Chi tiết yêu cầu để sửa
     public function detailRequest($id)
     {
         $detail = $this->requestModel->getRequestById($id);
-        return $this->render("admin.service_change_requests.editRequest", ['detail' => $detail]);
+        $bookings = $this->booking->getAllBookings();
+
+        return $this->render("admin.service_change_requests.editRequest", [
+            'detail'   => $detail,
+            'bookings' => $bookings
+        ]);
     }
 
     // 5. Xử lý sửa yêu cầu
     public function editRequest($id)
     {
-        if (!isset($_POST['btn-submit'])) return;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['btn-submit'])) {
+            redirect('errors', "Yêu cầu không hợp lệ", 'list-request');
+        }
+
+        $booking_id = trim($_POST['booking_id'] ?? '');
+        $request    = trim($_POST['request'] ?? '');
+        $status     = $_POST['status'] ?? 'pending';
 
         $error = [];
-
-        $booking_id = $_POST['booking_id'] ?? '';
-        $request    = $_POST['request'] ?? '';
-        $status     = $_POST['status'] ?? 'pending';
 
         if (empty($booking_id) || !is_numeric($booking_id)) {
             $error['booking_id'] = "Booking ID phải là số và không được để trống.";
@@ -88,27 +103,28 @@ class ServiceChangeRequestController extends BaseController
         if (empty($request)) {
             $error['request'] = "Nội dung yêu cầu không được để trống.";
         }
-        if (!in_array($status, ['pending','approved','rejected'])) {
+        if (!in_array($status, ['pending', 'approved', 'rejected'])) {
             $error['status'] = "Trạng thái không hợp lệ.";
         }
 
         $route = 'detail-request/' . $id;
+
         if (!empty($error)) {
             redirect('errors', $error, $route);
         }
 
         $check = $this->requestModel->updateRequest($id, [
-            'booking_id' => $booking_id,
-            'request'    => $request,
-            'status'     => $status,
-            'updated_at' => date("Y-m-d H:i:s")
+            'booking_id'  => $booking_id,
+            'requester_id'=> $_SESSION['user']['id'] ?? null,
+            'request'     => $request,
+            'status'      => $status,
+            'decision_by' => $_SESSION['user']['id'] ?? null,
+            'decided_at'  => ($status !== 'pending') ? date("Y-m-d H:i:s") : null
         ]);
 
-        if ($check) {
-            redirect('success', "Cập nhật yêu cầu thành công", 'list-request');
-        } else {
-            redirect('errors', "Cập nhật thất bại", $route);
-        }
+        $check
+            ? redirect('success', "Cập nhật yêu cầu thành công", 'list-request')
+            : redirect('errors', "Cập nhật thất bại", $route);
     }
 
     // 6. Xóa yêu cầu
@@ -116,10 +132,8 @@ class ServiceChangeRequestController extends BaseController
     {
         $check = $this->requestModel->deleteRequest($id);
 
-        if ($check) {
-            redirect('success', "Xóa yêu cầu thành công", 'list-request');
-        } else {
-            redirect('errors', "Xóa thất bại", 'list-request');
-        }
+        $check
+            ? redirect('success', 'Xóa yêu cầu thành công', 'list-request')
+            : redirect('errors', 'Xóa yêu cầu thất bại', 'list-request');
     }
 }

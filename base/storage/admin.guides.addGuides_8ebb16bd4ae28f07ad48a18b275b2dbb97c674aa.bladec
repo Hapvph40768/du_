@@ -3,71 +3,108 @@
 
 <?php $this->startSection('active-guides', 'active'); ?>
 <?php $this->startSection('content'); ?>
+ <h3 class="mb-4">Thêm hướng dẫn viên</h3>
+
+ <?php /* Thông báo lỗi */ ?>
  <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
- <ul>
+ <div class="alert alert-danger">
+ <ul class="mb-0">
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
  <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </ul>
+ </div>
+ <?php unset($_SESSION['errors'])  ?>
  <?php endif; ?>
 
+ <?php /* Thông báo thành công */ ?>
  <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-success">
  <span><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ </div>
+ <?php unset($_SESSION['success'])  ?>
  <?php endif; ?>
 
- <form action="<?php echo \htmlentities(route('post-guides')??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post" enctype="multipart/form-data">
- <label>Tài khoản liên kết</label>
- <select name="user_id" required>
+ <form action="<?php echo \htmlentities(route('post-guides')??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post" enctype="multipart/form-data" class="row g-3">
+ <div class="col-md-6">
+ <label class="form-label">Tài khoản liên kết</label>
+ <select name="user_id" class="form-select" required>
  <option value="">-- chọn user --</option>
  <?php $__currentLoopData = $users; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $u): $loop = $this->incrementLoopIndices();  ?>
  <option value="<?php echo \htmlentities($u->id??'', ENT_QUOTES, 'UTF-8', false); ?>"><?php echo \htmlentities($u->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities($u->username??'', ENT_QUOTES, 'UTF-8', false); ?>)</option>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
- </select><br>
+ </select>
+ </div>
 
- <label>Họ tên</label>
- <input type="text" name="fullname" required><br>
+ <div class="col-md-6">
+ <label class="form-label">Họ tên</label>
+ <input type="text" name="fullname" class="form-control" required>
+ </div>
 
- <label>Ngày sinh</label>
- <input type="date" name="dob"><br>
+ <div class="col-md-6">
+ <label class="form-label">Ngày sinh</label>
+ <input type="date" name="dob" class="form-control">
+ </div>
 
- <label>Số điện thoại</label>
- <input type="text" name="phone"><br>
+ <div class="col-md-6">
+ <label class="form-label">Số điện thoại</label>
+ <input type="text" name="phone" class="form-control">
+ </div>
 
- <label>Email</label>
- <input type="email" name="email"><br>
+ <div class="col-md-6">
+ <label class="form-label">Email</label>
+ <input type="email" name="email" class="form-control">
+ </div>
 
- <label>Giới tính</label>
- <select name="gender">
+ <div class="col-md-6">
+ <label class="form-label">Giới tính</label>
+ <select name="gender" class="form-select">
  <option value="">-- chọn giới tính --</option>
  <option value="male">Nam</option>
  <option value="female">Nữ</option>
  <option value="other">Khác</option>
- </select><br>
+ </select>
+ </div>
 
- <label>Ảnh đại diện</label>
- <input type="file" name="avatar" accept="image/*"><br>
+ <div class="col-md-6">
+ <label class="form-label">Ảnh đại diện</label>
+ <input type="file" name="avatar" class="form-control" accept="image/*">
+ </div>
 
- <label>Ngôn ngữ</label>
- <input type="text" name="languages" placeholder="Ví dụ: Tiếng Việt, Tiếng Anh"><br>
+ <div class="col-md-6">
+ <label class="form-label">Ngôn ngữ</label>
+ <input type="text" name="languages" class="form-control" placeholder="Ví dụ: Tiếng Việt, Tiếng Anh">
+ </div>
 
- <label>Số năm kinh nghiệm</label>
- <input type="number" name="experience_years" min="0"><br>
+ <div class="col-md-6">
+ <label class="form-label">Số năm kinh nghiệm</label>
+ <input type="number" name="experience_years" class="form-control" min="0">
+ </div>
 
- <label>Mô tả kinh nghiệm</label>
- <textarea name="experience"></textarea><br>
+ <div class="col-md-12">
+ <label class="form-label">Mô tả kinh nghiệm</label>
+ <textarea name="experience" class="form-control" rows="3"></textarea>
+ </div>
 
- <label>Chứng chỉ (URL)</label>
- <input type="text" name="certificate_url" placeholder="http://..."><br>
+ <div class="col-md-6">
+ <label class="form-label">Chứng chỉ (URL)</label>
+ <input type="text" name="certificate_url" class="form-control" placeholder="http://...">
+ </div>
 
- <label>Trạng thái</label>
- <select name="status">
+ <div class="col-md-6">
+ <label class="form-label">Trạng thái</label>
+ <select name="status" class="form-select">
  <option value="active">Đang hoạt động</option>
  <option value="inactive">Ngừng hoạt động</option>
- </select><br>
+ </select>
+ </div>
 
- <button type="submit" name="btn-submit">Thêm hướng dẫn viên</button>
+ <div class="col-12">
+ <button type="submit" name="btn-submit" class="btn btn-primary">Thêm hướng dẫn viên</button>
+ <a href="<?php echo \htmlentities(route('list-guides')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-secondary">Quay lại</a>
+ </div>
  </form>
 <?php $this->stopSection(); ?>
 <?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

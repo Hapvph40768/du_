@@ -8,7 +8,7 @@
     {{-- Thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <div class="alert alert-danger">
-            <ul>
+            <ul class="mb-0">
                 @foreach($_SESSION['errors'] as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -60,6 +60,7 @@
         <div class="mb-3">
             <label for="gender" class="form-label">Giới tính</label>
             <select name="gender" class="form-select" required>
+                <option value="">-- Chọn giới tính --</option>
                 <option value="male">Nam</option>
                 <option value="female">Nữ</option>
                 <option value="other">Khác</option>
@@ -75,7 +76,7 @@
         {{-- ghi chú --}}
         <div class="mb-3">
             <label for="note" class="form-label">Ghi chú</label>
-            <textarea class="form-control" name="note"></textarea>
+            <textarea class="form-control" name="note" rows="3"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary" name="btn-submit">Xác nhận</button>

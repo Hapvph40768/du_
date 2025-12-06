@@ -5,10 +5,15 @@ use App\Models\BaseModel;
 
 class UserModel extends BaseModel
 {
-    public $table = 'users';
+    protected $table = 'users';
+
+    // Lấy tất cả user
     public function getAllUsers()
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+        $sql = "SELECT u.*, r.name as role_name 
+                FROM {$this->table} u 
+                LEFT JOIN roles r ON u.role_id = r.id 
+                ORDER BY u.id DESC";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
@@ -33,19 +38,17 @@ class UserModel extends BaseModel
     public function createUser($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (username, email, password, role, avatar, is_active, last_login, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (username, email, password, role_id, avatar, is_active, last_login) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['username'],
             $data['email'] ?? null,
-            $data['password'],
-            $data['role'] ?? 'customer',
+            password_hash($data['password'], PASSWORD_BCRYPT), // mã hóa mật khẩu
+            $data['role_id'] ?? 1, // mặc định role_id = 1
             $data['avatar'] ?? null,
             $data['is_active'] ?? 1,
-            $data['last_login'] ?? null,
-            $data['created_at'] ?? date("Y-m-d H:i:s"),
-            $data['updated_at'] ?? null
+            $data['last_login'] ?? null
         ]);
     }
 
@@ -53,18 +56,17 @@ class UserModel extends BaseModel
     public function updateUser($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        username=?, email=?, password=?, role=?, avatar=?, is_active=?, last_login=?, updated_at=? 
+        username=?, email=?, password=?, role_id=?, avatar=?, is_active=?, last_login=? 
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['username'],
             $data['email'] ?? null,
-            $data['password'],
-            $data['role'] ?? 'customer',
+            password_hash($data['password'], PASSWORD_BCRYPT),
+            $data['role_id'] ?? 1,
             $data['avatar'] ?? null,
             $data['is_active'] ?? 1,
             $data['last_login'] ?? null,
-            $data['updated_at'] ?? date("Y-m-d H:i:s"),
             $id
         ]);
     }
@@ -76,5 +78,4 @@ class UserModel extends BaseModel
         $this->setQuery($sql);
         return $this->execute([$id]);
     }
-
 }

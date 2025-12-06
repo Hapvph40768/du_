@@ -1,63 +1,77 @@
 <?php $_shouldextend[1]=1; ?>
 <?php $this->startSection('title', 'Danh sách Booking'); ?>
-
 <?php $this->startSection('active-booking', 'active'); ?>
+
 <?php $this->startSection('content'); ?>
 <div class="container-fluid">
+
+ <?php /* HEADER */ ?>
  <div class="d-flex justify-content-between align-items-center mb-4">
- <h2 class="text-primary"><i class="fas fa-book"></i> Danh sách Booking</h2>
- <a href="<?php echo \htmlentities(route('add-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-info">
- <i class="fas fa-plus-circle"></i> Thêm booking
+ <h2 class="text-primary">
+ <i class="fas fa-ticket-alt"></i> Danh sách Booking
+ </h2>
+ <a href="<?php echo \htmlentities(route('add-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-success shadow-sm">
+ <i class="fas fa-plus-circle"></i> Thêm Booking
  </a>
  </div>
 
- <?php /* Thông báo lỗi */ ?>
+ <?php /* Thông báo */ ?>
+ <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+ <i class="fas fa-check-circle"></i> <?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
+ <?php endif; ?>
+
  <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
- <div class="alert alert-danger">
- <ul class="mb-0">
+ <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+ <i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi:
+ <ul class="mt-2 mb-0">
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
- foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
- <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ foreach($__currentLoopData as $err): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($err??'', ENT_QUOTES, 'UTF-8', false); ?></li>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </ul>
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
  </div>
  <?php endif; ?>
 
- <?php /* Thông báo thành công */ ?>
- <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
- <div class="alert alert-success">
- <?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?>
-
- </div>
- <?php endif; ?>
-
- <div class="table-responsive shadow-sm">
- <table class="table table-striped table-hover align-middle text-center">
+ <?php /* TABLE */ ?>
+ <div class="table-responsive shadow-sm rounded">
+ <table class="table table-bordered table-hover text-center align-middle mb-0">
  <thead class="table-primary">
  <tr>
- <th>STT</th>
- <th>Tour & Lịch khởi hành</th>
- <th>Người đặt</th>
- <th>Số điện thoại</th>
- <th>Số lượng</th>
+ <th>#</th>
+ <th>Khách hàng</th>
+ <th>Tour</th>
+ <th>Ngày đi</th>
+ <th>Số người</th>
  <th>Tổng tiền</th>
  <th>Thanh toán</th>
  <th>Trạng thái</th>
- <th>Hành động</th>
+ <th>Ghi chú</th>
+ <th width="130px">Hành động</th>
  </tr>
  </thead>
+
  <tbody>
- <?php $__empty_1 = true; foreach($bookings as $b): $__empty_1 = false; ?>
+ <?php $__empty_1 = true; foreach($bookings as $index => $b): $__empty_1 = false; ?>
  <tr>
- <td><?php echo \htmlentities($b->id??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($index + 1??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td class="fw-semibold"><?php echo \htmlentities($b->customer_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($b->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities(date('d/m/Y', strtotime($b->start_date))??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+
  <td>
- <strong><?php echo \htmlentities($b->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?></strong><br>
- <small class="text-muted"><?php echo \htmlentities(date('d/m/Y', strtotime($b->start_date))??'', ENT_QUOTES, 'UTF-8', false); ?> → <?php echo \htmlentities(date('d/m/Y', strtotime($b->end_date))??'', ENT_QUOTES, 'UTF-8', false); ?></small>
+ <span class="badge bg-info"><?php echo \htmlentities($b->num_people??'', ENT_QUOTES, 'UTF-8', false); ?></span>
  </td>
- <td><?php echo \htmlentities($b->customer_name ?? 'N/A'??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($b->customer_phone ?? 'N/A'??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($b->num_people??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td class="text-success"><?php echo \htmlentities(number_format($b->total_price, 0, ',', '.')??'', ENT_QUOTES, 'UTF-8', false); ?> đ</td>
+
+ <td class="text-success fw-bold">
+ <?php echo \htmlentities(number_format($b->total_price, 0, ',', '.')??'', ENT_QUOTES, 'UTF-8', false); ?> đ
+ </td>
+
+ <?php /* PAYMENT */ ?>
  <td>
  <?php switch ($b->payment_status) {
  case ('unpaid'): ?>
@@ -71,36 +85,63 @@
  <?php break; ?>
  <?php } // end switch ?>
  </td>
+
+ <?php /* STATUS */ ?>
  <td>
  <?php switch ($b->status) {
  case ('pending'): ?>
- <span class="badge bg-secondary">Đang chờ</span>
+ <span class="badge bg-secondary">Chờ xác nhận</span>
  <?php break; ?>
  <?php case ('confirmed'): ?>
- <span class="badge bg-success">Đã xác nhận</span>
+ <span class="badge bg-primary">Đã xác nhận</span>
  <?php break; ?>
  <?php case ('cancelled'): ?>
- <span class="badge bg-danger">Đã hủy</span>
+ <span class="badge bg-dark">Đã hủy</span>
+ <?php break; ?>
+ <?php case ('completed'): ?>
+ <span class="badge bg-success">Hoàn thành</span>
  <?php break; ?>
  <?php } // end switch ?>
  </td>
+
+ <td><?php echo \htmlentities($b->note ?: '-'??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+
+ <?php /* ACTION */ ?>
  <td>
- <a href="<?php echo \htmlentities(route('detail-booking/' . $b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-sm btn-warning me-1">
- <i class="fas fa-edit"></i>sửa
+ <a href="<?php echo \htmlentities(route('detail-booking/'.$b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>"
+ class="btn btn-sm btn-warning me-1 shadow-sm">
+ <i class="fas fa-edit"></i>Sửa 
  </a>
- <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('<?php echo \htmlentities(route('delete-booking/' . $b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>')">
- <i class="fas fa-trash-alt"></i>xóa
+
+ <button class="btn btn-sm btn-danger shadow-sm"
+ onclick="confirmDelete('<?php echo \htmlentities(route('delete-booking/'.$b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>')">
+ <i class="fas fa-trash-alt"></i>Xóa
  </button>
  </td>
  </tr>
  <?php endforeach; if ($__empty_1): ?>
  <tr>
- <td colspan="9" class="text-center text-muted">Chưa có booking nào</td>
+ <td colspan="10" class="text-muted py-3">
+ <i class="fas fa-info-circle"></i> Chưa có booking nào
+ </td>
  </tr>
  <?php endif; ?>
  </tbody>
+
  </table>
  </div>
+
 </div>
+
+<?php /* SCRIPT XÓA */ ?>
+<script>
+ function confirmDelete(url) {
+ if (confirm("Bạn có chắc muốn xóa booking này?")) {
+ window.location.href = url;
+ }
+ }
+</script>
+
 <?php $this->stopSection(); ?>
+
 <?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

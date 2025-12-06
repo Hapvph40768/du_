@@ -5,7 +5,7 @@
 @section('content')
     <h3>Thêm Yêu cầu đặc biệt</h3>
 
-    <form action="{{ route('post-request') }}" method="post">
+    <form action="{{ route('post-special-request') }}" method="post">
         <div class="mb-3">
             <label>Khách hàng</label>
             <select name="customer_id" class="form-select" required>
@@ -22,6 +22,6 @@
         </div>
 
         <button type="submit" class="btn btn-primary" name="btn-submit">Thêm</button>
-        <a href="{{ route('list-request') }}" class="btn btn-secondary">Quay lại</a>
+        <a href="{{ route('list-special-request') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 @endsection

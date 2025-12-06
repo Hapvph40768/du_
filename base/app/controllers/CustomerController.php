@@ -37,7 +37,7 @@ class CustomerController extends BaseController
             $error['phone'] = "Số điện thoại không được bỏ trống";
         }
 
-        if (count($error) >= 1) {
+        if (!empty($error)) {
             redirect('error', $error, "add-customer");
         } else {
             $check = $this->customer->addCustomer([
@@ -50,8 +50,6 @@ class CustomerController extends BaseController
                 'gender'      => $_POST['gender'] ?? null,
                 'address'     => $_POST['address'] ?? null,
                 'note'        => $_POST['note'] ?? null,
-                'created_at'  => date("Y-m-d H:i:s"),
-                'updated_at'  => date("Y-m-d H:i:s"),
             ]);
 
             if ($check) {
@@ -83,7 +81,7 @@ class CustomerController extends BaseController
             }
 
             $route = 'detail-customer/' . $id;
-            if (count($error) >= 1) {
+            if (!empty($error)) {
                 redirect('error', $error, $route);
             } else {
                 $check = $this->customer->updateCustomer($id, [
@@ -96,7 +94,6 @@ class CustomerController extends BaseController
                     'gender'      => $_POST['gender'] ?? null,
                     'address'     => $_POST['address'] ?? null,
                     'note'        => $_POST['note'] ?? null,
-                    'updated_at'  => date("Y-m-d H:i:s"),
                 ]);
 
                 if ($check) {
