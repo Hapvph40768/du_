@@ -1,5 +1,8 @@
-@extends('layout.main')
-@section('content-guides')
+@extends('admin.dashboard')
+@section('title', 'Danh Sách Hướng Dẫn Viên')
+
+@section('active-guides', 'active')
+@section('content')
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
         <ul>
             @foreach($_SESSION['errors'] as $error)

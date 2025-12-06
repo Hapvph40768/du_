@@ -10,11 +10,11 @@ class UserController extends BaseController
     {
         $this->user = new UserModel();
     }
-    public function index()
-    {
-        $users = $this->user->getAll();
-        $this->render('user.listUser', compact($users));
-    }
+  public function index()
+{
+    $users = $this->user->getAll();
+    $this->render('user.listUser', compact('users')); // phải là 'users'
+}
     public function create()
     {
         $this->render('user.addUser');

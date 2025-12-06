@@ -3,101 +3,87 @@
 use Phroute\Phroute\RouteCollector;
 
 $url = !isset($_GET['url']) ? "/" : $_GET['url'];
-
 $router = new RouteCollector();
 
-// filter check đăng nhập
+//====================
+// FILTERS
+//====================
 $router->filter('auth', function(){
     if(!isset($_SESSION['auth']) || empty($_SESSION['auth'])){
-        header('location: ' . BASE_URL . 'login');die;
+        header('location: ' . BASE_URL . 'login'); die;
     }
 });
 
-
-// bắt đầu định nghĩa ra các đường dẫn
+//====================
+// TRANG CHỦ
+//====================
 $router->get('/', function(){
     return "trang chủ";
 });
 
-//Login, logout
+//====================
+// AUTH (Login / Register / Logout)
+//====================
 $router->get('login', [App\Controllers\AuthController::class, 'login']);
 $router->post('login', [App\Controllers\AuthController::class, 'loginPost']); 
 $router->get('register', [App\Controllers\AuthController::class, 'register']);
 $router->post('register', [App\Controllers\AuthController::class, 'registerPost']); 
-//admin
+$router->get('logout', [App\Controllers\AuthController::class, 'logout']);
 $router->get('dashboard', [App\Controllers\AuthController::class, 'dashboard']);
 
-$router->get('logout', [App\Controllers\AuthController::class, 'logout']);//user
+//====================
+// USER
+//====================
+$router->get('list-users', [App\Controllers\UserController::class, 'index']); // danh sách
+$router->get('add-user', [App\Controllers\UserController::class, 'create']); // form thêm
+$router->post('post-user', [App\Controllers\UserController::class,'postUser']); // xử lý thêm
+$router->get('detail-user/{id}', [App\Controllers\UserController::class, 'updateUser']); // form sửa
+$router->post('edit-user/{id}', [App\Controllers\UserController::class, 'updateUser']); // xử lý sửa
+$router->get('delete-user/{id}', [App\Controllers\UserController::class, 'deleteUser']); // xóa
 
-//danh sach
-$router->get('list-user', [App\Controllers\UserController::class, 'getUser']);
-//them
-$router->get('add-user', [App\Controllers\UserController::class, 'createUser']);
-$router->post('post-user',[App\Controllers\UserController::class,'postUser']);
-$router->get('detail-user/{id}', [App\Controllers\UserController::class, 'detailUser']);
-$router->post('edit-user/{id}', [App\Controllers\UserController::class, 'editUser']);
-//xoa
-$router->get('delete-user/{id}',[App\Controllers\UserController::class,'deleteUser']);
+//====================
+// ROLES
+//====================
+$router->get('list-roles', [App\Controllers\RolesController::class,'getRoles']);
+$router->get('add-roles', [App\Controllers\RolesController::class,'createRoles']);
+$router->post('post-roles', [App\Controllers\RolesController::class,'postRoles']);
+$router->get('detail-roles/{id}', [App\Controllers\RolesController::class,'detailRoles']);
+$router->post('edit-roles/{id}', [App\Controllers\RolesController::class,'editRoles']);
+$router->get('delete-roles/{id}', [App\Controllers\RolesController::class,'deleteRoles']);
 
-
-//ROLES: Chuc nang
-
-//danh sach chu nang
-$router->get('list-roles',[App\Controllers\RolesController::class,'getRoles']);
-//them chuc nang
-$router->get('add-roles',[App\Controllers\RolesController::class,'createRoles']);
-$router->post('post-roles',[App\Controllers\RolesController::class,'postRoles']);
-//cap nhat
-$router->get('detail-roles/{id}',[App\Controllers\RolesController::class,'detailRoles']);
-$router->post('edit-roles/{id}',[App\Controllers\RolesController::class,'editRoles']);
-//xoa
-$router->get('delete-roles/{id}',[App\Controllers\RolesController::class,'deleteRoles']);
-
-
-//TOURS: Tour du lịch
-
-//danh sách tour
+//====================
+// TOURS
+//====================
 $router->get('list-tours', [App\Controllers\TourController::class, 'getTours']);
-//them tour
-$router->get('add-tour', handler: [App\Controllers\TourController::class, 'createTour']);
+$router->get('add-tour', [App\Controllers\TourController::class, 'createTour']);
 $router->post('post-tour', [App\Controllers\TourController::class, 'postTour']);
-// chức năng sửa
 $router->get('detail-tour/{id}', [App\Controllers\TourController::class, 'detailTour']);
 $router->post('edit-tour/{id}', [App\Controllers\TourController::class, 'editTour']);
-//xoa tour
 $router->get('delete-tour/{id}', [App\Controllers\TourController::class, 'deleteTour']);
 
-
-// DEPARTURES: Lịch khởi hành của tour
-
-//Danh sách đợt khởi hành
+//====================
+// DEPARTURE
+//====================
 $router->get('list-departure', [App\Controllers\DepartureController::class, 'getDepartures']);
-//Thêm đợt khởi hành
 $router->get('add-departure', [App\Controllers\DepartureController::class, 'createDeparture']);
 $router->post('post-departure', [App\Controllers\DepartureController::class, 'postDeparture']);
-// sua đợt khởi hành
 $router->get('detail-departure/{id}', [App\Controllers\DepartureController::class, 'detailDeparture']);
 $router->post('edit-departure/{id}', [App\Controllers\DepartureController::class, 'editDeparture']);
-//xoa đợt khởi hành
 $router->get('delete-departure/{id}', [App\Controllers\DepartureController::class, 'deleteDeparture']);
 
-//================================================================
-// QUẢN LÝ NHÀ CUNG CẤP (SUPPLIER)
-//================================================================
-// Danh sách nhà cung cấp
+//====================
+// SUPPLIER
+//====================
 $router->get('list-supplier', [App\Controllers\SupplierController::class, 'getSuppliers']);
-// Thêm nhà cung cấp
 $router->get('add-supplier', [App\Controllers\SupplierController::class, 'createSupplier']);
 $router->post('post-supplier', [App\Controllers\SupplierController::class, 'postSupplier']);
-// Sửa nhà cung cấp (Hiển thị chi tiết và xử lý POST)
 $router->get('detail-supplier/{id}', [App\Controllers\SupplierController::class, 'detailSupplier']);
 $router->post('edit-supplier/{id}', [App\Controllers\SupplierController::class, 'editSupplier']);
-// Xóa nhà cung cấp
 $router->get('delete-supplier/{id}', [App\Controllers\SupplierController::class, 'deleteSupplier']);
 
-
-
-// TOUR LOGS: Lịch theo ngày trên mỗi đợt khởi hành (tour logs)
+//====================
+// TOUR LOGS
+//====================
 $router->get('list-tourlog', [App\Controllers\TourLogController::class, 'getLogs']);
 $router->get('add-tourlog', [App\Controllers\TourLogController::class, 'createLog']);
 $router->post('post-tourlog', [App\Controllers\TourLogController::class, 'postLog']);
@@ -105,7 +91,9 @@ $router->get('detail-tourlog/{id}', [App\Controllers\TourLogController::class, '
 $router->post('edit-tourlog/{id}', [App\Controllers\TourLogController::class, 'editLog']);
 $router->get('delete-tourlog/{id}', [App\Controllers\TourLogController::class, 'deleteLog']);
 
-// TOUR IMAGES: quản lý ảnh tour
+//====================
+// TOUR IMAGES
+//====================
 $router->get('list-tourimg', [App\Controllers\TourImgController::class, 'getImages']);
 $router->get('add-tourimg', [App\Controllers\TourImgController::class, 'createImage']);
 $router->post('post-tourimg', [App\Controllers\TourImgController::class, 'postImage']);
@@ -113,47 +101,43 @@ $router->get('detail-tourimg/{id}', [App\Controllers\TourImgController::class, '
 $router->post('edit-tourimg/{id}', [App\Controllers\TourImgController::class, 'editImage']);
 $router->get('delete-tourimg/{id}', [App\Controllers\TourImgController::class, 'deleteImage']);
 
-
-//ITINERARY: Lịch trình theo ngày
-
-// danh sach
+//====================
+// ITINERARY
+//====================
 $router->get('list-itinerary', [App\Controllers\ItineraryController::class, 'getItinerary']);
-// them moi
 $router->get('add-itinerary', [App\Controllers\ItineraryController::class, 'createItinerary']);
 $router->post('post-itinerary', [App\Controllers\ItineraryController::class, 'postItinerary']);
-// sửa 
 $router->get('detail-itinerary/{id}', [App\Controllers\ItineraryController::class, 'detailItinerary']);
 $router->post('edit-itinerary/{id}', [App\Controllers\ItineraryController::class, 'editItinerary']);
-//xoa
 $router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::class, 'deleteItinerary']);
 
-// GUIDES:HDV
+//====================
+// GUIDES (HDV)
+//====================
 $router->get('list-guides', [App\Controllers\GuidesController::class, 'getGuides']);
 $router->get('add-guide', [App\Controllers\GuidesController::class, 'createGuides']);
+$router->post('post-guides', [App\Controllers\GuidesController::class, 'postGuides']);
+$router->get('detail-guide/{id}', [App\Controllers\GuidesController::class, 'detailGuides']);
+$router->post('edit-guide/{id}', [App\Controllers\GuidesController::class, 'editGuides']);
+$router->get('delete-guide/{id}', [App\Controllers\GuidesController::class, 'deleteGuides']);
 
-//BOOKINGS: Đặt tour
+//====================
+// BOOKINGS
+//====================
+$router->get('list-booking', [App\Controllers\BookingController::class,'getBookings']);
+$router->get('add-booking', [App\Controllers\BookingController::class,'createBooking']);
+$router->post('post-booking', [App\Controllers\BookingController::class, 'postBooking']);
+$router->get('detail-booking/{id}', [App\Controllers\BookingController::class,'detailBooking']);
+$router->post('edit-booking/{id}', [App\Controllers\BookingController::class,'editBooking']);
+$router->get('delete-booking/{id}', [App\Controllers\BookingController::class,'deleteBooking']);
 
-//danh sach
-$router->get('list-booking',[App\Controllers\BookingController::class,'getBookings']);
-//them
-$router->get('add-booking',[App\Controllers\BookingController::class,'createBooking']);
-$router->post('post-booking',[App\Controllers\BookingController::class, 'postBooking']);
-//sua
-$router->get('detail-booking/{id}', [App\Controllers\BookingController::class, 'detailBooking']);
-$router->post('edit-booking/{id}', [App\Controllers\BookingController::class, 'editBooking']);
-//xoa
-$router->get('delete-booking/{id}',[App\Controllers\BookingController::class,'deleteBooking']);
+// booking_customers
+$router->get('list-bookingCus/{booking_id}', [App\Controllers\BookingCustomerController::class,'getBookId']);
 
-//booking_customers
-//danh sach
-$router->get('list-bookingCus/{booking_id}',[App\Controllers\BookingCustomerController::class,'getBookId']);
-
-# NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
+//====================
+// DISPATCH
+//====================
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
-
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $url);
-
-// Print out the value returned from the dispatched function
 echo $response;
 
-?>

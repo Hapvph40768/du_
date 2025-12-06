@@ -32,4 +32,7 @@
     <a href="{{ route('list-tourimg') }}" class="@yield('active-tourimg')">
         <i class="bi bi-book-fill me-2"></i> Quản lý Tour Images  
     </a>
+     <a href="{{ route('list-guides') }}" class="@yield('active-guides')">
+        <i class="bi bi-book-fill me-2"></i> Quản lý Hướng Dẫn Viên 
+    </a>
 </div>
