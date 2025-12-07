@@ -58,8 +58,7 @@
         /* TABLE */
         .table-dark-custom { color: var(--text-main); background: transparent; width: 100%; border-collapse: collapse; }
         .table-dark-custom th { text-align: left; background: transparent; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; padding: 16px; }
-        .table-dark-custom td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
-        
+        .table-dark-custom td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }        
         /* PROGRESS & DOTS */
         .progress-dark { background-color: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; margin-top: 6px; overflow: hidden; }
         .progress-bar { height: 100%; }

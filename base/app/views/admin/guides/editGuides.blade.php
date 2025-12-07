@@ -78,9 +78,23 @@
             @endif
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label class="form-label">Ngôn ngữ</label>
-            <input type="text" class="form-control" name="languages" value="{{ $detail->languages }}">
+            <div class="row g-2">
+                @php
+                    $langs = ['Tiếng Việt', 'Tiếng Anh', 'Tiếng Trung', 'Tiếng Hàn', 'Tiếng Nhật', 'Tiếng Pháp', 'Tiếng Đức', 'Tiếng Nga', 'Tiếng Tây Ban Nha'];
+                    $selectedLangs = $detail->languages ? array_map('trim', explode(',', $detail->languages)) : [];
+                @endphp
+                @foreach($langs as $lang)
+                    <div class="col-6 col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="languages[]" value="{{ $lang }}" id="lang_{{ $loop->index }}" 
+                                {{ in_array($lang, $selectedLangs) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="lang_{{ $loop->index }}">{{ $lang }}</label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <div class="col-md-6">
