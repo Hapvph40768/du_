@@ -30,8 +30,8 @@
             <thead class="table-primary">
                 <tr>
                     <th>STT</th>
-                    <th>Tour</th>
-                    <th>Ngày bắt đầu</th>
+                    <th>Tên Tour</th>
+                    <th>Ngày khởi hành</th>
                     <th>Ngày kết thúc</th>
                     <th>Giá</th>
                     <th>Tổng số ghế</th>
@@ -65,6 +65,9 @@
                             @endswitch
                         </td>
                         <td>
+                            <a href="{{ route('list-itinerary/'.$dp->id) }}" class="btn btn-sm btn-info me-1">
+                                <i class="fas fa-list-alt"></i> Xem lịch trình
+                            </a>
                             <a href="{{ route('detail-departure/'.$dp->id) }}" class="btn btn-sm btn-warning me-1">
                                 <i class="fas fa-edit"></i> Sửa
                             </a>
@@ -80,5 +83,56 @@
             </tbody>
         </table>
     </div>
+    
+        <!-- Itinerary Modal -->
+        <div class="modal fade" id="itineraryModal" tabindex="-1" aria-labelledby="itineraryModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="itineraryModalLabel">Chi tiết lịch trình</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="itineraryModalBody">
+                        <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+                (function(){
+                        function qs(selector, parent) { return (parent||document).querySelector(selector); }
+                        function qsa(selector, parent) { return Array.from((parent||document).querySelectorAll(selector)); }
+
+                        const modalEl = qs('#itineraryModal');
+                        const modalBody = qs('#itineraryModalBody');
+                        const bsModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+                        qsa('.btn-view-itinerary').forEach(btn => {
+                                btn.addEventListener('click', function(){
+                                        const id = this.getAttribute('data-departure-id');
+                                        if(!id) return;
+                                        // show modal with loader
+                                        modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                                        bsModal.show();
+
+                                        fetch('{{ route('list-itinerary') }}/' + id + '?ajax=1')
+                                                .then(r => r.text())
+                                                .then(html => {
+                                                        modalBody.innerHTML = html;
+                                                })
+                                                .catch(err => {
+                                                        modalBody.innerHTML = '<div class="alert alert-danger">Không tải được dữ liệu. Vui lòng thử lại.</div>';
+                                                        console.error(err);
+                                                });
+                                });
+                        });
+                })();
+        </script>
 </div>
 @endsection

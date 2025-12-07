@@ -23,6 +23,7 @@ $router->post('register', [App\Controllers\AuthController::class, 'register']);
 $router->get('logout', [App\Controllers\AuthController::class, 'logout']);
 $router->get('dashboard', [App\Controllers\AuthController::class, 'dashboard']);
 
+$router->get('guide-dashboard', [App\Controllers\AuthController::class, 'guideDashboard']);
 // ===================
 // USER (Người dùng) - Commented out for now
 // ===================
@@ -40,6 +41,7 @@ $router->get('list-tours', [App\Controllers\TourController::class, 'getTours']);
 $router->get('add-tour', [App\Controllers\TourController::class, 'createTour']);
 $router->post('post-tour', [App\Controllers\TourController::class, 'postTour']);
 $router->get('detail-tour/{id}', [App\Controllers\TourController::class, 'detailTour']);
+$router->get('show-tour/{id}', [App\Controllers\TourController::class, 'showTour']);
 $router->post('edit-tour/{id}', [App\Controllers\TourController::class, 'editTour']);
 $router->get('delete-tour/{id}', [App\Controllers\TourController::class, 'deleteTour']);
 
@@ -67,6 +69,7 @@ $router->get('delete-supplier/{id}', [App\Controllers\SupplierController::class,
 // ITINERARY (Lịch trình)
 // ===================
 $router->get('list-itinerary', [App\Controllers\ItineraryController::class, 'getItinerary']);
+$router->get('list-itinerary/{departure_id}', [App\Controllers\ItineraryController::class, 'detailItinerariesByDeparture']);
 $router->get('add-itinerary', [App\Controllers\ItineraryController::class, 'createItinerary']);
 $router->post('post-itinerary', [App\Controllers\ItineraryController::class, 'postItinerary']);
 $router->get('detail-itinerary/{id}', [App\Controllers\ItineraryController::class, 'detailItinerary']);
@@ -76,9 +79,9 @@ $router->get('delete-itinerary/{id}', [App\Controllers\ItineraryController::clas
 // ===================
 // GUIDES (Hướng dẫn viên)
 // ===================
-$router->get('list-guides', [App\Controllers\GuidesController::class, 'listGuides']);
+$router->get('list-guides', [App\Controllers\GuidesController::class, 'listGuide']);
 $router->get('add-guide', [App\Controllers\GuidesController::class, 'createGuide']);
-$router->post('add-guide', [App\Controllers\GuidesController::class, 'postGuide']);
+$router->post('post-guide', [App\Controllers\GuidesController::class, 'postGuide']);
 $router->get('detail-guide/{id}', [App\Controllers\GuidesController::class, 'detailGuide']);
 $router->get('edit-guide/{id}', [App\Controllers\GuidesController::class, 'editGuide']);
 $router->get('delete-guide/{id}', [App\Controllers\GuidesController::class, 'deleteGuide']);
@@ -164,7 +167,7 @@ $router->post('edit-payment/{id}', [App\Controllers\PaymentController::class, 'e
 $router->get('delete-payment/{id}', [App\Controllers\PaymentController::class, 'deletePayment']);  
 
 // ===================
-// ATTENDANCE (Điểm danh khách)
+// ATTENDANCE (Điểm danh khách) ADMIN
 // ===================
 $router->get('list-attendance', [App\Controllers\AttendanceController::class, 'listAttendance']);          
 $router->get('add-attendance', [App\Controllers\AttendanceController::class, 'createAttendance']);         
@@ -172,6 +175,14 @@ $router->post('post-attendance', [App\Controllers\AttendanceController::class, '
 $router->get('detail-attendance/{id}', [App\Controllers\AttendanceController::class, 'detailAttendance']); 
 $router->post('edit-attendance/{id}', [App\Controllers\AttendanceController::class, 'updateAttendance']);  
 $router->get('delete-attendance/{id}', [App\Controllers\AttendanceController::class, 'deleteAttendance']); 
+
+// ===================
+// ATTENDANCE (Điểm danh khách) GUIDES
+// ===================
+$router->get('list-guide-attendance', [App\Controllers\GuideAttendanceController::class, 'listAttendance']);          
+$router->get('detail-guide-attendance/{id}', [App\Controllers\GuideAttendanceController::class, 'detailAttendance']); 
+$router->post('edit-guide-attendance/{id}', [App\Controllers\GuideAttendanceController::class, 'updateAttendance']);  
+
 
 // ===================
 // DISPATCHER

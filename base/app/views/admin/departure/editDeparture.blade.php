@@ -32,11 +32,23 @@
         <div class="mb-3">
             <label for="tour_id" class="form-label fw-bold">Chọn Tour</label>
             <select name="tour_id" id="tour_id" class="form-select" required>
-                @foreach($tours as $tour)
-                    <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
-                        {{ $tour->name }}
-                    </option>
-                @endforeach
+                @if(is_array($tours))
+                    @foreach($tours as $catKey => $catTours)
+                        <optgroup label="{{ $categories[$catKey] ?? $catKey }}">
+                            @foreach($catTours as $tour)
+                                <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
+                                    {{ $tour->name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                @else
+                    @foreach($tours as $tour)
+                        <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
+                            {{ $tour->name }}
+                        </option>
+                    @endforeach
+                @endif
             </select>
             @if(isset($_SESSION['errors']['tour_id']))
                 <small class="text-danger">{{ $_SESSION['errors']['tour_id'] }}</small>

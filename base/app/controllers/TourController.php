@@ -105,6 +105,13 @@ public function postTour()
         return $this->render('admin.tour.editTour', compact('detail'));
     }
 
+    // Chi tiết tour (Xem)
+    public function showTour($id)
+    {
+        $detail = $this->tour->getTourById($id);
+        return $this->render('admin.tour.showTour', compact('detail'));
+    }
+
     // Xử lý sửa tour
 // Xử lý sửa tour
 public function editTour($id)

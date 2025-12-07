@@ -25,7 +25,7 @@
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <form action="{{ route('post-guides') }}" method="post" enctype="multipart/form-data" class="row g-3">
+    <form action="{{ route('post-guide') }}" method="post" enctype="multipart/form-data" class="row g-3">
         <div class="col-md-6">
             <label class="form-label">Tài khoản liên kết</label>
             <select name="user_id" class="form-select" required>

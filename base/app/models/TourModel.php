@@ -74,5 +74,33 @@ class TourModel extends BaseModel
         $this->setQuery($sql);
         return $this->execute([$id]);
     }
+
+    // Trả về danh sách category có sẵn (key => label)
+    public static function getCategories()
+    {
+        return [
+            'domestic' => 'Tour trong nước',
+            'international' => 'Tour quốc tế',
+            'on_demand' => 'Tour theo yêu cầu',
+        ];
+    }
+
+    // Lấy tours và gom theo category
+    public function getToursGroupedByCategory()
+    {
+        $tours = $this->getAllTours();
+        $groups = [];
+        foreach ($tours as $tour) {
+            $cat = $tour->category ?? 'other';
+            if ($cat === '') {
+                $cat = 'other';
+            }
+            if (!isset($groups[$cat])) {
+                $groups[$cat] = [];
+            }
+            $groups[$cat][] = $tour;
+        }
+        return $groups;
+    }
 }
 ?>
