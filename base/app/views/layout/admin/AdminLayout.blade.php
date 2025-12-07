@@ -10,94 +10,75 @@
     @include('layout.script')
 
     <style>
+        /* INLINED styles to ensure loading */
+        body { margin: 0; font-family: 'Tahoma'; }
+        .container { width: 980px; margin: 0 auto; }
+        
+        /* DARK THEME OVERRIDES */
+        :root {
+            --bg-body: #0b1120;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --cyan: #06b6d4;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
         body {
-            background: #f0f2f5;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-body) !important;
+            color: var(--text-main) !important;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
         }
 
-        /* Navbar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1100;
-            padding: 12px 20px;
-            background: #2c3e50;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .navbar .navbar-brand {
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            position: fixed;
-            left: 0;
-            top: 56px;
-            bottom: 0;
-            background: #34495e;
-            padding-top: 20px;
-            overflow-y: auto;
-            transition: all 0.3s;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            border-right: 1px solid #2c3e50;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: #ecf0f1;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 8px;
-            margin: 4px 12px;
-            transition: all 0.2s;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-            color: #fff;
-            transform: translateX(5px);
-        }
-
-        .sidebar a.active {
-            background: #16a085;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        /* Content */
-        .content {
-            margin-left: 270px;
-            margin-top: 80px;
-            padding: 20px;
-        }
-
-        /* Cards inside content */
-        .content .card {
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-        }
-
-        .content .card:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Scrollbar for sidebar */
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background-color: rgba(255,255,255,0.3);
-            border-radius: 3px;
-        }
+        .sidebar { background: var(--bg-sidebar) !important; border-right: 1px solid rgba(255,255,255,0.05); width: var(--sidebar-width); position: fixed; left: 0; top: 0; bottom: 0; padding: 0; z-index: 1000; }
+        .sidebar .brand { color: #fff; font-weight: 700; }
+        .sidebar .nav-link { color: var(--text-muted); padding: 10px 15px; display: flex; align-items: center; text-decoration: none; transition: all 0.2s; border-radius: 8px; margin-bottom: 2px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(59, 130, 246, 0.1) !important; color: var(--primary) !important; }
+        
+        .content { margin-left: var(--sidebar-width); padding: 30px; background-color: var(--bg-body); min-height: 100vh; }
+        
+        /* UTILITIES */
+        .card-dark { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; }
+        .search-dark { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 20px; padding: 8px 16px; width: 300px; }
+        .search-dark:focus { outline: none; border-color: var(--primary); }
+        
+        .stats-mini-card { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 15px; min-width: 140px; }
+        .stats-mini-card .label { font-size: 0.8rem; color: var(--text-muted); }
+        .stats-mini-card .value { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        
+        .filter-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 16px; border-radius: 20px; font-weight: 500; transition: all 0.2s; }
+        .filter-btn.active { background: #fff; color: #000; }
+        
+        /* TABLE */
+        .table-dark-custom { color: var(--text-main); background: transparent; width: 100%; border-collapse: collapse; }
+        .table-dark-custom th { text-align: left; background: transparent; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; padding: 16px; }
+        .table-dark-custom td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        
+        /* PROGRESS & DOTS */
+        .progress-dark { background-color: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+        .progress-bar { height: 100%; }
+        .dot-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-success { background-color: var(--success); }
+        .dot-danger { background-color: var(--danger); }
+        
+        .tour-avatar { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #334155; }
+        .tour-info-cell { display: flex; align-items: center; gap: 12px; }
+        .tour-name { font-weight: 600; display: block; margin-bottom: 2px; }
+        
+        .footer-stat-card { background: var(--bg-card); border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        
+        /* HIDE DEFAULT SCROLLBARS IF UGLY */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -111,5 +92,36 @@
     @yield('content-main')
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Sidebar toggle behavior
+    (function(){
+        const body = document.body;
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        if(!sidebar || !toggle) return;
+
+        function toggleSidebar(){
+            // mobile
+            if(window.innerWidth < 992){
+                sidebar.classList.toggle('show');
+                return;
+            }
+            sidebar.classList.toggle('collapsed');
+            document.querySelector('.content').classList.toggle('sidebar-collapsed');
+        }
+
+        toggle.addEventListener('click', function(e){
+            e.preventDefault(); toggleSidebar();
+        });
+
+        // close on outside click (mobile)
+        document.addEventListener('click', function(e){
+            if(window.innerWidth >= 992) return;
+            if(!sidebar.classList.contains('show')) return;
+            if(e.target.closest('.sidebar') || e.target.closest('#sidebarToggle')) return;
+            sidebar.classList.remove('show');
+        });
+    })();
+</script>
 </body>
 </html>

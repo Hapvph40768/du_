@@ -1,106 +1,71 @@
+<div class="sidebar d-flex flex-column h-100">
+    <!-- Brand -->
+    <div class="brand p-3 d-flex align-items-center gap-2">
+        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+            <i class="bi bi-globe"></i>
+        </div>
+        <div class="d-flex flex-column">
+            <span class="text-primary fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Admin</span>
+            <span class="text-white fw-bold">Quản lý tour</span>
+        </div>
+    </div>
 
-<div class="sidebar d-flex flex-column p-3">
-    <a href="#" class="fs-4 mb-3 text-decoration-none text-white">Admin Dashboard</a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-        {{-- Tour --}}
-
-        <li class="nav-item">
-            <a href="{{ route('list-tours') }}" class="@yield('active-tour')">
-                <i class="bi bi-map-fill me-2"></i> Quản lý Tour
+    <!-- Navigation -->
+    <div class="sidebar-content flex-grow-1 overflow-auto py-2">
+        <div class="px-3 mb-2 mt-2">
+            <small class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">ĐIỀU HƯỚNG</small>
+        </div>
+        
+        <nav class="nav flex-column px-2 gap-1">
+            <a href="{{ route('list-tours') }}" class="nav-link @yield('active-tours')">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard tour
+                <span class="badge bg-secondary ms-auto text-dark bg-opacity-10" style="font-size: 0.6rem;">Trực tiếp</span>
             </a>
-        </li>
-        {{-- Departure --}}
-
-        <li>
-            <a href="{{ route('list-departure') }}" class="@yield('active-departure')">
-                <i class="bi bi-calendar-check-fill me-2"></i> Quản lý Lịch khởi hành
+            
+            <a href="{{ route('list-departure') }}" class="nav-link @yield('active-departure')">
+                <i class="bi bi-calendar-event me-2"></i> Lịch khởi hành
             </a>
-        </li>
-
-        {{-- Itinerary --}}
-        <li>
-            <a href="{{ route('list-itinerary') }}" class="@yield('active-itinerary')">
-                <i class="bi bi-list-ul me-2"></i> Quản lý Lịch trình theo ngày
+            
+            <a href="{{ route('list-booking') }}" class="nav-link @yield('active-booking')">
+                <i class="bi bi-people me-2"></i> Khách & booking
             </a>
-        </li>
-
-        {{-- Booking --}}
-        <li>
-            <a href="{{ route('list-booking') }}" class="@yield('active-booking')">
-                <i class="bi bi-journal-bookmark-fill me-2"></i> Quản lý Booking
+            
+            <a href="{{ route('list-supplier') }}" class="nav-link @yield('active-supplier')">
+                <i class="bi bi-building me-2"></i> Đối tác & nhà cung cấp
             </a>
-        </li>
-
-        {{-- Booking Customer --}}
-
-        <li>
-            <a href="{{ route('list-booking-customer') }}" class="@yield('active-booking-customer')">
-                <i class="bi bi-people-fill me-2"></i> Khách Booking
+        </nav>
+        
+        <div class="px-3 mb-2 mt-4">
+            <small class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">CẤU HÌNH</small>
+        </div>
+        
+        <nav class="nav flex-column px-2 gap-1">
+            <a href="{{ route('list-service') }}" class="nav-link @yield('active-service')">
+                <i class="bi bi-geo-alt me-2"></i> Điểm đến & tuyến
             </a>
-        </li>
-
-        {{-- Booking Service --}}
-        <li>
-            <a href="{{ route('list-booking-service') }}" class="@yield('active-booking-service')">
-                <i class="bi bi-bag-check-fill me-2"></i> Dịch vụ kèm theo Booking
+             <a href="#" class="nav-link">
+                <i class="bi bi-tag me-2"></i> Giá & khuyến mãi
             </a>
-        </li>
-
-        {{-- Service --}}
-        <li>
-            <a href="{{ route('list-service') }}" class="@yield('active-service')">
-                <i class="bi bi-tools me-2"></i> Quản lý Dịch vụ
+             <a href="{{ route('list-guides') }}" class="nav-link @yield('active-guides')">
+                <i class="bi bi-person-badge me-2"></i> Hướng dẫn viên
             </a>
-        </li>
+        </nav>
+    </div>
 
-        {{-- Service Change Request --}}
-        <li>
-            <a href="{{ route('list-request') }}" class="@yield('active-request')">
-                <i class="bi bi-arrow-repeat me-2"></i> Yêu cầu thay đổi dịch vụ
+    <!-- User Profile (Bottom) -->
+    <div class="mt-auto p-3 border-top border-secondary border-opacity-10">
+        <div class="user-block d-flex align-items-center gap-3 p-2 bg-white bg-opacity-10 rounded-3">
+            <div class="avatar-container position-relative">
+                <img src="/public/img/avatar.png" alt="Admin" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle" style="width: 10px; height: 10px;"></span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
+                <span class="text-white fw-bold text-truncate">Quản trị viên</span>
+                <small class="text-muted text-truncate">admin@travel.com</small>
+            </div>
+            <a href="{{ route('logout') }}" class="btn btn-sm btn-dark text-white p-1" title="Đăng xuất">
+               <i class="bi bi-box-arrow-right"></i>
             </a>
-        </li>
-
-        {{-- Special Request --}}
-        <li>
-            <a href="{{ route('list-special-request') }}" class="@yield('active-special-request')">
-                <i class="bi bi-star-fill me-2"></i> Yêu cầu đặc biệt
-            </a>
-        </li>
-
-        {{-- Payment --}}
-        <li>
-            <a href="{{ route('list-payment') }}" class="@yield('active-payment')">
-                <i class="bi bi-credit-card-2-front-fill me-2"></i> Quản lý Thanh toán
-            </a>
-        </li>
-
-        {{-- Customer --}}
-        <li>
-            <a href="{{ route('list-customer') }}" class="@yield('active-customer')">
-                <i class="bi bi-person-lines-fill me-2"></i> Quản lý Khách hàng
-            </a>
-        </li>
-
-        {{-- Supplier --}}
-        <li>
-            <a href="{{ route('list-supplier') }}" class="@yield('active-supplier')">
-                <i class="bi bi-building-fill me-2"></i> Quản lý Nhà cung cấp
-            </a>
-        </li>
-
-        {{-- Guide --}}
-        <li>
-            <a href="{{ route('list-guides') }}" class="@yield('active-guides')">
-                <i class="bi bi-person-badge-fill me-2"></i> Quản lý Hướng dẫn viên
-            </a>
-        </li>
-
-        {{-- Guide --}}
-        <li>
-            <a href="{{ route('list-attendance') }}" class="@yield('active-attendance')">
-                <i class="bi bi-person-badge-fill me-2"></i> Quản lý điểm danh
-            </a>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>

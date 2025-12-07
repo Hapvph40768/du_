@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Models\BaseModel;
@@ -77,5 +78,11 @@ class UserModel extends BaseModel
         $sql = "DELETE FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([$id]);
+    }
+    public function getUsersByRole($role_id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE role_id=?";
+        $this->setQuery($sql);
+        return $this->loadAllRows([$role_id]);
     }
 }

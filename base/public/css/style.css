@@ -78,3 +78,64 @@ footer span {
     color: #fff;
     font-size: 13px;
 }
+
+/* Admin tour list improvements */
+.table-responsive.shadow-sm {
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.table thead.table-primary {
+    background: linear-gradient(90deg, #e6f0ff, #d7e8ff);
+}
+.table thead.table-primary th {
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+    color: #0b5ed7;
+    font-weight: 700;
+    vertical-align: middle;
+}
+.table tbody tr {
+    transition: background .12s ease, transform .06s ease;
+}
+.table tbody tr:hover {
+    background: #fbfdff;
+    transform: translateY(-1px);
+}
+.table td, .table th {
+    vertical-align: middle;
+}
+.table .img-thumbnail {
+    border: 0;
+    box-shadow: none;
+}
+.badge.bg-success {
+    background-color: #2ecc71 !important;
+}
+.btn-sm {
+    padding: .35rem .6rem;
+}
+.h3.text-primary { color: #1e73be; }
+
+/* responsive tweaks for small screens */
+@media (max-width: 768px) {
+    .table-responsive.shadow-sm { padding: 8px; }
+    .table thead { display: none; }
+    .table tbody td { display: block; text-align: left; border-top: none; }
+    .table tbody tr { margin-bottom: 12px; display: block; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 10px; border-radius: 6px; }
+}
+
+/* Tour card grid styles */
+.tour-grid { padding: 6px 8px; }
+.tour-card .card-img-top {
+    height: 180px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius:8px;
+}
+.tour-card .card-body { padding: 14px; }
+.tour-card .card-title { font-size: 1.05rem; font-weight: 700; }
+.tour-card .card-text { color: #556677; }
+.tour-card .card-footer .btn { padding: .35rem .55rem; }
+.tour-card .badge { font-size: .75rem; padding: .35rem .5rem; }
+
+@media (max-width: 576px){
+    .tour-card .card-img-top { height: 160px; }
+}

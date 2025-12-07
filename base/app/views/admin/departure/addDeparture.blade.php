@@ -30,9 +30,19 @@
             <label class="fw-bold">Chọn Tour</label>
             <select name="tour_id" class="form-select" required>
                 <option value="">-- Chọn tour --</option>
-                @foreach($tours as $tour)
-                    <option value="{{ $tour->id }}">{{ $tour->name }}</option>
-                @endforeach
+                @if(is_array($tours))
+                    @foreach($tours as $catKey => $catTours)
+                        <optgroup label="{{ $categories[$catKey] ?? $catKey }}">
+                            @foreach($catTours as $tour)
+                                <option value="{{ $tour->id }}">{{ $tour->name }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                @else
+                    @foreach($tours as $tour)
+                        <option value="{{ $tour->id }}">{{ $tour->name }}</option>
+                    @endforeach
+                @endif
             </select>
         </div>
 

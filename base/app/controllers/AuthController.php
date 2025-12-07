@@ -35,8 +35,10 @@ class AuthController extends BaseController
             // Nếu role_id = 1 (admin) thì vào dashboard
             if ($user->role_id == 1) {
                 $this->render('layout.dashboard', ['user' => $user]);
-            } else {
-                header('Location: /'); // hoặc /user/home
+            } elseif ( $user->role_id == 2) {
+                $this->render('layout.guide.GuideLayout', ['user' => $user]);
+            }else {
+                header('Location: /');
             }
             exit;
 
@@ -52,7 +54,7 @@ class AuthController extends BaseController
             'username' => $_POST['username'] ?? '',
             'email'    => $_POST['email'] ?? '',
             'password' => $_POST['password'] ?? '',
-            'role_id'  => 2 // mặc định role user thường
+            'role_id'  => 3 // mặc định role user thường
         ]);
 
         header('Location: login');
@@ -72,5 +74,15 @@ class AuthController extends BaseController
         }
 
         $this->render('layout.dashboard', ['user' => $_SESSION['user']]);
+    }
+
+    public function guideDashboard()
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
+            header('Location: /login');
+            exit;
+        }
+
+        $this->render('layout.guide.GuideLayout', ['user' => $_SESSION['user']]);
     }
 }

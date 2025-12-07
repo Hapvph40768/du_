@@ -35,6 +35,7 @@
                 <tr>
                     <th>STT</th>
                     <th>Tour</th>
+                    <th>Lịch trình</th>
                     <th>Ngày thứ</th>
                     <th>Tiêu đề</th>
                     <th>Nội dung chi tiết</th>
@@ -42,21 +43,23 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($itinerary as $it)
+                @forelse($itinerary as $index => $it)
                     <tr>
-                        <td>{{ $it->id }}</td>
+                        <td>{{ $index + 1 }}</td>
                         <td class="fw-bold">{{ $it->tour_name }}</td>
+                        <td class="fw-bold">{{ $it->departure_id }}</td>
                         <td>
                             <span class="badge bg-info text-dark">Ngày {{ $it->day_number }}</span>
                         </td>
                         <td>{{ $it->title }}</td>
                         <td>{{ strlen($it->description) > 80 ? substr($it->description, 0, 80) . '...' : $it->description }}</td>
                         <td>
-                            <a href="{{ route('detail-itinerary/' . $it->id) }}" class="btn btn-sm btn-warning me-1">
-                                <i class="fas fa-edit">Sửa</i>
+                            {{-- Link sửa sử dụng departure_id để đảm bảo đúng lịch khởi hành --}}
+                            <a href="{{ route('detail-itinerary/' . $it->departure_id) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="fas fa-edit"></i> Sửa
                             </a>
                             <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-itinerary/' . $it->id) }}')">
-                                <i class="fas fa-trash-alt">Xóa</i>
+                                <i class="fas fa-trash-alt"></i> Xóa
                             </button>
                         </td>
                     </tr>

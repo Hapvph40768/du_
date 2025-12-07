@@ -1,0 +1,245 @@
+:root {
+    --bg-body: #0b1120;
+    /* Very dark blue/black */
+    --bg-sidebar: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #334155;
+
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+
+    --primary: #3b82f6;
+    --cyan: #06b6d4;
+    --danger: #ef4444;
+    --success: #22c55e;
+
+    --sidebar-width: 250px;
+    --header-height: 70px;
+}
+
+body {
+    background-color: var(--bg-body) !important;
+    color: var(--text-main) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Sidebar Overrides */
+.sidebar {
+    background: var(--bg-sidebar) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar .brand {
+    color: #fff;
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    color: var(--text-muted);
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: var(--primary) !important;
+}
+
+/* Main Content Area */
+.content {
+    padding: 30px;
+    background-color: var(--bg-body);
+}
+
+/* Page Header */
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.page-header .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Stats Cards Top Right */
+.stats-mini-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px 15px;
+    min-width: 140px;
+}
+
+.stats-mini-card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.stats-mini-card .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Filter Buttons */
+.filter-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #fff;
+    color: #000;
+}
+
+.filter-btn:hover:not(.active) {
+    color: #fff;
+}
+
+/* Search Bar */
+.search-dark {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 20px;
+    padding: 8px 16px;
+    width: 300px;
+}
+
+.search-dark:focus {
+    background: var(--bg-card);
+    color: #fff;
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Main Cards (List) */
+.card-dark {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+}
+
+/* Table Dark */
+.table-dark-custom {
+    color: var(--text-main);
+    background: transparent;
+}
+
+.table-dark-custom th {
+    background: transparent;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 16px;
+}
+
+.table-dark-custom td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.table-dark-custom tr:last-child td {
+    border-bottom: none;
+}
+
+/* Progress Bar */
+.progress-dark {
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 6px;
+}
+
+/* Status dots & badges */
+.dot-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.dot-success {
+    background-color: var(--success);
+}
+
+.dot-danger {
+    background-color: var(--danger);
+}
+
+.dot-warning {
+    background-color: #f59e0b;
+}
+
+.badge-tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.badge-hot {
+    background: rgba(6, 182, 212, 0.2);
+    color: var(--cyan);
+}
+
+.badge-new {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--primary);
+}
+
+.badge-sale {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+/* Avatar/Tour Image */
+.tour-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #334155;
+}
+
+.tour-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tour-name {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Footer Stats */
+.footer-stat-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
