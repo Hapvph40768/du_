@@ -1,87 +1,146 @@
 <?php
+
 namespace App\Models;
 
 class BookingModel extends BaseModel
 {
-    protected $table = "bookings";
+    protected $table = 'bookings';
 
-    // Lấy tất cả bookings
+    /* ===============================
+       LẤY DANH SÁCH BOOKING
+    ================================== */
     public function getAllBookings()
     {
         $sql = "
-        SELECT b.*, d.start_date, d.end_date, t.name AS tour_name, c.fullname AS customer_name, c.phone AS customer_phone
-        FROM {$this->table} b
-        JOIN departures d ON b.departure_id = d.id
-        JOIN tours t ON d.tour_id = t.id
-        LEFT JOIN customers c ON b.customer_id = c.id
-        ORDER BY b.id DESC
+            SELECT b.*, 
+                   c.fullname AS customer_name, 
+                   d.start_date, d.end_date, d.price AS departure_price,
+                   t.name AS tour_name
+            FROM {$this->table} b
+            JOIN customers c ON b.customer_id = c.id
+            JOIN departures d ON b.departure_id = d.id
+            JOIN tours t ON d.tour_id = t.id
+            ORDER BY b.created_at DESC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
     }
 
-    // Lấy booking theo ID
     public function getBookingById($id)
     {
         $sql = "
-        SELECT b.*, d.start_date, d.end_date, t.name AS tour_name, c.fullname AS customer_name, c.phone AS customer_phone
-        FROM {$this->table} b
-        JOIN departures d ON b.departure_id = d.id
-        JOIN tours t ON d.tour_id = t.id
-        LEFT JOIN customers c ON b.customer_id = c.id
-        WHERE b.id = ?
+            SELECT b.*, 
+                   c.fullname AS customer_name, 
+                   d.start_date, d.end_date, d.price AS departure_price,
+                   t.name AS tour_name
+            FROM {$this->table} b
+            JOIN customers c ON b.customer_id = c.id
+            JOIN departures d ON b.departure_id = d.id
+            JOIN tours t ON d.tour_id = t.id
+            WHERE b.id = ?
         ";
         $this->setQuery($sql);
         return $this->loadRow([$id]);
     }
 
-    // Thêm booking mới
+    /* ===============================
+       THÊM BOOKING
+    ================================== */
     public function addBooking($data)
     {
+        // Validate cơ bản trước khi tới trigger
+        if (empty($data['num_people']) || $data['num_people'] <= 0) {
+            throw new \Exception("Số lượng khách không hợp lệ!");
+        }
+
+        // Lấy giá từ departure
+        $sql = "SELECT price FROM departures WHERE id = ?";
+        $this->setQuery($sql);
+        $departure = $this->loadRow([$data['departure_id']]);
+
+        if (!$departure) {
+            throw new \Exception("Departure không tồn tại!");
+        }
+
+        $price = (float)$departure->price;
+        $total_price = $price * (int)$data['num_people'];
+
+        // Thêm booking
         $sql = "INSERT INTO {$this->table} 
-        (`customer_id`, `departure_id`, `booking_date`, `num_people`, `total_price`, `payment_status`, `status`, `note`, `created_at`, `updated_at`)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                (customer_id, departure_id, booking_date, num_people, total_price, 
+                 payment_status, status, note, created_at, created_by) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         $this->setQuery($sql);
         return $this->execute([
-            $data['customer_id'] ?? null,
+            $data['customer_id'],
             $data['departure_id'],
-            $data['booking_date'] ?? date("Y-m-d H:i:s"),
-            $data['num_people'] ?? 1,
-            $data['total_price'] ?? 0.00,
-            $data['payment_status'] ?? 'unpaid',
-            $data['status'] ?? 'pending',
+            date('Y-m-d'),
+            $data['num_people'],
+            $total_price,
+            $data['payment_status'],
+            $data['status'],
             $data['note'] ?? null,
-            $data['created_at'] ?? date("Y-m-d H:i:s"),
-            $data['updated_at'] ?? null
+            date('Y-m-d H:i:s'),
+            $data['created_by'] ?? null
         ]);
     }
 
-    // Cập nhật booking
+    /* ===============================
+       UPDATE BOOKING
+    ================================== */
     public function updateBooking($id, $data)
     {
+        // Validate
+        if (empty($data['num_people']) || $data['num_people'] <= 0) {
+            throw new \Exception("Số lượng khách không hợp lệ!");
+        }
+
+        $sql = "SELECT price FROM departures WHERE id = ?";
+        $this->setQuery($sql);
+        $departure = $this->loadRow([$data['departure_id']]);
+
+        if (!$departure) {
+            throw new \Exception("Departure không tồn tại!");
+        }
+
+        $price = (float)$departure->price;
+        $total_price = $price * (int)$data['num_people'];
+
         $sql = "UPDATE {$this->table} SET 
-        `customer_id`=?, `departure_id`=?, `num_people`=?, `total_price`=?, `payment_status`=?, `status`=?, `note`=?, `updated_at`=?
-        WHERE id=?";
+                    customer_id = ?, 
+                    departure_id = ?, 
+                    num_people = ?, 
+                    total_price = ?, 
+                    payment_status = ?, 
+                    status = ?, 
+                    note = ?, 
+                    updated_at = ?, 
+                    updated_by = ?
+                WHERE id = ?";
+
         $this->setQuery($sql);
         return $this->execute([
-            $data['customer_id'] ?? null,
+            $data['customer_id'],
             $data['departure_id'],
-            $data['num_people'] ?? 1,
-            $data['total_price'] ?? 0.00,
-            $data['payment_status'] ?? 'unpaid',
-            $data['status'] ?? 'pending',
+            $data['num_people'],
+            $total_price,
+            $data['payment_status'],
+            $data['status'],
             $data['note'] ?? null,
-            $data['updated_at'] ?? date("Y-m-d H:i:s"),
+            date('Y-m-d H:i:s'),
+            $data['updated_by'] ?? null,
             $id
         ]);
     }
 
-    // Xóa booking
+    /* ===============================
+       XÓA BOOKING
+    ================================== */
     public function deleteBooking($id)
     {
-        $sql = "DELETE FROM {$this->table} WHERE id=?";
+        $sql = "DELETE FROM {$this->table} WHERE id = ?";
         $this->setQuery($sql);
         return $this->execute([$id]);
     }
 }
-?>

@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Controllers;
+
 use App\Models\DepartureModel;
 use App\Models\TourModel;
 
@@ -16,7 +18,7 @@ class DepartureController extends BaseController
     public function getDepartures()
     {
         $departures = $this->departure->getAllDepartures();
-        $this->render("departure.listDeparture", ['departures' => $departures]);
+        $this->render("admin.departure.listDeparture", ['departures' => $departures]);
     }
 
     // Form thêm departure
@@ -24,7 +26,7 @@ class DepartureController extends BaseController
     {
         $tourModel = new TourModel();
         $tours = $tourModel->getAllTours();
-        $this->render("departure.addDeparture", ['tours' => $tours]);
+        $this->render("admin.departure.addDeparture", ['tours' => $tours]);
     }
 
     // Xử lý thêm departure
@@ -32,13 +34,13 @@ class DepartureController extends BaseController
     {
         $error = [];
 
-        $tour_id        = $_POST['tour_id'] ?? '';
-        $start_date     = $_POST['start_date'] ?? '';
-        $end_date       = $_POST['end_date'] ?? '';
-        $price          = $_POST['price'] ?? null;
-        $available_seats= $_POST['available_seats'] ?? '';
-        $status         = $_POST['status'] ?? 'open';
-        $guide_price    = $_POST['guide_price'] ?? null;
+        $tour_id     = $_POST['tour_id'] ?? '';
+        $start_date  = $_POST['start_date'] ?? '';
+        $end_date    = $_POST['end_date'] ?? '';
+        $price_input = $_POST['price'] ?? '';
+        $total_seats = $_POST['total_seats'] ?? '';   // dùng total_seats
+        $status      = $_POST['status'] ?? 'open';
+        $guide_price = $_POST['guide_price'] ?? null;
 
         // validate
         if (empty($tour_id)) {
@@ -53,26 +55,33 @@ class DepartureController extends BaseController
         if (!empty($start_date) && !empty($end_date) && $start_date > $end_date) {
             $error['date_invalid'] = "Ngày kết thúc phải sau ngày khởi hành";
         }
-        if (empty($available_seats) || !is_numeric($available_seats)) {
-            $error['available_seats'] = "Số ghế còn trống không hợp lệ";
+        if (empty($total_seats) || !is_numeric($total_seats) || $total_seats <= 0) {
+            $error['total_seats'] = "Số ghế không hợp lệ";
         }
-        if (!in_array($status, ['open','closed','full'])) {
+        if (!in_array($status, ['open', 'closed', 'full'])) {
             $error['status'] = "Trạng thái không hợp lệ";
         }
+
+        // lấy giá tour nếu price để trống
+        $tourModel = new TourModel();
+        $tour = $tourModel->getTourById($tour_id);
+        $price = ($price_input === '' || $price_input === null) ? $tour->price : $price_input;
 
         if (count($error) > 0) {
             redirect('errors', $error, 'add-departure');
         } else {
             $check = $this->departure->addDeparture([
-                'tour_id'        => $tour_id,
-                'start_date'     => $start_date,
-                'end_date'       => $end_date,
-                'price'          => $price,
-                'available_seats'=> $available_seats,
-                'status'         => $status,
-                'guide_price'    => $guide_price,
-                'created_at'     => date('Y-m-d H:i:s'),
-                'updated_at'     => date('Y-m-d H:i:s'),
+                'tour_id'         => $tour_id,
+                'start_date'      => $start_date,
+                'end_date'        => $end_date,
+                'price'           => $price,
+                'total_seats'     => $total_seats,
+                'available_seats' => $total_seats,
+                'remaining_seats' => $total_seats, // khi tạo mới remaining = total
+                'status'          => $status,
+                'guide_price'     => ($guide_price === '' ? null : $guide_price),
+                'created_at'      => date('Y-m-d H:i:s'),
+                'updated_at'      => date('Y-m-d H:i:s'),
             ]);
             if ($check) {
                 redirect('success', "Thêm thành công", 'list-departure');
@@ -99,7 +108,7 @@ class DepartureController extends BaseController
         $detail = $this->departure->getDepartureById($id);
         $tour = new TourModel();
         $tours = $tour->getAllTours();
-        return $this->render('departure.editDeparture', ['detail' => $detail, 'tours' => $tours]);
+        return $this->render('admin.departure.editDeparture', ['detail' => $detail, 'tours' => $tours]);
     }
 
     // Xử lý sửa departure
@@ -108,13 +117,13 @@ class DepartureController extends BaseController
         if (isset($_POST['btn-submit'])) {
             $error = [];
 
-            $tour_id        = $_POST['tour_id'] ?? '';
-            $start_date     = $_POST['start_date'] ?? '';
-            $end_date       = $_POST['end_date'] ?? '';
-            $price          = $_POST['price'] ?? null;
-            $available_seats= $_POST['available_seats'] ?? '';
-            $status         = $_POST['status'] ?? 'open';
-            $guide_price    = $_POST['guide_price'] ?? null;
+            $tour_id     = $_POST['tour_id'] ?? '';
+            $start_date  = $_POST['start_date'] ?? '';
+            $end_date    = $_POST['end_date'] ?? '';
+            $price_input = $_POST['price'] ?? '';
+            $total_seats = $_POST['total_seats'] ?? '';   // dùng total_seats
+            $status      = $_POST['status'] ?? 'open';
+            $guide_price = $_POST['guide_price'] ?? null;
 
             if (empty($tour_id)) {
                 $error['tour_id'] = "Tên tour không được để trống";
@@ -128,27 +137,44 @@ class DepartureController extends BaseController
             if (!empty($start_date) && !empty($end_date) && $start_date > $end_date) {
                 $error['date_invalid'] = "Ngày kết thúc phải sau ngày khởi hành";
             }
-            if (empty($available_seats) || !is_numeric($available_seats)) {
-                $error['available_seats'] = "Số ghế còn trống không hợp lệ";
+            if (empty($total_seats) || !is_numeric($total_seats) || $total_seats <= 0) {
+                $error['total_seats'] = "Số ghế không hợp lệ";
             }
-            if (!in_array($status, ['open','closed','full'])) {
+            if (!in_array($status, ['open', 'closed', 'full'])) {
                 $error['status'] = "Trạng thái không hợp lệ";
             }
 
             $route = 'detail-departure/' . $id;
 
+            // lấy giá tour nếu price để trống
+            $tourModel = new TourModel();
+            $tour = $tourModel->getTourById($tour_id);
+            $price = ($price_input === '' || $price_input === null) ? $tour->price : $price_input;
+
+            $detail = $this->departure->getDepartureById($id);
+            $bookedSeats = $detail->total_seats - $detail->remaining_seats;
+
+            // kiểm tra tổng ghế mới không nhỏ hơn số ghế đã đặt
+            if (is_numeric($total_seats) && $total_seats < $bookedSeats) {
+                $error['total_seats'] = "Tổng số ghế không được nhỏ hơn số ghế đã đặt ($bookedSeats).";
+            }
+
             if (count($error) > 0) {
                 redirect('errors', $error, $route);
             } else {
+                $newRemaining = max(0, $total_seats - $bookedSeats);
+
                 $check = $this->departure->updateDeparture($id, [
-                    'tour_id'        => $tour_id,
-                    'start_date'     => $start_date,
-                    'end_date'       => $end_date,
-                    'price'          => $price,
-                    'available_seats'=> $available_seats,
-                    'status'         => $status,
-                    'guide_price'    => $guide_price,
-                    'updated_at'     => date('Y-m-d H:i:s'),
+                    'tour_id'         => $tour_id,
+                    'start_date'      => $start_date,
+                    'end_date'        => $end_date,
+                    'price'           => $price,
+                    'total_seats'     => $total_seats,
+                    'available_seats' => $total_seats,
+                    'remaining_seats' => $newRemaining,
+                    'status'          => $status,
+                    'guide_price'     => ($guide_price === '' ? null : $guide_price),
+                    'updated_at'      => date('Y-m-d H:i:s'),
                 ]);
                 if ($check) {
                     redirect('success', "Sửa thành công", 'list-departure');

@@ -1,72 +1,99 @@
 <?php $_shouldextend[1]=1; ?>
-<?php $this->startSection('title', 'Danh sách hướng dẫn viên'); ?>
+<?php $this->startSection('title', 'Danh sách Hướng dẫn viên'); ?>
+<?php $this->startSection('active-guide', 'active'); ?>
 
-<?php $this->startSection('active-guides', 'active'); ?>
 <?php $this->startSection('content'); ?>
+<div class="container-fluid">
+ <div class="d-flex justify-content-between align-items-center mb-4">
+ <h1 class="h3 text-primary"><i class="fas fa-user-tie"></i> Danh sách Hướng dẫn viên</h1>
+ <a href="<?php echo \htmlentities(route('add-guide')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-success">
+ <i class="fas fa-plus-circle"></i> Thêm Hướng dẫn viên
+ </a>
+ </div>
+
+ <?php /* Hiển thị thông báo lỗi */ ?>
  <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
- <ul>
+ <div class="alert alert-danger">
+ <ul class="mb-0">
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
  <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </ul>
+ </div>
+ <?php unset($_SESSION['errors'])  ?>
  <?php endif; ?>
 
+ <?php /* Hiển thị thông báo thành công */ ?>
  <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
- <span><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ <div class="alert alert-success">
+ <?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </div>
+ <?php unset($_SESSION['success'])  ?>
  <?php endif; ?>
 
- <a href="<?php echo \htmlentities(route('add-guide')??'', ENT_QUOTES, 'UTF-8', false); ?>">
- <button>Thêm HDV</button>
- </a>
-
- <table class="table">
- <thead>
+ <div class="table-responsive shadow-sm">
+ <table class="table table-striped table-hover align-middle text-center">
+ <thead class="table-primary">
  <tr>
- <th scope="col">STT</th>
- <th scope="col">Họ Tên</th>
- <th scope="col">Ngày Sinh</th>
- <th scope="col">Ảnh Đại Diện</th>
- <th scope="col">Chứng Chỉ</th>
- <th scope="col">Ngôn Ngữ</th>
- <th scope="col">Số Năm Kinh Nghiệm</th>
- <th scope="col">Trạng Thái</th>
- <th scope="col">Hành động</th>
+ <th>#</th>
+ <th>Tài khoản</th>
+ <th>Họ tên</th>
+ <th>Điện thoại</th>
+ <th>Email</th>
+ <th>Giới tính</th>
+ <th>Kinh nghiệm (năm)</th>
+ <th>Trạng thái</th>
+ <th>Hành động</th>
  </tr>
  </thead>
  <tbody>
- <?php $__currentLoopData = $guides; $this->addLoop($__currentLoopData);$this->getFirstLoop();
- foreach($__currentLoopData as $st): $loop = $this->incrementLoopIndices();  ?>
+ <?php $__empty_1 = true; foreach($guides as $g): $__empty_1 = false; ?>
  <tr>
- <td><?php echo \htmlentities($st->id??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($st->fullname??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($st->dob??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($g->id??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($g->account_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td class="fw-bold"><?php echo \htmlentities($g->fullname??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($g->phone??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($g->email??'', ENT_QUOTES, 'UTF-8', false); ?></td>
  <td>
- <?php if($st->avatar): ?>
- <img src="<?php echo \htmlentities($st->avatar??'', ENT_QUOTES, 'UTF-8', false); ?>" alt="avatar" width="60">
- <?php else: ?>
- Không có
- <?php endif; ?>
+ <span class="badge <?php echo \htmlentities($g->gender === 'Nam' ? 'bg-info' : 'bg-warning'??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <?php echo \htmlentities($g->gender??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </span>
+ </td>
+ <td><?php echo \htmlentities($g->experience_years??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td>
+ <span class="badge <?php echo \htmlentities($g->status === 'active' ? 'bg-success' : 'bg-secondary'??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <?php echo \htmlentities($g->status === 'active' ? 'Đang hoạt động' : 'Ngừng'??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </span>
  </td>
  <td>
- <?php if($st->certificate_url): ?>
- <a href="<?php echo \htmlentities($st->certificate_url??'', ENT_QUOTES, 'UTF-8', false); ?>" target="_blank">Xem chứng chỉ</a>
- <?php else: ?>
- Không có
- <?php endif; ?>
- </td>
- <td><?php echo \htmlentities($st->languages??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($st->experience_years??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($st->status??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td>
- <a href="<?php echo \htmlentities(route('detail-guide/' . $st->id)??'', ENT_QUOTES, 'UTF-8', false); ?>">
- <button>Sửa</button>
+ <a href="<?php echo \htmlentities(route('detail-guide/' . $g->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-sm btn-warning me-1">
+ <i class="fas fa-edit"></i> Sửa
  </a>
- <button onclick="confirmDelete('<?php echo \htmlentities(route('delete-guide/' . $st->id)??'', ENT_QUOTES, 'UTF-8', false); ?>')">Xóa</button>
+ <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('<?php echo \htmlentities(route('delete-guide/' . $g->id)??'', ENT_QUOTES, 'UTF-8', false); ?>', '<?php echo \htmlentities($g->fullname??'', ENT_QUOTES, 'UTF-8', false); ?>')">
+ <i class="fas fa-trash-alt"></i> Xóa
+ </button>
  </td>
  </tr>
- <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ <?php endforeach; if ($__empty_1): ?>
+ <tr>
+ <td colspan="9" class="text-muted">Chưa có hướng dẫn viên nào được thêm</td>
+ </tr>
+ <?php endif; ?>
  </tbody>
  </table>
+ </div>
+</div>
+
+<script>
+ function confirmDelete(deleteUrl, name) {
+ if (confirm(`Bạn có chắc chắn muốn xóa hướng dẫn viên: ${name}?`)) {
+ window.location.href = deleteUrl;
+ }
+ }
+</script>
 <?php $this->stopSection(); ?>
-<?php if (isset($_shouldextend[1])) { echo $this->runChild('dashboard'); } ?>
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

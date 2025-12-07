@@ -1,0 +1,180 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Thêm Booking'); ?>
+<?php $this->startSection('active-booking', 'active'); ?>
+
+<?php $this->startSection('content'); ?>
+<div class="container-fluid">
+
+ <?php /* HEADER */ ?>
+ <div class="d-flex justify-content-between align-items-center mb-4">
+ <h2 class="text-primary">
+ <i class="fas fa-plus-circle"></i> Thêm Booking
+ </h2>
+ <a href="<?php echo \htmlentities(route('list-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-warning shadow-sm">
+ <i class="fas fa-arrow-left"></i> Quay lại danh sách
+ </a>
+ </div>
+
+ <?php /* Thông báo */ ?>
+ <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-success alert-dismissible fade show shadow-sm">
+ <i class="fas fa-check-circle"></i> <?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
+ <?php endif; ?>
+
+ <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+ <i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi:
+ <ul class="mt-2 mb-0">
+ <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $err): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($err??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </ul>
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
+ <?php endif; ?>
+
+ <?php /* FORM ADD BOOKING */ ?>
+ <form action="<?php echo \htmlentities(route('post-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post" class="bg-white p-4 rounded shadow-sm border">
+
+ <?php /* KHÁCH HÀNG */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Khách hàng</label>
+ <select name="customer_id" class="form-select" required>
+ <option value="">-- Chọn khách hàng --</option>
+ <?php $__currentLoopData = $customers; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $c): $loop = $this->incrementLoopIndices();  ?>
+ <option value="<?php echo \htmlentities($c->id??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <?php echo \htmlentities($c->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> — <?php echo \htmlentities($c->email??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* LỊCH KHỞI HÀNH */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Lịch khởi hành</label>
+ <select name="departure_id" id="departureSelect" class="form-select" required>
+ <option value="">-- Chọn lịch khởi hành --</option>
+ <?php $__currentLoopData = $departures; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $d): $loop = $this->incrementLoopIndices();  ?>
+ <option 
+ value="<?php echo \htmlentities($d->id??'', ENT_QUOTES, 'UTF-8', false); ?>"
+ data-price="<?php echo \htmlentities($d->price??'', ENT_QUOTES, 'UTF-8', false); ?>"
+ data-seats="<?php echo \htmlentities($d->remaining_seats??'', ENT_QUOTES, 'UTF-8', false); ?>"
+ >
+ <?php echo \htmlentities($d->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> 
+ (<?php echo \htmlentities(date('d/m/Y', strtotime($d->start_date))??'', ENT_QUOTES, 'UTF-8', false); ?>)
+ — Giá: <?php echo \htmlentities(number_format($d->price,0,',','.')??'', ENT_QUOTES, 'UTF-8', false); ?> đ
+ — Còn: <?php echo \htmlentities($d->remaining_seats??'', ENT_QUOTES, 'UTF-8', false); ?> ghế
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* SỐ NGƯỜI */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Số người</label>
+ <input 
+ type="number" 
+ name="num_people" 
+ id="numPeopleInput" 
+ class="form-control" 
+ min="1" 
+ required
+ >
+ <small id="seatWarning" class="text-danger d-none"></small>
+ </div>
+
+ <?php /* TỔNG TIỀN */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Tổng tiền</label>
+ <input 
+ type="text" 
+ id="total_price_display" 
+ class="form-control fw-bold text-success" 
+ readonly 
+ value="0 đ"
+ >
+ </div>
+
+ <?php /* THANH TOÁN */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Thanh toán</label>
+ <select name="payment_status" class="form-select" required>
+ <option value="unpaid">Chưa thanh toán</option>
+ <option value="partial">Thanh toán một phần</option>
+ <option value="paid">Đã thanh toán</option>
+ </select>
+ </div>
+
+ <?php /* TRẠNG THÁI */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Trạng thái</label>
+ <select name="status" class="form-select" required>
+ <option value="pending">Chờ xác nhận</option>
+ <option value="confirmed">Đã xác nhận</option>
+ <option value="cancelled">Đã hủy</option>
+ <option value="completed">Hoàn thành</option>
+ </select>
+ </div>
+
+ <?php /* GHI CHÚ */ ?>
+ <div class="mb-3">
+ <label class="fw-bold">Ghi chú</label>
+ <textarea 
+ name="note" 
+ class="form-control" 
+ rows="3" 
+ placeholder="Nhập ghi chú (nếu có)..."
+ ></textarea>
+ </div>
+
+ <?php /* SUBMIT */ ?>
+ <div class="text-end">
+ <button type="submit" class="btn btn-primary shadow-sm" name="btn-submit">
+ <i class="fas fa-check-circle"></i> Xác nhận
+ </button>
+ </div>
+ </form>
+</div>
+
+<?php /* SCRIPT TÍNH GIÁ + CHECK GHẾ */ ?>
+<script>
+ const departureSelect = document.getElementById('departureSelect');
+ const numPeopleInput = document.getElementById('numPeopleInput');
+ const totalPriceDisplay = document.getElementById('total_price_display');
+ const seatWarning = document.getElementById('seatWarning');
+
+ function updateTotalPrice() {
+ const selected = departureSelect.options[departureSelect.selectedIndex];
+
+ const price = Number(selected?.dataset.price || 0);
+ const seats = Number(selected?.dataset.seats || 0);
+ const numPeople = Number(numPeopleInput.value || 0);
+
+ // Tính tổng tiền
+ const total = price * numPeople;
+ totalPriceDisplay.value = total.toLocaleString("vi-VN") + " đ";
+
+ // Kiểm tra ghế trống
+ if (numPeople > seats && seats > 0) {
+ seatWarning.textContent = `Không đủ ghế. Chỉ còn ${seats} ghế.`;
+ seatWarning.classList.remove('d-none');
+ } else {
+ seatWarning.textContent = "";
+ seatWarning.classList.add('d-none');
+ }
+ }
+
+ departureSelect.addEventListener('change', updateTotalPrice);
+ numPeopleInput.addEventListener('input', updateTotalPrice);
+</script>
+
+<?php $this->stopSection(); ?>
+
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

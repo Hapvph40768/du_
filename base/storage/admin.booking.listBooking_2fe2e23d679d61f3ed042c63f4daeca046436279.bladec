@@ -1,0 +1,147 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Danh sách Booking'); ?>
+<?php $this->startSection('active-booking', 'active'); ?>
+
+<?php $this->startSection('content'); ?>
+<div class="container-fluid">
+
+ <?php /* HEADER */ ?>
+ <div class="d-flex justify-content-between align-items-center mb-4">
+ <h2 class="text-primary">
+ <i class="fas fa-ticket-alt"></i> Danh sách Booking
+ </h2>
+ <a href="<?php echo \htmlentities(route('add-booking')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-success shadow-sm">
+ <i class="fas fa-plus-circle"></i> Thêm Booking
+ </a>
+ </div>
+
+ <?php /* Thông báo */ ?>
+ <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+ <i class="fas fa-check-circle"></i> <?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
+ <?php endif; ?>
+
+ <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+ <i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi:
+ <ul class="mt-2 mb-0">
+ <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $err): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($err??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </ul>
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
+ <?php endif; ?>
+
+ <?php /* TABLE */ ?>
+ <div class="table-responsive shadow-sm rounded">
+ <table class="table table-bordered table-hover text-center align-middle mb-0">
+ <thead class="table-primary">
+ <tr>
+ <th>#</th>
+ <th>Khách hàng</th>
+ <th>Tour</th>
+ <th>Ngày đi</th>
+ <th>Số người</th>
+ <th>Tổng tiền</th>
+ <th>Thanh toán</th>
+ <th>Trạng thái</th>
+ <th>Ghi chú</th>
+ <th width="130px">Hành động</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ <?php $__empty_1 = true; foreach($bookings as $index => $b): $__empty_1 = false; ?>
+ <tr>
+ <td><?php echo \htmlentities($index + 1??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td class="fw-semibold"><?php echo \htmlentities($b->customer_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($b->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities(date('d/m/Y', strtotime($b->start_date))??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+
+ <td>
+ <span class="badge bg-info"><?php echo \htmlentities($b->num_people??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ </td>
+
+ <td class="text-success fw-bold">
+ <?php echo \htmlentities(number_format($b->total_price, 0, ',', '.')??'', ENT_QUOTES, 'UTF-8', false); ?> đ
+ </td>
+
+ <?php /* PAYMENT */ ?>
+ <td>
+ <?php switch ($b->payment_status) {
+ case ('unpaid'): ?>
+ <span class="badge bg-danger">Chưa thanh toán</span>
+ <?php break; ?>
+ <?php case ('partial'): ?>
+ <span class="badge bg-warning text-dark">Thanh toán một phần</span>
+ <?php break; ?>
+ <?php case ('paid'): ?>
+ <span class="badge bg-success">Đã thanh toán</span>
+ <?php break; ?>
+ <?php } // end switch ?>
+ </td>
+
+ <?php /* STATUS */ ?>
+ <td>
+ <?php switch ($b->status) {
+ case ('pending'): ?>
+ <span class="badge bg-secondary">Chờ xác nhận</span>
+ <?php break; ?>
+ <?php case ('confirmed'): ?>
+ <span class="badge bg-primary">Đã xác nhận</span>
+ <?php break; ?>
+ <?php case ('cancelled'): ?>
+ <span class="badge bg-dark">Đã hủy</span>
+ <?php break; ?>
+ <?php case ('completed'): ?>
+ <span class="badge bg-success">Hoàn thành</span>
+ <?php break; ?>
+ <?php } // end switch ?>
+ </td>
+
+ <td><?php echo \htmlentities($b->note ?: '-'??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+
+ <?php /* ACTION */ ?>
+ <td>
+ <a href="<?php echo \htmlentities(route('detail-booking/'.$b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>"
+ class="btn btn-sm btn-warning me-1 shadow-sm">
+ <i class="fas fa-edit"></i>Sửa 
+ </a>
+
+ <button class="btn btn-sm btn-danger shadow-sm"
+ onclick="confirmDelete('<?php echo \htmlentities(route('delete-booking/'.$b->id)??'', ENT_QUOTES, 'UTF-8', false); ?>')">
+ <i class="fas fa-trash-alt"></i>Xóa
+ </button>
+ </td>
+ </tr>
+ <?php endforeach; if ($__empty_1): ?>
+ <tr>
+ <td colspan="10" class="text-muted py-3">
+ <i class="fas fa-info-circle"></i> Chưa có booking nào
+ </td>
+ </tr>
+ <?php endif; ?>
+ </tbody>
+
+ </table>
+ </div>
+
+</div>
+
+<?php /* SCRIPT XÓA */ ?>
+<script>
+ function confirmDelete(url) {
+ if (confirm("Bạn có chắc muốn xóa booking này?")) {
+ window.location.href = url;
+ }
+ }
+</script>
+
+<?php $this->stopSection(); ?>
+
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

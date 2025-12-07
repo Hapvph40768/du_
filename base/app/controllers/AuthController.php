@@ -25,11 +25,18 @@ class AuthController extends BaseController
         $user = $userModel->getUserByUsername($username);
 
         if ($user && password_verify($password, $user->password)) {
-            $_SESSION['user'] = $user;
-            if ($user->role === 'admin') {
-                $this->render('admin.dashboard');
+            // Lưu session gọn gàng
+            $_SESSION['user'] = [
+                'id'       => $user->id,
+                'username' => $user->username,
+                'role_id'  => $user->role_id
+            ];
+
+            // Nếu role_id = 1 (admin) thì vào dashboard
+            if ($user->role_id == 1) {
+                $this->render('layout.dashboard', ['user' => $user]);
             } else {
-                header('Location: /'); // hoặc /user/home nếu bạn có route riêng cho user
+                header('Location: /'); // hoặc /user/home
             }
             exit;
 
@@ -40,31 +47,30 @@ class AuthController extends BaseController
 
     public function register()
     {
-        $data = [
-            $_POST['username'] ?? '',
-            $_POST['email'] ?? '',
-            password_hash($_POST['password'] ?? '', PASSWORD_BCRYPT)
-        ];
-
         $userModel = new UserModel();
-        $userModel->createUser($data);
+        $userModel->createUser([
+            'username' => $_POST['username'] ?? '',
+            'email'    => $_POST['email'] ?? '',
+            'password' => $_POST['password'] ?? '',
+            'role_id'  => 2 // mặc định role user thường
+        ]);
 
         header('Location: login');
     }
 
     public function logout()
     {
-        session_destroy();
+        unset($_SESSION['user']);
         header('Location: login');
     }
 
     public function dashboard()
     {
-        if (!isset($_SESSION['user']) || $_SESSION['user']->role !== 'admin') {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
             header('Location: /login');
             exit;
         }
 
-        $this->render('admin.dashboard', ['user' => $_SESSION['user']]);
+        $this->render('layout.dashboard', ['user' => $_SESSION['user']]);
     }
 }

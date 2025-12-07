@@ -1,137 +1,140 @@
 <?php
 namespace App\Controllers;
+
 use App\Models\ServiceModel;
+use App\Models\SupplierModel;
 use App\Models\TourModel;
 
 class ServiceController extends BaseController
 {
-    public $service;
+    protected $service;
 
     public function __construct()
     {
         $this->service = new ServiceModel();
     }
 
-    // List services
-    public function getServices()
+    // 1. Danh sách dịch vụ
+    public function listServices()
     {
         $services = $this->service->getAllServices();
-        $this->render("service.listService", ['services' => $services]);
+        return $this->render("admin.service.listService", ['services' => $services]);
     }
 
-    // Show add form
+    // 2. Form thêm dịch vụ
     public function createService()
     {
-        // show list of tours so user can attach package to a tour
-        $tourModel = new TourModel();
-        $tours = $tourModel->getAllTours();
-        $this->render('service.addService', ['tours' => $tours]);
+        $suppliers = (new SupplierModel())->getAll();
+        $tours     = (new TourModel())->getAllTours();
+
+        return $this->render("admin.service.addService", [
+            'suppliers' => $suppliers,
+            'tours'     => $tours
+        ]);
     }
 
-    // Handle add form submit
+    // 3. Xử lý thêm dịch vụ
     public function postService()
     {
-        $error = [];
+        $data  = $this->collectServiceData();
+        $error = $this->validateServiceData($data);
 
-        $package_name = $_POST['package_name'] ?? '';
-        $price = $_POST['price'] ?? '';
-        $currency = $_POST['currency'] ?? 'VND';
-        $tour_id = $_POST['tour_id'] ?? null;
-        $is_optional = isset($_POST['is_optional']) ? 1 : 0;
-        $is_active = isset($_POST['is_active']) ? 1 : 0;
-
-        if (empty($package_name)) {
-            $error['package_name'] = 'Tên gói/dịch vụ không được để trống';
-        }
-        if ($price === '' || !is_numeric($price)) {
-            $error['price'] = 'Giá phải là số và không được để trống';
-        }
-
-        if (count($error) >= 1) {
+        if (!empty($error)) {
             redirect('errors', $error, 'add-service');
         }
 
-        $check = $this->service->addService([
-            'tour_id' => $tour_id,
-            'package_name' => $package_name,
-            'description' => $_POST['description'] ?? null,
-            'price' => $price,
-            'currency' => $currency,
-            'is_optional' => $is_optional,
-            'is_active' => $is_active,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ]);
+        $data['created_at'] = $data['updated_at'] = date("Y-m-d H:i:s");
 
-        if ($check) {
-            redirect('success', 'Thêm dịch vụ thành công', 'list-service');
-        } else {
-            redirect('errors', 'Thêm thất bại, vui lòng thử lại', 'add-service');
-        }
+        $check = $this->service->addService($data);
+
+        $check
+            ? redirect('success', "Thêm dịch vụ thành công", 'list-service')
+            : redirect('errors', "Thêm dịch vụ thất bại", 'add-service');
     }
 
-    // Delete service
+    // 4. Chi tiết dịch vụ để sửa
+    public function detailService($id)
+    {
+        $detail    = $this->service->getServiceById($id);
+        $suppliers = (new SupplierModel())->getAll();
+        $tours     = (new TourModel())->getAllTours();
+
+        return $this->render("admin.service.editService", [
+            'detail'    => $detail,
+            'suppliers' => $suppliers,
+            'tours'     => $tours
+        ]);
+    }
+
+    // 5. Xử lý sửa dịch vụ
+    public function editService($id)
+    {
+        if (!isset($_POST['btn-submit'])) return;
+
+        $data  = $this->collectServiceData();
+        $error = $this->validateServiceData($data);
+        $route = 'detail-service/' . $id;
+
+        if (!empty($error)) {
+            redirect('errors', $error, $route);
+        }
+
+        $data['updated_at'] = date("Y-m-d H:i:s");
+
+        $check = $this->service->updateService($id, $data);
+
+        $check
+            ? redirect('success', "Cập nhật dịch vụ thành công", 'list-service')
+            : redirect('errors', "Cập nhật thất bại", $route);
+    }
+
+    // 6. Xóa dịch vụ
     public function deleteService($id)
     {
         $check = $this->service->deleteService($id);
-        if ($check) {
-            redirect('success', 'Xóa thành công', 'list-service');
-        } else {
-            redirect('errors', 'Xóa thất bại', 'list-service');
-        }
+
+        $check
+            ? redirect('success', "Xóa dịch vụ thành công", 'list-service')
+            : redirect('errors', "Xóa thất bại", 'list-service');
     }
 
-    // Detail / edit form
-    public function detailService($id)
+    // --- Hỗ trợ: thu thập dữ liệu từ form ---
+    private function collectServiceData()
     {
-        $detail = $this->service->getServiceById($id);
-        $tourModel = new \App\Models\TourModel();
-        $tours = $tourModel->getAllTours();
-        return $this->render('service.editService', ['detail' => $detail, 'tours' => $tours]);
+        return [
+            'tour_id'      => $_POST['tour_id'] ?? null,
+            'package_name' => $_POST['package_name'] ?? '',
+            'name'         => $_POST['name'] ?? '',
+            'description'  => $_POST['description'] ?? null,
+            'type'         => $_POST['type'] ?? null,
+            'supplier_id'  => $_POST['supplier_id'] ?? null,
+            'price'        => $_POST['price'] ?? 0,
+            'default_price'=> $_POST['default_price'] ?? 0,
+            'currency'     => $_POST['currency'] ?? 'VND',
+            'is_optional'  => isset($_POST['is_optional']) ? 1 : 0,
+            'is_active'    => isset($_POST['is_active']) ? 1 : 0
+        ];
     }
 
-    // Handle edit submit
-    public function editService($id)
+    // --- Hỗ trợ: validate dữ liệu dịch vụ ---
+    private function validateServiceData($data)
     {
-        if (isset($_POST['btn-submit'])) {
-            $error = [];
+        $error = [];
 
-            $package_name = $_POST['package_name'] ?? '';
-            $price = $_POST['price'] ?? '';
-            $currency = $_POST['currency'] ?? 'VND';
-            $tour_id = $_POST['tour_id'] ?? null;
-            $is_optional = isset($_POST['is_optional']) ? 1 : 0;
-            $is_active = isset($_POST['is_active']) ? 1 : 0;
-
-            if (empty($package_name)) {
-                $error['package_name'] = 'Tên gói/dịch vụ không được để trống';
-            }
-            if ($price === '' || !is_numeric($price)) {
-                $error['price'] = 'Giá phải là số và không được để trống';
-            }
-
-            $route = 'detail-service/' . $id;
-            if (count($error) >= 1) {
-                redirect('errors', $error, $route);
-            }
-
-            $check = $this->service->updateService($id, [
-                'tour_id' => $tour_id,
-                'package_name' => $package_name,
-                'description' => $_POST['description'] ?? null,
-                'price' => $price,
-                'currency' => $currency,
-                'is_optional' => $is_optional,
-                'is_active' => $is_active,
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-
-            if ($check) {
-                redirect('success', 'Sửa dịch vụ thành công', 'list-service');
-            } else {
-                redirect('errors', 'Sửa thất bại, vui lòng thử lại', $route);
-            }
+        if (empty($data['name'])) {
+            $error['name'] = "Tên dịch vụ không được để trống.";
         }
-    }
+        if (!is_numeric($data['price']) || $data['price'] < 0) {
+            $error['price'] = "Giá dịch vụ phải là số không âm.";
+        }
+        if (!is_numeric($data['default_price']) || $data['default_price'] < 0) {
+            $error['default_price'] = "Giá mặc định phải là số không âm.";
+        }
+        if (strlen($data['currency']) !== 3) {
+            $error['currency'] = "Đơn vị tiền tệ phải gồm 3 ký tự (VD: VND, USD).";
+        }
 
+        return $error;
+    }
 }
+?>

@@ -16,13 +16,13 @@ class CustomerController extends BaseController
     public function getCustomers()
     {
         $customers = $this->customer->getAllCustomers();
-        $this->render("customer.listCustomer", ['customers' => $customers]);
+        $this->render("admin.customer.listCustomer", ['customers' => $customers]);
     }
 
     // Hiển thị form thêm khách hàng
     public function createCustomer()
     {
-        $this->render("customer.addCustomer");
+        $this->render("admin.customer.addCustomer");
     }
 
     // Xử lý thêm khách hàng
@@ -37,7 +37,7 @@ class CustomerController extends BaseController
             $error['phone'] = "Số điện thoại không được bỏ trống";
         }
 
-        if (count($error) >= 1) {
+        if (!empty($error)) {
             redirect('error', $error, "add-customer");
         } else {
             $check = $this->customer->addCustomer([
@@ -50,8 +50,6 @@ class CustomerController extends BaseController
                 'gender'      => $_POST['gender'] ?? null,
                 'address'     => $_POST['address'] ?? null,
                 'note'        => $_POST['note'] ?? null,
-                'created_at'  => date("Y-m-d H:i:s"),
-                'updated_at'  => date("Y-m-d H:i:s"),
             ]);
 
             if ($check) {
@@ -66,7 +64,7 @@ class CustomerController extends BaseController
     public function detailCustomer($id)
     {
         $detail = $this->customer->getCustomerById($id);
-        return $this->render('customer.editCustomer', ['detail' => $detail]);
+        return $this->render('admin.customer.editCustomer', ['detail' => $detail]);
     }
 
     // Xử lý sửa khách hàng
@@ -83,7 +81,7 @@ class CustomerController extends BaseController
             }
 
             $route = 'detail-customer/' . $id;
-            if (count($error) >= 1) {
+            if (!empty($error)) {
                 redirect('error', $error, $route);
             } else {
                 $check = $this->customer->updateCustomer($id, [
@@ -96,7 +94,6 @@ class CustomerController extends BaseController
                     'gender'      => $_POST['gender'] ?? null,
                     'address'     => $_POST['address'] ?? null,
                     'note'        => $_POST['note'] ?? null,
-                    'updated_at'  => date("Y-m-d H:i:s"),
                 ]);
 
                 if ($check) {

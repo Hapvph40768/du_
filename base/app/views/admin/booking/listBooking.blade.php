@@ -1,82 +1,143 @@
 @extends('layout.dashboard')
 @section('title', 'Danh sách Booking')
-
 @section('active-booking', 'active')
+
 @section('content')
-    @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-        <ul>
-            @foreach($_SESSION['errors'] as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    @endif
+<div class="container-fluid">
 
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">
+            <i class="fas fa-ticket-alt"></i> Danh sách Booking
+        </h2>
+        <a href="{{ route('add-booking') }}" class="btn btn-success shadow-sm">
+            <i class="fas fa-plus-circle"></i> Thêm Booking
+        </a>
+    </div>
+
+    {{-- Thông báo --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <span>{{ $_SESSION['success'] }}</span>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle"></i> {{ $_SESSION['success'] }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     @endif
 
-    <a href="{{ route('add-booking') }}">
-        <button type="button" class="btn btn-info">Thêm booking</button>
-    </a>
+    @if(isset($_SESSION['errors']) && isset($_GET['msg']))
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi:
+            <ul class="mt-2 mb-0">
+                @foreach($_SESSION['errors'] as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">STT</th>
-                <th scope="col">Tour & Lịch khởi hành</th>
-                <th scope="col">Người đặt</th>
-                <th scope="col">Số điện thoại</th>
-                <th scope="col">Số lượng</th>
-                <th scope="col">Tổng tiền</th>
-                <th scope="col">Thanh toán</th>
-                <th scope="col">Trạng thái</th>
-                <th scope="col">Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($bookings as $b)
+    {{-- TABLE --}}
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-bordered table-hover text-center align-middle mb-0">
+            <thead class="table-primary">
                 <tr>
-                    <td>{{ $b->id }}</td>
-                    <td>
-                        {{ $b->tour_name }} <br>
-                        {{ $b->start_date }} → {{ $b->end_date }}
-                    </td>
-                    <td>{{ $b->customer_name ?? 'N/A' }}</td>
-                    <td>{{ $b->customer_phone ?? 'N/A' }}</td>
-                    <td>{{ $b->num_people }}</td>
-                    <td>{{ number_format($b->total_price, 0, ',', '.') }} đ</td>
-                    <td>
-                        @switch($b->payment_status)
-                            @case('unpaid')
-                                <span class="text-danger">Chưa thanh toán</span>
-                                @break
-                            @case('partial')
-                                <span class="text-warning">Thanh toán một phần</span>
-                                @break
-                            @case('paid')
-                                <span class="text-success">Đã thanh toán</span>
-                                @break
-                        @endswitch
-                    </td>
-                    <td>
-                        @switch($b->status)
-                            @case('pending')
-                                <span class="text-secondary">Đang chờ</span>
-                                @break
-                            @case('confirmed')
-                                <span class="text-success">Đã xác nhận</span>
-                                @break
-                            @case('cancelled')
-                                <span class="text-danger">Đã hủy</span>
-                                @break
-                        @endswitch
-                    </td>
-                    <td>
-                        <a href="{{ route('detail-booking/' . $b->id) }}" class="btn btn-warning">Sửa</a>
-                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ route('delete-booking/' . $b->id) }}')">Xóa</button>
-                    </td>
+                    <th>#</th>
+                    <th>Khách hàng</th>
+                    <th>Tour</th>
+                    <th>Ngày đi</th>
+                    <th>Số người</th>
+                    <th>Tổng tiền</th>
+                    <th>Thanh toán</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th width="130px">Hành động</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                @forelse($bookings as $index => $b)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td class="fw-semibold">{{ $b->customer_name }}</td>
+                        <td>{{ $b->tour_name }}</td>
+                        <td>{{ date('d/m/Y', strtotime($b->start_date)) }}</td>
+
+                        <td>
+                            <span class="badge bg-info">{{ $b->num_people }}</span>
+                        </td>
+
+                        <td class="text-success fw-bold">
+                            {{ number_format($b->total_price, 0, ',', '.') }} đ
+                        </td>
+
+                        {{-- PAYMENT --}}
+                        <td>
+                            @switch($b->payment_status)
+                                @case('unpaid')
+                                    <span class="badge bg-danger">Chưa thanh toán</span>
+                                @break
+                                @case('partial')
+                                    <span class="badge bg-warning text-dark">Thanh toán một phần</span>
+                                @break
+                                @case('paid')
+                                    <span class="badge bg-success">Đã thanh toán</span>
+                                @break
+                            @endswitch
+                        </td>
+
+                        {{-- STATUS --}}
+                        <td>
+                            @switch($b->status)
+                                @case('pending')
+                                    <span class="badge bg-secondary">Chờ xác nhận</span>
+                                @break
+                                @case('confirmed')
+                                    <span class="badge bg-primary">Đã xác nhận</span>
+                                @break
+                                @case('cancelled')
+                                    <span class="badge bg-dark">Đã hủy</span>
+                                @break
+                                @case('completed')
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                @break
+                            @endswitch
+                        </td>
+
+                        <td>{{ $b->note ?: '-' }}</td>
+
+                        {{-- ACTION --}}
+                        <td>
+                            <a href="{{ route('detail-booking/'.$b->id) }}"
+                                class="btn btn-sm btn-warning me-1 shadow-sm">
+                                <i class="fas fa-edit"></i>Sửa 
+                            </a>
+
+                            <button class="btn btn-sm btn-danger shadow-sm"
+                                onclick="confirmDelete('{{ route('delete-booking/'.$b->id) }}')">
+                                <i class="fas fa-trash-alt"></i>Xóa
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="10" class="text-muted py-3">
+                            <i class="fas fa-info-circle"></i> Chưa có booking nào
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{{-- SCRIPT XÓA --}}
+<script>
+    function confirmDelete(url) {
+        if (confirm("Bạn có chắc muốn xóa booking này?")) {
+            window.location.href = url;
+        }
+    }
+</script>
+
 @endsection

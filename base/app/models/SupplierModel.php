@@ -8,7 +8,7 @@ class SupplierModel extends BaseModel
     // Lấy tất cả suppliers
     public function getAll()
     {
-        $this->setQuery("SELECT * FROM {$this->table} ORDER BY id DESC");
+        $this->setQuery("SELECT * FROM {$this->table}");
         return $this->loadAllRows();
     }
 
