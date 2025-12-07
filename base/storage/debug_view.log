@@ -1,0 +1,14 @@
+[2025-12-07 18:03:33] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:03:37] viewFile=admin.tourimg.addImage viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\addImage.blade.php exists=no
+[2025-12-07 18:03:38] viewFile=admin.tourimg.listImages viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\listImages.blade.php exists=yes
+[2025-12-07 18:03:40] viewFile=admin.tourimg.addImage viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\addImage.blade.php exists=no
+[2025-12-07 18:12:43] viewFile=admin.tourimg.addImage viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\addImage.blade.php exists=no
+[2025-12-07 18:12:44] viewFile=admin.tourimg.addImage viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\addImage.blade.php exists=no
+[2025-12-07 18:12:45] viewFile=admin.tourimg.addImage viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourimg\addImage.blade.php exists=no
+[2025-12-07 18:12:56] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:15:39] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:15:39] fallback alt=admin\tourlog\listLogs.blade.php altFull=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:17:10] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:17:10] fallback alt=admin\tourlog\listLogs.blade.php altFull=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:17:24] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no
+[2025-12-07 18:23:02] viewFile=admin.tourlog.listLogs viewDir=C:\laragon\www\du_an1\base\app\views expected=C:\laragon\www\du_an1\base\app\views\admin\tourlog\listLogs.blade.php exists=no

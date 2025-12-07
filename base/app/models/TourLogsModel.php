@@ -8,10 +8,10 @@ class TourLogsModel extends BaseModel
     public function getAllLogs()
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*, d.start_date, d.end_date
         FROM {$this->table} tl
         JOIN departures d ON tl.departure_id = d.id
-        ORDER BY tl.day_number ASC
+        ORDER BY tl.id ASC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
@@ -20,7 +20,7 @@ class TourLogsModel extends BaseModel
     public function getLogById($id)
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*, d.start_date, d.end_date
         FROM {$this->table} tl
         JOIN departures d ON tl.departure_id = d.id
         WHERE tl.id=?
@@ -31,12 +31,10 @@ class TourLogsModel extends BaseModel
 
     public function addLog($data)
     {
-        $sql = "INSERT INTO {$this->table} (`departure_id`, `day_number`, `note`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} (`departure_id`, `created_at`, `updated_at`) VALUES (?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['departure_id'],
-            $data['day_number'],
-            $data['note'],
             $data['created_at'],
             $data['updated_at']
         ]);
@@ -44,12 +42,10 @@ class TourLogsModel extends BaseModel
 
     public function updateLog($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `departure_id`=?, `day_number`=?, `note`=?, `updated_at`=? WHERE id=?";
+        $sql = "UPDATE {$this->table} SET `departure_id`=?, `updated_at`=? WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['departure_id'],
-            $data['day_number'],
-            $data['note'],
             $data['updated_at'],
             $id
         ]);

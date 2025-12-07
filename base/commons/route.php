@@ -65,6 +65,29 @@ $router->get('detail-supplier/{id}', [App\Controllers\SupplierController::class,
 $router->post('edit-supplier/{id}', [App\Controllers\SupplierController::class, 'editSupplier']);
 $router->get('delete-supplier/{id}', [App\Controllers\SupplierController::class, 'deleteSupplier']);
 
+
+// ===================
+// TOUR IMAGES (Ảnh tour)
+// ===================
+$router->get('list-tour-images', [App\Controllers\TourImgController::class, 'listImages']);
+$router->get('add-tour-image', [App\Controllers\TourImgController::class, 'createImage']);
+$router->post('post-tour-image', [App\Controllers\TourImgController::class, 'postImage']);
+$router->get('detail-tour-image/{id}', [App\Controllers\TourImgController::class, 'detailImage']);
+$router->post('edit-tour-image/{id}', [App\Controllers\TourImgController::class, 'editImage']);
+$router->get('delete-tour-image/{id}', [App\Controllers\TourImgController::class, 'deleteImage']);
+
+// ===================
+// TOUR LOGS (Nhật ký tour)
+// ===================
+$router->get('list-tour-logs', [App\Controllers\TourLogController::class, 'listLogs']);
+$router->get('add-tour-log', [App\Controllers\TourLogController::class, 'createLog']);
+$router->post('post-tour-log', [App\Controllers\TourLogController::class, 'postLog']);
+$router->get('detail-tour-log/{id}', [App\Controllers\TourLogController::class, 'detailLog']);
+$router->post('edit-tour-log/{id}', [App\Controllers\TourLogController::class, 'editLog']);
+$router->get('delete-tour-log/{id}', [App\Controllers\TourLogController::class, 'deleteLog']);
+
+
+
 // ===================
 // ITINERARY (Lịch trình)
 // ===================

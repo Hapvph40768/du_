@@ -273,14 +273,10 @@ class BladeOne
         $this->setMode($mode);
         $this->setCommentMode($commentMode);
         self::$instance = $this;
-        $this->authCallBack = function(
-            $action = null,
-            /** @noinspection PhpUnusedParameterInspection */
-            $subject = null
-        ) {
+        $this->authCallBack = function ($action = null, /** @noinspection PhpUnusedParameterInspection */ $subject = null) {
             return \in_array($action, $this->currentPermission, true);
         };
-        $this->authAnyCallBack = function($array = []) {
+        $this->authAnyCallBack = function ($array = []) {
             foreach ($array as $permission) {
                 if (\in_array($permission, $this->currentPermission ?? [], true)) {
                     return true;
@@ -288,10 +284,7 @@ class BladeOne
             }
             return false;
         };
-        $this->errorCallBack = static function(
-            /** @noinspection PhpUnusedParameterInspection */
-            $key = null
-        ) {
+        $this->errorCallBack = static function ( /** @noinspection PhpUnusedParameterInspection */ $key = null) {
             return false;
         };
         // If the "traits" has "Constructors", then we call them.
@@ -300,7 +293,7 @@ class BladeOne
         // 2- it must don't have arguments
         // 3- It must have the name of the trait. i.e. trait=MyTrait, method=MyTrait()
         $traits = get_declared_traits();
-        $currentTraits = (array)class_uses($this);
+        $currentTraits = (array) class_uses($this);
         foreach ($traits as $trait) {
             $r = explode('\\', $trait);
             $name = end($r);
@@ -490,7 +483,7 @@ class BladeOne
             return \htmlentities(\print_r($value, true), ENT_QUOTES, 'UTF-8', false);
         }
         if (\is_numeric($value)) {
-            $value = (string)$value;
+            $value = (string) $value;
         }
         return \htmlentities($value, ENT_QUOTES, 'UTF-8', false);
     }
@@ -595,7 +588,7 @@ class BladeOne
             $alias = \explode('.', $view);
             $alias = \end($alias);
         }
-        $this->directive($alias, function($expression) use ($view) {
+        $this->directive($alias, function ($expression) use ($view) {
             $expression = $this->stripParentheses($expression) ?: '[]';
             return "$this->phpTag echo \$this->runChild('$view', $expression); ?>";
         });
@@ -640,7 +633,7 @@ class BladeOne
      */
     public static function startsWith($haystack, $needles): bool
     {
-        foreach ((array)$needles as $needle) {
+        foreach ((array) $needles as $needle) {
             if ($needle != '') {
                 if (\function_exists('mb_strpos')) {
                     if ($haystack !== null && \mb_strpos($haystack, $needle) === 0) {
@@ -747,7 +740,7 @@ class BladeOne
         \extract($data, EXTR_SKIP);
         $previousError = \error_get_last();
         try {
-            @eval('?' . '>' . $php);
+            @eval ('?' . '>' . $php);
         } catch (Exception $e) {
             while (\ob_get_level() > $obLevel) {
                 \ob_end_clean();
@@ -811,7 +804,7 @@ class BladeOne
      */
     protected function storeVerbatimBlocks($value): string
     {
-        return \preg_replace_callback('/(?<!@)@verbatim(.*?)@endverbatim/s', function($matches) {
+        return \preg_replace_callback('/(?<!@)@verbatim(.*?)@endverbatim/s', function ($matches) {
             $this->verbatimBlocks[] = $matches[1];
             return $this->verbatimPlaceholder;
         }, $value);
@@ -848,7 +841,7 @@ class BladeOne
      */
     protected function restoreVerbatimBlocks($result): string
     {
-        $result = \preg_replace_callback('/' . \preg_quote($this->verbatimPlaceholder) . '/', function() {
+        $result = \preg_replace_callback('/' . \preg_quote($this->verbatimPlaceholder) . '/', function () {
             return \array_shift($this->verbatimBlocks);
         }, $result);
         $this->verbatimBlocks = [];
@@ -1170,19 +1163,19 @@ class BladeOne
     public function registerIfStatement($name, callable $callback): string
     {
         $this->conditions[$name] = $callback;
-        $this->directive($name, function($expression) use ($name) {
+        $this->directive($name, function ($expression) use ($name) {
             $tmp = $this->stripParentheses($expression);
             return $expression !== ''
                 ? $this->phpTag . " if (\$this->check('$name', $tmp)): ?>"
                 : $this->phpTag . " if (\$this->check('$name')): ?>";
         });
-        $this->directive('else' . $name, function($expression) use ($name) {
+        $this->directive('else' . $name, function ($expression) use ($name) {
             $tmp = $this->stripParentheses($expression);
             return $expression !== ''
                 ? $this->phpTag . " elseif (\$this->check('$name', $tmp)): ?>"
                 : $this->phpTag . " elseif (\$this->check('$name')): ?>";
         });
-        $this->directive('end' . $name, function() {
+        $this->directive('end' . $name, function () {
             return $this->phpTag . ' endif; ?>';
         });
         return '';
@@ -1342,7 +1335,8 @@ class BladeOne
      */
     protected function wildCardComparison($text, $textWithWildcard): bool
     {
-        if (($textWithWildcard === null || $textWithWildcard === '')
+        if (
+            ($textWithWildcard === null || $textWithWildcard === '')
             || strpos($textWithWildcard, '*') === false
         ) {
             // if the text with wildcard is null or empty, or it contains two ** or it contains no * then..
@@ -1591,7 +1585,7 @@ class BladeOne
         // flush out any stray output that might get out before an error occurs or
         // an exception is thrown. This prevents any partial views from leaking.
         try {
-            eval(' ?>' . $content . $this->phpTag);
+            eval (' ?>' . $content . $this->phpTag);
         } catch (\Throwable $e) {
             $this->handleViewException($e);
         }
@@ -2089,7 +2083,7 @@ class BladeOne
             'odd' => false,
             'last' => isset($length) ? $length == 1 : null,
             'depth' => \count($this->loopsStack) + 1,
-            'parent' => $parent ? (object)$parent : null,
+            'parent' => $parent ? (object) $parent : null,
         ];
     }
 
@@ -2111,7 +2105,7 @@ class BladeOne
             $loop['remaining']--;
             $loop['last'] = $loop['index'] == $loop['count'] - 1;
         }
-        return (object)$loop;
+        return (object) $loop;
     }
 
     /**
@@ -2131,7 +2125,7 @@ class BladeOne
      */
     public function getFirstLoop(): ?object
     {
-        return ($last = static::last($this->loopsStack)) ? (object)$last : null;
+        return ($last = static::last($this->loopsStack)) ? (object) $last : null;
     }
 
     /**
@@ -2206,15 +2200,18 @@ class BladeOne
         }
         $me = $this;
         // we returned the escape character.
-        return preg_replace_callback('/' . $this->escapeStack0 . '\s?([A-Za-z0-9_:() ,*.@$]+)\s?' . $this->escapeStack1 . '/u',
-            static function($matches) use ($me) {
+        return preg_replace_callback(
+            '/' . $this->escapeStack0 . '\s?([A-Za-z0-9_:() ,*.@$]+)\s?' . $this->escapeStack1 . '/u',
+            static function ($matches) use ($me) {
                 $l0 = strlen($me->escapeStack0);
                 $l1 = strlen($me->escapeStack1);
                 $item = trim(is_array($matches) ? substr($matches[0], $l0, -$l1) : substr($matches, $l0, -$l1));
                 $items = explode(',', $item);
                 return $me->yieldPushContent($items[0], $items[1] ?? null);
                 //return is_array($r) ? $flagtxt . json_encode($r) : $flagtxt . $r;
-            }, $string);
+            },
+            $string
+        );
     }
 
     /**
@@ -2975,7 +2972,7 @@ class BladeOne
             'compileEscapedEchos' => \strlen(\stripcslashes($this->escapedTags[0])),
             'compileRegularEchos' => \strlen(\stripcslashes($this->contentTags[0])),
         ];
-        \uksort($methods, static function($method1, $method2) use ($methods) {
+        \uksort($methods, static function ($method1, $method2) use ($methods) {
             // Ensure the longest tags are processed first
             if ($methods[$method1] > $methods[$method2]) {
                 return -1;
@@ -3020,7 +3017,7 @@ class BladeOne
          *
          * @return string
          */
-        $callback = function($match) {
+        $callback = function ($match) {
             if (isset($match[4]) && static::contains($match[0], 'x-')) {
                 $match[4] = $this->compileComponents($match[4]);
             }
@@ -3067,7 +3064,7 @@ class BladeOne
          *
          * @return mixed|string
          */
-        $callback = function($match) {
+        $callback = function ($match) {
             if (static::contains($match[1], '@')) {
                 // @@escaped tag
                 $match[0] = isset($match[3]) ? $match[1] . $match[3] : $match[1];
@@ -3143,7 +3140,7 @@ class BladeOne
      */
     public static function contains($haystack, $needles): bool
     {
-        foreach ((array)$needles as $needle) {
+        foreach ((array) $needles as $needle) {
             if ($needle != '') {
                 if (\function_exists('mb_strpos')) {
                     if (\mb_strpos($haystack, $needle) !== false) {
@@ -3396,7 +3393,7 @@ class BladeOne
     protected function compileRawEchos($value): string
     {
         $pattern = \sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->rawTags[0], $this->rawTags[1]);
-        $callback = function($matches) {
+        $callback = function ($matches) {
             $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
             return $matches[1] ? \substr(
                 $matches[0],
@@ -3489,7 +3486,7 @@ class BladeOne
     protected function compileRegularEchos($value): string
     {
         $pattern = \sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->contentTags[0], $this->contentTags[1]);
-        $callback = function($matches) {
+        $callback = function ($matches) {
             $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
             $wrapped = \sprintf($this->echoFormat, $this->compileEchoDefaults($matches[2]));
             return $matches[1] ? \substr($matches[0], 1) : $this->phpTagEcho . $wrapped . '; ?>' . $whitespace;
@@ -3506,7 +3503,7 @@ class BladeOne
     protected function compileEscapedEchos($value): string
     {
         $pattern = \sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->escapedTags[0], $this->escapedTags[1]);
-        $callback = function($matches) {
+        $callback = function ($matches) {
             $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
             return $matches[1] ? $matches[0] : $this->phpTag
                 . \sprintf($this->echoFormat, $this->compileEchoDefaults($matches[2])) . '; ?>'
