@@ -71,9 +71,21 @@
             <input type="file" name="avatar" class="form-control" accept="image/*">
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label class="form-label">Ngôn ngữ</label>
-            <input type="text" name="languages" class="form-control" placeholder="Ví dụ: Tiếng Việt, Tiếng Anh">
+            <div class="row g-2">
+                @php
+                    $langs = ['Tiếng Việt', 'Tiếng Anh', 'Tiếng Trung', 'Tiếng Hàn', 'Tiếng Nhật', 'Tiếng Pháp', 'Tiếng Đức', 'Tiếng Nga', 'Tiếng Tây Ban Nha'];
+                @endphp
+                @foreach($langs as $lang)
+                    <div class="col-6 col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="languages[]" value="{{ $lang }}" id="lang_{{ $loop->index }}">
+                            <label class="form-check-label" for="lang_{{ $loop->index }}">{{ $lang }}</label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <div class="col-md-6">
