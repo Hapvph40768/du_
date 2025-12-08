@@ -1,0 +1,43 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Nhật ký tour'); ?>
+
+<?php $this->startSection('active-guide-tourlog', 'active'); ?>
+<?php $this->startSection('content'); ?>
+<h1>Danh sách nhật ký tour</h1>
+
+<a href="<?php echo \htmlentities(route('add-guide-tourlog')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-primary mb-3">+ Thêm nhật ký</a>
+
+<table class="table table-bordered">
+ <thead>
+ <tr>
+ <th>ID</th>
+ <th>Departure</th>
+ <th>Ngày thứ</th>
+ <th>Ghi chú</th>
+ <th>Bắt đầu</th>
+ <th>Kết thúc</th>
+ <th>Hành động</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ <?php $__currentLoopData = $logs; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $log): $loop = $this->incrementLoopIndices();  ?>
+ <tr>
+ <td><?php echo \htmlentities($log->id??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td>#<?php echo \htmlentities($log->departure_id??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td>Ngày <?php echo \htmlentities($log->day_number??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($log->note??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($log->date_start??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td><?php echo \htmlentities($log->date_end??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+
+ <td>
+ <a href="<?php echo \htmlentities(route('detail-guide-tourlog/' . $log->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-warning">Sửa</a>
+ </td>
+ </tr>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </tbody>
+</table>
+<?php $this->stopSection(); ?>
+
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.guide'); } ?>

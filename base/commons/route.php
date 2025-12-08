@@ -183,6 +183,14 @@ $router->get('list-guide-attendance', [App\Controllers\GuideAttendanceController
 $router->get('detail-guide-attendance/{id}', [App\Controllers\GuideAttendanceController::class, 'detailAttendance']); 
 $router->post('edit-guide-attendance/{id}', [App\Controllers\GuideAttendanceController::class, 'updateAttendance']);  
 
+// ===================
+// TOUR LOG (Nhật ký tour) GUIDES
+// ===================
+$router->get('list-guide-tourlog', [App\Controllers\GuideTourLogController::class, 'list']);
+$router->get('add-guide-tourlog', [App\Controllers\GuideTourLogController::class, 'create']);
+$router->post('post-guide-tourlog', [App\Controllers\GuideTourLogController::class, 'store']);
+$router->get('detail-guide-tourlog/{id}', [App\Controllers\GuideTourLogController::class, 'detail']);
+$router->post('update-guide-tourlog/{id}', [App\Controllers\GuideTourLogController::class, 'update']);
 
 // ===================
 // DISPATCHER
