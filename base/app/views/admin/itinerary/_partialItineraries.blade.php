@@ -1,7 +1,16 @@
 <div class="itinerary-partial">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Lịch trình cho: {{ $departure->name ?? 'Chưa đặt tên' }}</h5>
-        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <h5 class="mb-0">Lịch trình: {{ $departure->tour_name ?? ($departure->name ?? 'Chưa đặt tên') }} 
+            <small class="text-muted fs-6">({{ $departure->start_date }})</small>
+        </h5>
+        <div class="d-flex gap-2">
+            <a href="{{ route('edit-departure/'.$departure->id) }}" class="btn btn-sm btn-warning fw-bold">
+                <i class="fas fa-edit me-1"></i>Sửa Lịch
+            </a>
+            <button type="button" class="btn btn-sm btn-danger fw-bold" onclick="if(confirm('Bạn có chắc muốn xóa lịch khởi hành này?')) window.location.href='{{ route('delete-departure/'.$departure->id) }}'">
+                <i class="fas fa-trash me-1"></i>Xóa
+            </button>
+        </div>
     </div>
 
     <div class="table-responsive">

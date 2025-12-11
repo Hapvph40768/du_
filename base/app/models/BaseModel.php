@@ -70,6 +70,11 @@ class BaseModel
         return $result->fetch(PDO::FETCH_OBJ);
     }
 
+    public function getLastInsertId()
+    {
+        return $this->pdo->lastInsertId();
+    }
+
 }
 //
 //

@@ -26,7 +26,13 @@ class PaymentController extends BaseController
         $bookingModel = new BookingModel();
         $bookings = $bookingModel->getAllBookings();
 
-        return $this->render("admin.payment.addPayment", ['bookings' => $bookings]);
+        $bookingServiceModel = new \App\Models\BookingServiceModel();
+        $bookingServices = $bookingServiceModel->getAllBookingServices();
+
+        return $this->render("admin.payment.addPayment", [
+            'bookings' => $bookings,
+            'bookingServices' => $bookingServices
+        ]);
     }
 
     // 3. Xử lý thêm payment
@@ -35,6 +41,15 @@ class PaymentController extends BaseController
         $error = [];
 
         $booking_id       = $_POST['booking_id'] ?? '';
+        
+        // Handle multiple booking services
+        $booking_service_ids = $_POST['booking_service_ids'] ?? [];
+        $booking_service_id = null;
+        
+        if (is_array($booking_service_ids) && count($booking_service_ids) === 1) {
+             $booking_service_id = $booking_service_ids[0];
+        }
+
         $amount           = $_POST['amount'] ?? 0;
         $method           = $_POST['method'] ?? 'cash';
         $transaction_code = $_POST['transaction_code'] ?? null;
@@ -53,6 +68,7 @@ class PaymentController extends BaseController
 
         $check = $this->payment->addPayment([
             'booking_id'       => $booking_id,
+            'booking_service_id' => $booking_service_id,
             'amount'           => $amount,
             'method'           => $method,
             'transaction_code' => $transaction_code,
@@ -77,9 +93,13 @@ class PaymentController extends BaseController
         $bookingModel = new BookingModel();
         $bookings = $bookingModel->getAllBookings();
 
+        $bookingServiceModel = new \App\Models\BookingServiceModel();
+        $bookingServices = $bookingServiceModel->getAllBookingServices();
+
         return $this->render("admin.payment.editPayment", [
             'detail'   => $detail,
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'bookingServices' => $bookingServices
         ]);
     }
 
@@ -91,6 +111,7 @@ class PaymentController extends BaseController
         $error = [];
 
         $booking_id       = $_POST['booking_id'] ?? '';
+        $booking_service_id = $_POST['booking_service_id'] ?? null;
         $amount           = $_POST['amount'] ?? 0;
         $method           = $_POST['method'] ?? 'cash';
         $transaction_code = $_POST['transaction_code'] ?? null;
@@ -109,6 +130,7 @@ class PaymentController extends BaseController
 
         $check = $this->payment->updatePayment($id, [
             'booking_id'       => $booking_id,
+            'booking_service_id' => $booking_service_id,
             'amount'           => $amount,
             'method'           => $method,
             'transaction_code' => $transaction_code,

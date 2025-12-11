@@ -1,80 +1,125 @@
 <?php $_shouldextend[1]=1; ?>
 <?php $this->startSection('title', 'Thêm Attendance'); ?>
-
+<?php $this->startSection('active-booking-group', 'active'); ?>
 <?php $this->startSection('active-attendance', 'active'); ?>
-<?php $this->startSection('content'); ?>
- <h1>Thêm Attendance</h1>
 
- <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
- <ul>
+<?php $this->startSection('content'); ?>
+<div class="page-header mb-4">
+ <div class="d-flex justify-content-between align-items-center">
+ <div>
+ <?php if(isset($_GET['booking_customer_id']) || isset($_GET['customer_id'])): ?>
+ <h1 class="text-white mb-1">Cập nhật Điểm Danh</h1>
+ <p class="text-muted mb-0">Cập nhật trạng thái tham gia của khách hàng.</p>
+ <?php else: ?>
+ <h1 class="text-white mb-1">Thêm Điểm Danh Mới</h1>
+ <p class="text-muted mb-0">Thêm khách hàng vào danh sách tham gia.</p>
+ <?php endif; ?>
+ </div>
+ <a href="<?php echo \htmlentities(route('list-attendance')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-outline-secondary rounded-pill px-3">
+ <i class="bi bi-arrow-left me-2"></i> Quay lại
+ </a>
+ </div>
+</div>
+
+<?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" style="background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: #fff;">
+ <i class="bi bi-exclamation-circle me-2"></i> 
+ <?php if(is_array($_SESSION['errors'])): ?>
+ <ul class="mb-0 ps-3">
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
  <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </ul>
+ <?php else: ?>
+ <?php echo \htmlentities($_SESSION['errors']??'', ENT_QUOTES, 'UTF-8', false); ?>
+
  <?php endif; ?>
+ <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+ </div>
+<?php endif; ?>
 
- <a href="<?php echo \htmlentities(route('list-attendance')??'', ENT_QUOTES, 'UTF-8', false); ?>">
- <button type="button" class="btn btn-warning">Quay lại</button>
- </a>
-
+<div class="card-dark p-4">
  <form action="<?php echo \htmlentities(route('post-attendance')??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post">
- <?php /* chọn departure */ ?>
- <div class="mb-3">
- <label>Lịch khởi hành</label>
- <select name="departure_id" required>
+ <div class="row g-4">
+ <?php /* Chọn departure */ ?>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Lịch khởi hành <span class="text-danger">*</span></label>
+ <select name="departure_id" class="form-select form-select-dark" required>
+ <option value="">-- Chọn lịch khởi hành --</option>
  <?php $__currentLoopData = $departures; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $d): $loop = $this->incrementLoopIndices();  ?>
- <option value="<?php echo \htmlentities($d->id??'', ENT_QUOTES, 'UTF-8', false); ?>"><?php echo \htmlentities($d->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities($d->start_date??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($d->end_date??'', ENT_QUOTES, 'UTF-8', false); ?>)</option>
+ <?php 
+ $sDate = $d->start_date ?? ($d->booking_start_date ?? null);
+ $eDate = $d->end_date ?? ($d->booking_end_date ?? null);
+ ?>
+ <option value="<?php echo \htmlentities($d->id??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities((isset($_GET['departure_id']) && $_GET['departure_id'] == $d->id) ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ <?php echo \htmlentities($d->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities(!empty($sDate) ? date('d/m/Y', strtotime($sDate)) : '?'??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities(!empty($eDate) ? date('d/m/Y', strtotime($eDate)) : '?'??'', ENT_QUOTES, 'UTF-8', false); ?>)
+ </option>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </select>
  </div>
 
- <?php /* chọn customer */ ?>
- <div class="mb-3">
- <label>Khách hàng</label>
- <select name="customer_id" required>
+ <?php /* Chọn customer */ ?>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Khách hàng</label>
+ <select name="customer_id" class="form-select form-select-dark">
+ <option value="">-- Chọn khách hàng --</option>
  <?php $__currentLoopData = $customers; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $c): $loop = $this->incrementLoopIndices();  ?>
- <option value="<?php echo \htmlentities($c->id??'', ENT_QUOTES, 'UTF-8', false); ?>"><?php echo \htmlentities($c->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($c->phone??'', ENT_QUOTES, 'UTF-8', false); ?></option>
+ <option value="<?php echo \htmlentities($c->id??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities((isset($_GET['customer_id']) && $_GET['customer_id'] == $c->id) ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ <?php echo \htmlentities($c->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($c->phone??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </option>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </select>
  </div>
 
- <?php /* chọn booking_customer */ ?>
- <div class="mb-3">
- <label>Booking Customer (nếu có)</label>
- <select name="booking_customer_id">
- <option value="">-- Không chọn --</option>
+ <?php /* Chọn booking_customer */ ?>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Thành viên (Khách đi kèm)</label>
+ <select name="booking_customer_id" class="form-select form-select-dark">
+ <option value="">-- Không chọn (Nếu là khách chính) --</option>
  <?php $__currentLoopData = $bookingCustomers; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $bc): $loop = $this->incrementLoopIndices();  ?>
- <option value="<?php echo \htmlentities($bc->id??'', ENT_QUOTES, 'UTF-8', false); ?>"><?php echo \htmlentities($bc->fullname??'', ENT_QUOTES, 'UTF-8', false); ?></option>
+ <option value="<?php echo \htmlentities($bc->id??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities((isset($_GET['booking_customer_id']) && $_GET['booking_customer_id'] == $bc->id) ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ <?php echo \htmlentities($bc->fullname??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </option>
  <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
  </select>
  </div>
 
- <?php /* trạng thái */ ?>
- <div class="mb-3">
- <label>Trạng thái</label>
- <select name="status" class="form-select" required>
+ <?php /* Trạng thái */ ?>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Trạng thái <span class="text-danger">*</span></label>
+ <select name="status" class="form-select form-select-dark" required>
  <option value="present">Có mặt</option>
  <option value="absent">Vắng</option>
  </select>
  </div>
 
- <?php /* checkin_time */ ?>
- <div class="mb-3">
- <label for="checkin_time" class="form-label">Thời gian check-in</label>
- <input type="datetime-local" class="form-control" name="checkin_time">
+ <?php /* Checkin time */ ?>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Thời gian Check-in</label>
+ <input type="datetime-local" class="form-control form-control-dark" name="checkin_time">
  </div>
 
- <?php /* ghi chú */ ?>
- <div class="mb-3">
- <label for="note" class="form-label">Ghi chú</label>
- <textarea class="form-control" name="note"></textarea>
+ <?php /* Ghi chú */ ?>
+ <div class="col-12">
+ <label class="form-label text-white-50">Ghi chú</label>
+ <textarea class="form-control form-control-dark" name="note" rows="3" placeholder="Nhập ghi chú..."></textarea>
+ </div>
  </div>
 
- <button type="submit" class="btn btn-primary" name="btn-submit">Xác nhận</button>
+ <div class="d-flex justify-content-end gap-2 mt-4">
+ <a href="<?php echo \htmlentities(route('list-attendance')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-outline-secondary px-4 rounded-pill">Hủy</a>
+ <button type="submit" class="btn btn-primary px-5 rounded-pill" name="btn-submit">
+ <i class="bi bi-check-lg me-2"></i> Xác nhận
+ </button>
+ </div>
  </form>
+</div>
 <?php $this->stopSection(); ?>
+
 <?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

@@ -1,0 +1,119 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Sửa thanh toán'); ?>
+
+<?php $this->startSection('active-payment', 'active'); ?>
+<?php $this->startSection('content'); ?>
+ <div class="page-header mb-4">
+ <h1 class="text-white mb-1">Cập nhật thanh toán</h1>
+ <p class="text-white-50 mb-0">Chỉnh sửa thông tin giao dịch #<?php echo \htmlentities($detail->id??'', ENT_QUOTES, 'UTF-8', false); ?></p>
+ </div>
+
+ <?php /* Thông báo lỗi */ ?>
+ <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-danger mb-4">
+ <ul class="mb-0">
+ <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($error??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </ul>
+ </div>
+ <?php unset($_SESSION['errors'])  ?>
+ <?php endif; ?>
+
+ <?php /* Thông báo thành công */ ?>
+ <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-success mb-4">
+ <span><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ </div>
+ <?php unset($_SESSION['success'])  ?>
+ <?php endif; ?>
+
+ <div class="row">
+ <div class="col-md-8 mx-auto">
+ <div class="card-dark p-4">
+ <form action="<?php echo \htmlentities(route('edit-payment/' . $detail->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post">
+ 
+ <?php /* chọn booking */ ?>
+ <div class="mb-3">
+ <label class="form-label text-white-50">Booking <span class="text-danger">*</span></label>
+ <select name="booking_id" class="form-select" required>
+ <?php $__currentLoopData = $bookings; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $b): $loop = $this->incrementLoopIndices();  ?>
+ <option value="<?php echo \htmlentities($b->id??'', ENT_QUOTES, 'UTF-8', false); ?>" data-price="<?php echo \htmlentities($b->total_price??'', ENT_QUOTES, 'UTF-8', false); ?>" <?php echo \htmlentities($b->id == $detail->booking_id ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>
+ Booking #<?php echo \htmlentities($b->id??'', ENT_QUOTES, 'UTF-8', false); ?> - <?php echo \htmlentities($b->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities(number_format($b->total_price)??'', ENT_QUOTES, 'UTF-8', false); ?> VND)
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <div class="row mb-3">
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Số tiền <span class="text-danger">*</span></label>
+ <div class="input-group">
+ <input type="number" step="0.01" class="form-control" name="amount" id="amount" value="<?php echo \htmlentities($detail->amount??'', ENT_QUOTES, 'UTF-8', false); ?>" required>
+ <span class="input-group-text bg-dark text-white-50 border-secondary">VND</span>
+ </div>
+ </div>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Phương thức <span class="text-danger">*</span></label>
+ <select name="method" class="form-select" required>
+ <option value="cash" <?php echo \htmlentities($detail->method === 'cash' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Tiền mặt</option>
+ <option value="bank" <?php echo \htmlentities($detail->method === 'bank' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Ngân hàng</option>
+ <option value="card" <?php echo \htmlentities($detail->method === 'card' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Thẻ tín dụng/Ghi nợ</option>
+ <option value="momo" <?php echo \htmlentities($detail->method === 'momo' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Ví MoMo</option>
+ <option value="zalo" <?php echo \htmlentities($detail->method === 'zalo' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>ZaloPay</option>
+ </select>
+ </div>
+ </div>
+
+ <div class="row mb-3">
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Mã giao dịch</label>
+ <input type="text" class="form-control" name="transaction_code" value="<?php echo \htmlentities($detail->transaction_code??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ </div>
+ <div class="col-md-6">
+ <label class="form-label text-white-50">Thời gian thanh toán</label>
+ <input type="datetime-local" class="form-control" name="paid_at" 
+ value="<?php echo \htmlentities($detail->paid_at ? date('Y-m-d\TH:i', strtotime($detail->paid_at)) : ''??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ </div>
+ </div>
+
+ <div class="mb-4">
+ <label class="form-label text-white-50">Trạng thái <span class="text-danger">*</span></label>
+ <select name="status" class="form-select" required>
+ <option value="pending" <?php echo \htmlentities($detail->status === 'pending' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Đang xử lý</option>
+ <option value="success" <?php echo \htmlentities($detail->status === 'success' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Thành công</option>
+ <option value="failed" <?php echo \htmlentities($detail->status === 'failed' ? 'selected' : ''??'', ENT_QUOTES, 'UTF-8', false); ?>>Thất bại</option>
+ </select>
+ </div>
+
+ <div class="d-flex justify-content-end gap-2">
+ <a href="<?php echo \htmlentities(route('list-payment')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-outline-secondary px-4">Hủy bỏ</a>
+ <button type="submit" class="btn btn-primary px-4" name="btn-submit">Cập nhật</button>
+ </div>
+ </form>
+ </div>
+ </div>
+ </div>
+
+ <script>
+ document.addEventListener('DOMContentLoaded', function() {
+ const bookingSelect = document.querySelector('select[name="booking_id"]');
+ const amountInput = document.getElementById('amount');
+
+ if (bookingSelect && amountInput) {
+ bookingSelect.addEventListener('change', function() {
+ const selectedOption = this.options[this.selectedIndex];
+ const price = selectedOption.getAttribute('data-price');
+ 
+ if (price) {
+ amountInput.value = price;
+ }
+ });
+ }
+ });
+ </script>
+<?php $this->stopSection(); ?>
+
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.dashboard'); } ?>

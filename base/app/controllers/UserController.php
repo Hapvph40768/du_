@@ -15,14 +15,15 @@ class UserController extends BaseController
     // Danh sách user
     public function listUsers()
     {
-        $users = $this->user->getAllUsers();
-        return $this->render("user.listUser", ['users' => $users]);
+        $users = $this->user->getCustomersOnly();
+        return $this->render("admin.user.listUser", ['users' => $users]);
     }
 
     // Form thêm
     public function createUser()
     {
-        return $this->render("user.addUser");
+        $roles = $this->user->getAllRoles();
+        return $this->render("admin.user.addUser", ['roles' => $roles]);
     }
 
     // Xử lý thêm
@@ -32,10 +33,14 @@ class UserController extends BaseController
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-        $role = $_POST['role'] ?? 'customer';
+        $fullname = $_POST['fullname'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $role_id = $_POST['role_id'] ?? 2; // Default to customer (assumed ID 2) if not set
+        $is_active = $_POST['status'] ?? 1;
 
-        if (empty($username)) $error['username'] = "Username không được để trống.";
-        if (empty($password)) $error['password'] = "Password không được để trống.";
+        if (empty($username)) $error['username'] = "Tên đăng nhập không được để trống.";
+        if (empty($password)) $error['password'] = "Mật khẩu không được để trống.";
+        if ($this->user->getUserByUsername($username)) $error['username'] = "Tên đăng nhập đã tồn tại.";
 
         if (!empty($error)) {
             redirect('errors', $error, 'add-user');
@@ -44,14 +49,17 @@ class UserController extends BaseController
         $check = $this->user->createUser([
             'username' => $username,
             'email' => $email,
+            'fullname' => $fullname,
+            'phone' => $phone,
             'password' => password_hash($password, PASSWORD_BCRYPT),
-            'role' => $role,
+            'role_id' => $role_id,
+            'is_active' => $is_active,
             'created_at' => date("Y-m-d H:i:s"),
             'updated_at' => date("Y-m-d H:i:s")
         ]);
 
         if ($check) {
-            redirect('success', "Thêm user thành công", 'list-user');
+            redirect('success', "Thêm người dùng thành công", 'list-user');
         } else {
             redirect('errors', "Thêm thất bại", 'add-user');
         }
@@ -61,7 +69,8 @@ class UserController extends BaseController
     public function detailUser($id)
     {
         $detail = $this->user->getUserById($id);
-        return $this->render("user.editUser", ['detail' => $detail]);
+        $roles = $this->user->getAllRoles();
+        return $this->render("admin.user.editUser", ['detail' => $detail, 'roles' => $roles]);
     }
 
     // Xử lý sửa
@@ -72,22 +81,36 @@ class UserController extends BaseController
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-        $role = $_POST['role'] ?? 'customer';
-        $is_active = $_POST['is_active'] ?? 1;
+        $fullname = $_POST['fullname'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $role_id = $_POST['role_id'] ?? 2;
+        $is_active = $_POST['status'] ?? 1;
 
-        $check = $this->user->updateUser($id, [
+        $data = [
             'username' => $username,
             'email' => $email,
-            'password' => password_hash($password, PASSWORD_BCRYPT),
-            'role' => $role,
+            'fullname' => $fullname,
+            'phone' => $phone,
+            'role_id' => $role_id,
             'is_active' => $is_active,
             'updated_at' => date("Y-m-d H:i:s")
-        ]);
+        ];
+
+        // Only update password if provided
+        if (!empty($password)) {
+            $data['password'] = password_hash($password, PASSWORD_BCRYPT); 
+        } else {
+             // Retrieve existing password if not changing
+             $currentUser = $this->user->getUserById($id);
+             $data['password'] = $currentUser->password; 
+        }
+        
+        $check = $this->user->updateUser($id, $data);
 
         if ($check) {
             redirect('success', "Cập nhật thành công", 'list-user');
         } else {
-            redirect('errors', "Cập nhật thất bại", 'detail-user/' . $id);
+            redirect('error', "Cập nhật thất bại", 'detail-user/' . $id);
         }
     }
 

@@ -16,73 +16,81 @@
         @php unset($_SESSION['errors']) @endphp
     @endif
 
-    <form action="{{ route('post-service') }}" method="post">
-        <div class="mb-3">
-            <label>Tên dịch vụ</label>
-            <input type="text" class="form-control" name="name" required>
-        </div>
+    <div class="card shadow-sm p-4">
+        <form action="{{ route('post-service') }}" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên dịch vụ</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
 
-        <div class="mb-3">
-            <label>Gói dịch vụ</label>
-            <input type="text" class="form-control" name="package_name">
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Gói dịch vụ</label>
+                <input type="text" class="form-control" name="package_name">
+            </div>
 
-        <div class="mb-3">
-            <label>Tour</label>
-            <select name="tour_id" class="form-select">
-                <option value="">-- Không chọn --</option>
-                @foreach($tours as $t)
-                    <option value="{{ $t->id }}">{{ $t->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nhà cung cấp</label>
+                <select name="supplier_id" id="supplierSelect" class="form-select">
+                    <option value="" data-type="">-- Không chọn --</option>
+                    @foreach($suppliers as $sup)
+                        <option value="{{ $sup->id }}" data-type="{{ $sup->type }}">{{ $sup->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label>Nhà cung cấp</label>
-            <select name="supplier_id" class="form-select">
-                <option value="">-- Không chọn --</option>
-                @foreach($suppliers as $sup)
-                    <option value="{{ $sup->id }}">{{ $sup->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Loại dịch vụ</label>
+                <input type="text" class="form-control bg-light" name="type" id="serviceTypeInput" readonly>
+            </div>
 
-        <div class="mb-3">
-            <label>Loại dịch vụ</label>
-            <input type="text" class="form-control" name="type">
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mô tả</label>
+                <textarea class="form-control" name="description"></textarea>
+            </div>
 
-        <div class="mb-3">
-            <label>Mô tả</label>
-            <textarea class="form-control" name="description"></textarea>
-        </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Giá</label>
+                    <input type="number" step="0.01" class="form-control" name="price" value="0">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Giá mặc định</label>
+                    <input type="number" step="0.01" class="form-control" name="default_price" value="0">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Tiền tệ</label>
+                    <input type="text" class="form-control" name="currency" value="VND" maxlength="3">
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label>Giá</label>
-            <input type="number" step="0.01" class="form-control" name="price" value="0">
-        </div>
+            <div class="form-check form-switch mb-2">
+                <input type="checkbox" class="form-check-input" name="is_optional" value="1" id="is_optional">
+                <label class="form-check-label" for="is_optional">Dịch vụ tùy chọn</label>
+            </div>
 
-        <div class="mb-3">
-            <label>Giá mặc định</label>
-            <input type="number" step="0.01" class="form-control" name="default_price" value="0">
-        </div>
+            <div class="form-check form-switch mb-3">
+                <input type="checkbox" class="form-check-input" name="is_active" value="1" checked id="is_active">
+                <label class="form-check-label" for="is_active">Đang hoạt động</label>
+            </div>
 
-        <div class="mb-3">
-            <label>Tiền tệ</label>
-            <input type="text" class="form-control" name="currency" value="VND" maxlength="3">
-        </div>
+            <hr>
+            <button type="submit" class="btn btn-primary" name="btn-submit"><i class="fas fa-save me-1"></i> Thêm</button>
+            <a href="{{ route('list-service') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Quay lại</a>
+        </form>
+    </div>
 
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="is_optional" value="1">
-            <label class="form-check-label">Dịch vụ tùy chọn</label>
-        </div>
+    <script>
+        const supplierSelect = document.getElementById('supplierSelect');
+        const serviceTypeInput = document.getElementById('serviceTypeInput');
 
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="is_active" value="1" checked>
-            <label class="form-check-label">Đang hoạt động</label>
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-3" name="btn-submit">Thêm</button>
-        <a href="{{ route('list-service') }}" class="btn btn-secondary mt-3">Quay lại</a>
-    </form>
+        if (supplierSelect) {
+            supplierSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const type = selectedOption.getAttribute('data-type');
+                if (type && serviceTypeInput) {
+                    serviceTypeInput.value = type;
+                }
+            });
+        }
+    </script>
 @endsection

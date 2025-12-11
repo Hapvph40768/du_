@@ -15,14 +15,15 @@
 
     <style>
         :root {
-            --bg-dark: #111827;
-            --bg-card: #1f2937;
-            --text-light: #f3f4f6;
-            --text-muted: #9ca3af;
+            /* Light Theme Palette */
+            --bg-dark: #f3f4f6;       /* Using same name for compatibility, but value is Light Gray */
+            --bg-card: #ffffff;       /* White */
+            --text-light: #111827;    /* Slate 900 (Dark Text) */
+            --text-muted: #6b7280;    /* Slate 500 */
             --primary: #3b82f6;
             --primary-hover: #2563eb;
-            --input-bg: #374151;
-            --input-border: #4b5563;
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
         }
 
         body {
@@ -34,18 +35,18 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.1), transparent 40%);
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.05), transparent 40%);
         }
 
         .auth-card {
             background-color: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             border-radius: 16px;
             padding: 2.5rem;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
             animation: slideUp 0.5s ease-out;
         }
 
@@ -67,9 +68,10 @@
         }
 
         .form-label {
-            color: var(--text-muted);
+            color: var(--text-light);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .form-control {
@@ -85,11 +87,11 @@
             background-color: var(--input-bg);
             border-color: var(--primary);
             color: var(--text-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         .form-control::placeholder {
-            color: #6b7280;
+            color: #9ca3af;
         }
 
         .btn-primary {
@@ -129,9 +131,9 @@
         }
 
         .alert-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
+            background-color: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #ef4444;
             padding: 0.75rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
@@ -140,6 +142,11 @@
             align-items: center;
             gap: 0.5rem;
         }
+
+        /* COMPATIBILITY OVERRIDES for Dark Mode Classes on Light Theme */
+        .text-white { color: var(--text-light) !important; }
+        .text-white-50 { color: var(--text-muted) !important; }
+        .bg-dark { background-color: #ffffff !important; color: var(--text-light) !important; border: 1px solid #e5e7eb !important; }
     </style>
 </head>
 <body>

@@ -3,7 +3,6 @@ namespace App\Controllers;
 
 use App\Models\ServiceModel;
 use App\Models\SupplierModel;
-use App\Models\TourModel;
 
 class ServiceController extends BaseController
 {
@@ -25,11 +24,9 @@ class ServiceController extends BaseController
     public function createService()
     {
         $suppliers = (new SupplierModel())->getAll();
-        $tours     = (new TourModel())->getAllTours();
 
         return $this->render("admin.service.addService", [
-            'suppliers' => $suppliers,
-            'tours'     => $tours
+            'suppliers' => $suppliers
         ]);
     }
 
@@ -57,12 +54,10 @@ class ServiceController extends BaseController
     {
         $detail    = $this->service->getServiceById($id);
         $suppliers = (new SupplierModel())->getAll();
-        $tours     = (new TourModel())->getAllTours();
 
         return $this->render("admin.service.editService", [
             'detail'    => $detail,
-            'suppliers' => $suppliers,
-            'tours'     => $tours
+            'suppliers' => $suppliers
         ]);
     }
 
@@ -102,7 +97,6 @@ class ServiceController extends BaseController
     private function collectServiceData()
     {
         return [
-            'tour_id'      => $_POST['tour_id'] ?? null,
             'package_name' => $_POST['package_name'] ?? '',
             'name'         => $_POST['name'] ?? '',
             'description'  => $_POST['description'] ?? null,

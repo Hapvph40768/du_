@@ -1,4 +1,4 @@
-@extends('layout.guide')
+@extends('layout.guide.GuideLayout')
 @section('title', 'Sửa Attendance')
 
 @section('active-guide-attendance', 'active')

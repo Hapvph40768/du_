@@ -11,11 +11,17 @@ class ServiceChangeRequestsModel extends BaseModel
     {
         $sql = "
             SELECT scr.*, 
-                   b.id AS booking_id, 
+                   bk.id AS booking_id, 
                    u1.username AS requester_name, 
-                   u2.username AS decision_by_name
+                   u2.username AS decision_by_name,
+                   -- bk.fullname AS customer_name,
+                   t.name AS tour_name,
+                   s.name AS service_name
             FROM {$this->table} scr
-            JOIN bookings b ON scr.booking_id = b.id
+            JOIN bookings bk ON scr.booking_id = bk.id
+            JOIN departures d ON bk.departure_id = d.id
+            JOIN tours t ON d.tour_id = t.id
+            LEFT JOIN services s ON scr.service_id = s.id
             LEFT JOIN users u1 ON scr.requester_id = u1.id
             LEFT JOIN users u2 ON scr.decision_by = u2.id
             ORDER BY scr.created_at DESC";
@@ -28,11 +34,17 @@ class ServiceChangeRequestsModel extends BaseModel
     {
         $sql = "
             SELECT scr.*, 
-                   b.id AS booking_id, 
+                   bk.id AS booking_id, 
                    u1.username AS requester_name, 
-                   u2.username AS decision_by_name
+                   u2.username AS decision_by_name,
+                   -- bk.fullname AS customer_name,
+                   t.name AS tour_name,
+                   s.name AS service_name
             FROM {$this->table} scr
-            JOIN bookings b ON scr.booking_id = b.id
+            JOIN bookings bk ON scr.booking_id = bk.id
+            JOIN departures d ON bk.departure_id = d.id
+            JOIN tours t ON d.tour_id = t.id
+            LEFT JOIN services s ON scr.service_id = s.id
             LEFT JOIN users u1 ON scr.requester_id = u1.id
             LEFT JOIN users u2 ON scr.decision_by = u2.id
             WHERE scr.id = ?";
@@ -44,11 +56,12 @@ class ServiceChangeRequestsModel extends BaseModel
     public function addRequest($data)
     {
         $sql = "INSERT INTO {$this->table} 
-                (booking_id, requester_id, request, status) 
-                VALUES (?, ?, ?, ?)";
+                (booking_id, service_id, requester_id, request, status) 
+                VALUES (?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['booking_id'],
+            $data['service_id'] ?? null,
             $data['requester_id'] ?? null,
             $data['request'],
             $data['status'] ?? 'pending'
@@ -59,12 +72,13 @@ class ServiceChangeRequestsModel extends BaseModel
     public function updateRequest($id, $data)
     {
         $sql = "UPDATE {$this->table} 
-                SET booking_id = ?, requester_id = ?, request = ?, status = ?, 
+                SET booking_id = ?, service_id = ?, requester_id = ?, request = ?, status = ?, 
                     decision_by = ?, decided_at = ?, updated_at = NOW() 
                 WHERE id = ?";
         $this->setQuery($sql);
         return $this->execute([
             $data['booking_id'],
+            $data['service_id'] ?? null,
             $data['requester_id'] ?? null,
             $data['request'],
             $data['status'] ?? 'pending',

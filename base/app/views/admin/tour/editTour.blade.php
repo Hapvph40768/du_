@@ -53,11 +53,7 @@
             <input type="number" class="form-control" name="price" step="1000" value="{{ $detail->price }}" required>
         </div>
 
-        {{-- số ngày tour --}}
-        <div class="mb-3">
-            <label for="days" class="form-label fw-bold">Số ngày tour</label>
-            <input type="number" class="form-control" name="days" min="1" value="{{ $detail->days }}" required>
-        </div>
+
 
         {{-- điểm khởi hành --}}
         <div class="mb-3">
@@ -85,7 +81,11 @@
         {{-- loại tour --}}
         <div class="mb-3">
             <label for="category" class="form-label fw-bold">Loại tour</label>
-            <input type="text" class="form-control" name="category" value="{{ $detail->category }}">
+            <select name="category" class="form-select">
+                <option value="">-- Chọn loại tour --</option>
+                <option value="domestic" {{ $detail->category == 'domestic' ? 'selected' : '' }}>Trong nước</option>
+                <option value="international" {{ $detail->category == 'international' ? 'selected' : '' }}>Quốc tế</option>
+            </select>
         </div>
 
         {{-- trạng thái --}}

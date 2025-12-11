@@ -8,9 +8,30 @@ class TourModel extends BaseModel
     // Lấy tất cả tour
     public function getAllTours()
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+        $sql = "SELECT t.*, 
+                       COALESCE(SUM(d.total_seats), 0) as total_seats, 
+                       COALESCE(SUM(d.seats_booked), 0) as booked_seats
+                FROM {$this->table} t
+                LEFT JOIN departures d ON t.id = d.tour_id AND d.status = 'open'
+                GROUP BY t.id
+                ORDER BY t.id DESC";
         $this->setQuery($sql);
         return $this->loadAllRows();
+    }
+
+    // Lấy tour theo trạng thái
+    public function getToursByStatus($status)
+    {
+        $sql = "SELECT t.*, 
+                       COALESCE(SUM(d.total_seats), 0) as total_seats, 
+                       COALESCE(SUM(d.seats_booked), 0) as booked_seats
+                FROM {$this->table} t
+                LEFT JOIN departures d ON t.id = d.tour_id AND d.status = 'open'
+                WHERE t.status = ?
+                GROUP BY t.id
+                ORDER BY t.id DESC";
+        $this->setQuery($sql);
+        return $this->loadAllRows([$status]);
     }
 
     // Lấy tour theo ID
@@ -25,15 +46,14 @@ class TourModel extends BaseModel
     public function addTour($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (`name`, `slug`, `description`, `price`, `days`, `start_location`, `destination`, `thumbnail`, `status`, `category`, `created_at`, `updated_at`) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (`name`, `slug`, `description`, `price`, `start_location`, `destination`, `thumbnail`, `status`, `category`, `created_at`, `updated_at`) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['name'],
             $data['slug'] ?? null,
             $data['description'] ?? null,
             $data['price'] ?? 0.00,
-            $data['days'] ?? 1,
             $data['start_location'] ?? null,
             $data['destination'] ?? null,
             $data['thumbnail'] ?? null,
@@ -48,7 +68,7 @@ class TourModel extends BaseModel
     public function updateTour($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        `name`=?, `slug`=?, `description`=?, `price`=?, `days`=?, `start_location`=?, `destination`=?, `thumbnail`=?, `status`=?, `category`=?, `updated_at`=? 
+        `name`=?, `slug`=?, `description`=?, `price`=?, `start_location`=?, `destination`=?, `thumbnail`=?, `status`=?, `category`=?, `updated_at`=? 
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
@@ -56,7 +76,6 @@ class TourModel extends BaseModel
             $data['slug'] ?? null,
             $data['description'] ?? null,
             $data['price'] ?? 0.00,
-            $data['days'] ?? 1,
             $data['start_location'] ?? null,
             $data['destination'] ?? null,
             $data['thumbnail'] ?? null,

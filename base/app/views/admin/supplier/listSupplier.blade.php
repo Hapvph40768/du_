@@ -6,11 +6,11 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-primary">
-            <i class="fas fa-truck"></i> Danh Sách Nhà Cung Cấp
-        </h1>
-        <a href="{{ route('add-supplier') }}" class="btn btn-success shadow-sm">
-            <i class="fas fa-plus-circle"></i> Thêm Nhà Cung Cấp
+        <h2 class="text-white fw-bold">
+            <i class="fas fa-truck text-primary"></i> Danh Sách Nhà Cung Cấp
+        </h2>
+        <a href="{{ route('add-supplier') }}" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+            <i class="fas fa-plus-circle me-1"></i> Thêm Nhà Cung Cấp
         </a>
     </div>
 
@@ -35,50 +35,52 @@
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle text-center">
-                    <thead class="table-primary">
+    <div class="card-dark p-3">
+        <div class="table-responsive">
+            <table class="table-dark-custom align-middle text-center">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th class="text-start">Tên Nhà Cung Cấp</th>
+                        <th class="text-center">Loại</th>
+                        <th class="text-center">Số điện thoại</th>
+                        <th class="text-start">Email</th>
+                        <th class="text-start">Địa chỉ</th>
+                        <th style="width: 150px;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($suppliers as $index => $sp)
                         <tr>
-                            <th>#</th>
-                            <th>Tên Nhà Cung Cấp</th>
-                            <th>Loại</th>
-                            <th>Số điện thoại</th>
-                            <th>Email</th>
-                            <th>Địa chỉ</th>
-                            <th>Hành động</th>
+                            <td class="text-muted">{{ $index + 1 }}</td>
+                            <td class="fw-bold text-white text-start">{{ $sp->name }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info rounded-pill px-3">
+                                    {{ $sp->type }}
+                                </span>
+                            </td>
+                            <td class="text-muted text-center">{{ $sp->phone }}</td>
+                            <td class="text-muted text-start">{{ $sp->email }}</td>
+                            <td class="text-start text-muted">{{ $sp->address }}</td>
+                            <td>
+                                <a href="{{ route('detail-supplier/' . $sp->id) }}" 
+                                   class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-danger" title="Xóa"
+                                        onclick="confirmDelete('{{ route('delete-supplier/' . $sp->id) }}', '{{ $sp->name }}')">
+                                    <i class="fas fa-trash-alt"></i> Xóa
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($suppliers as $index => $sp)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td class="fw-bold text-primary">{{ $sp->name }}</td>
-                                <td><span class="badge bg-info">{{ $sp->type }}</span></td>
-                                <td>{{ $sp->phone }}</td>
-                                <td>{{ $sp->email }}</td>
-                                <td>{{ $sp->address }}</td>
-                                <td>
-                                    <a href="{{ route('detail-supplier/' . $sp->id) }}" 
-                                       class="btn btn-sm btn-warning me-1">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </a>
-                                    <button type="button" 
-                                            class="btn btn-sm btn-danger" 
-                                            onclick="confirmDelete('{{ route('delete-supplier/' . $sp->id) }}', '{{ $sp->name }}')">
-                                        <i class="fas fa-trash-alt"></i> Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-muted">Chưa có nhà cung cấp nào được thêm</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">Chưa có nhà cung cấp nào được thêm</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

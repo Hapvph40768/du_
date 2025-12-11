@@ -9,10 +9,16 @@ class DepartureModel extends BaseModel
     public function getAllDepartures()
     {
         $sql = "
-        SELECT d.*, t.name AS tour_name, t.price AS tour_price
+        SELECT d.*, t.name AS tour_name, t.price AS tour_price, t.start_location, t.destination,
+               (SELECT COALESCE(SUM(b.num_people), 0) FROM bookings b WHERE b.departure_id = d.id AND b.status IN ('confirmed', 'pending_payment', 'completed', 'pending')) as booked_guests,
+               (d.total_seats - (SELECT COALESCE(SUM(b.num_people), 0) FROM bookings b WHERE b.departure_id = d.id AND b.status IN ('confirmed', 'pending_payment', 'completed', 'pending'))) as real_remaining_seats,
+
+               (SELECT GROUP_CONCAT(DISTINCT b.pickup_location SEPARATOR ', ') FROM bookings b WHERE b.departure_id = d.id AND b.pickup_location IS NOT NULL AND b.pickup_location != '') as pickup_locations_list,
+               (SELECT MIN(b.start_date) FROM bookings b WHERE b.departure_id = d.id) as booking_start_date,
+               (SELECT MAX(b.end_date) FROM bookings b WHERE b.departure_id = d.id) as booking_end_date
         FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
-        ORDER BY d.start_date DESC
+        ORDER BY d.id DESC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
@@ -21,7 +27,12 @@ class DepartureModel extends BaseModel
     public function getDepartureById($id)
     {
         $sql = "
-        SELECT d.*, t.name AS tour_name, t.price AS tour_price
+        SELECT d.*, 
+               t.name AS tour_name, t.price AS tour_price, 
+               t.start_location, t.destination,
+               (SELECT GROUP_CONCAT(DISTINCT b.pickup_location SEPARATOR ', ') FROM bookings b WHERE b.departure_id = d.id AND b.pickup_location IS NOT NULL AND b.pickup_location != '') as pickup_locations_list,
+               (SELECT MIN(b.start_date) FROM bookings b WHERE b.departure_id = d.id) as booking_start_date,
+               (SELECT MAX(b.end_date) FROM bookings b WHERE b.departure_id = d.id) as booking_end_date
         FROM {$this->table} d
         JOIN tours t ON d.tour_id = t.id
         WHERE d.id=?
@@ -35,21 +46,20 @@ class DepartureModel extends BaseModel
         $total = $data['total_seats'];
 
         $sql = "INSERT INTO {$this->table} 
-        (tour_id, start_date, end_date, price, total_seats, seats_booked, remaining_seats,
-         status, guide_price, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (tour_id, start_date, end_date, start_time, total_seats, seats_booked, remaining_seats,
+         status, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['start_date'],
-            $data['end_date'],
-            $data['price'],
+            $data['start_date'] ?? null,
+            $data['end_date'] ?? null,
+            $data['start_time'] ?? null,
             $total,
             0,              // seats_booked = 0
             $total,         // remaining_seats = total
             $data['status'] ?? 'open',
-            $data['guide_price'] ?: null,
             date("Y-m-d H:i:s"),
             date("Y-m-d H:i:s")
         ]);
@@ -69,21 +79,20 @@ class DepartureModel extends BaseModel
         $newRemaining = $newTotal - $bookedSeats;
 
         $sql = "UPDATE {$this->table} SET 
-        tour_id=?, start_date=?, end_date=?, price=?, total_seats=?, seats_booked=?, 
-        remaining_seats=?, status=?, guide_price=?, updated_at=?
+        tour_id=?, start_date=?, end_date=?, start_time=?, total_seats=?, seats_booked=?, 
+        remaining_seats=?, status=?, updated_at=?
         WHERE id=?";
 
         $this->setQuery($sql);
         return $this->execute([
             $data['tour_id'],
-            $data['start_date'],
-            $data['end_date'],
-            $data['price'],
+            $data['start_date'] ?? null,
+            $data['end_date'] ?? null,
+            $data['start_time'] ?? null,
             $newTotal,
             $bookedSeats,
             $newRemaining,
             $data['status'],
-            $data['guide_price'] ?: null,
             date("Y-m-d H:i:s"),
             $id
         ]);
@@ -95,5 +104,18 @@ class DepartureModel extends BaseModel
         $sql = "DELETE FROM {$this->table} WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([$id]);
+    }
+
+    public function getBookingsByDepartureId($departureId)
+    {
+        $sql = "
+            SELECT b.fullname, b.phone, b.total_price, b.num_people, b.status
+            FROM bookings b
+            JOIN departures d ON b.departure_id = d.id
+            WHERE b.departure_id = ?
+            ORDER BY b.created_at DESC
+        ";
+        $this->setQuery($sql);
+        return $this->loadAllRows([$departureId]);
     }
 }

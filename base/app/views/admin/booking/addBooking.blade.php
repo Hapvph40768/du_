@@ -4,170 +4,471 @@
 
 @section('content')
 <div class="container-fluid">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">
-            <i class="fas fa-plus-circle"></i> Thêm Booking
-        </h2>
-        <a href="{{ route('list-booking') }}" class="btn btn-warning shadow-sm">
-            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        <div>
+            <h2 class="text-primary fw-bold mb-0">
+                <i class="fas fa-plus-circle me-2"></i>Thêm Booking
+            </h2>
+            <p class="text-muted mb-0">Tạo mới đơn đặt tour cho khách hàng</p>
+        </div>
+        <a href="{{ route('list-booking') }}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
         </a>
     </div>
 
     {{-- Thông báo --}}
-    @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm">
-            <i class="fas fa-check-circle"></i> {{ $_SESSION['success'] }}
+    @if(isset($_SESSION['success']) && isset($_GET['msg']) && $_GET['msg'] == 'success')
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4">
+            <i class="fas fa-check-circle me-2"></i> {{ $_SESSION['success'] }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+        @php unset($_SESSION['success']); @endphp
     @endif
 
-    @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
-            <i class="fas fa-exclamation-circle"></i> Đã xảy ra lỗi:
-            <ul class="mt-2 mb-0">
-                @foreach($_SESSION['errors'] as $err)
-                    <li>{{ $err }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    @if(isset($_SESSION['errors']) && isset($_GET['msg']) && $_GET['msg'] == 'errors')
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4">
+            <div class="d-flex">
+                <i class="fas fa-exclamation-circle me-3 fs-4 mt-1"></i>
+                <div>
+                    <strong class="d-block mb-1">Đã xảy ra lỗi:</strong>
+                    <ul class="mb-0 ps-3">
+                        @foreach($_SESSION['errors'] as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
+        @php unset($_SESSION['errors']); @endphp
     @endif
 
-    {{-- FORM ADD BOOKING --}}
-    <form action="{{ route('post-booking') }}" method="post" class="bg-white p-4 rounded shadow-sm border">
 
-        {{-- KHÁCH HÀNG --}}
-        <div class="mb-3">
-            <label class="fw-bold">Khách hàng</label>
-            <select name="customer_id" class="form-select" required>
-                <option value="">-- Chọn khách hàng --</option>
-                @foreach($customers as $c)
-                    <option value="{{ $c->id }}">
-                        {{ $c->fullname }} — {{ $c->email }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom py-3 px-4">
+                    <h5 class="mb-0 text-dark fw-bold"><i class="fas fa-file-invoice me-2 text-primary"></i>Thông tin Booking</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="{{ route('post-booking') }}" method="post">
+                        
+                        <div class="row g-4">
+                            <!-- Cột trái: Thông tin chính -->
+                            <div class="col-lg-8 border-end">
+                                <h6 class="text-primary fw-bold text-uppercase mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Thông tin khách hàng & Tour</h6>
+                                
+                                <div class="row g-3 mb-4">
+                                    {{-- CUSTOMER SELECTION LOGIC --}}
+                                    
+                                        {{-- ADMIN VIEW: Select Customer Only --}}
+                                        <div class="col-md-12">
+                                            <label class="fw-bold text-dark mb-1">Khách hàng</label>
+                                            <select name="customer_id" id="customerSelect" class="form-select">
+                                                <option value="">-- Chọn khách hàng --</option>
+                                                @if(isset($customers))
+                                                    @foreach($customers as $c)
+                                                        <option value="{{ $c->id }}">
+                                                            {{ $c->fullname }} ({{ $c->phone }}) - {{ $c->email }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    
+                                    {{-- PICKUP LOCATION --}}
+                                    <div class="col-md-12">
+                                        <label class="fw-bold text-dark mb-1">Vị trí đón (Pickup Location)</label>
+                                        <input type="text" name="pickup_location" class="form-control" placeholder="Nhập địa chỉ đón khách">
+                                    </div>
+                                </div>
 
-        {{-- LỊCH KHỞI HÀNH --}}
-        <div class="mb-3">
-            <label class="fw-bold">Lịch khởi hành</label>
-            <select name="departure_id" id="departureSelect" class="form-select" required>
-                <option value="">-- Chọn lịch khởi hành --</option>
-                @foreach($departures as $d)
-                    <option 
-                        value="{{ $d->id }}"
-                        data-price="{{ $d->price }}"
-                        data-seats="{{ $d->remaining_seats }}"
-                    >
-                        {{ $d->tour_name }} 
-                        ({{ date('d/m/Y', strtotime($d->start_date)) }})
-                        — Giá: {{ number_format($d->price,0,',','.') }} đ
-                        — Còn: {{ $d->remaining_seats }} ghế
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                                <div class="mb-4">
+                                    <label class="fw-bold text-dark mb-1">Chọn Lịch khởi hành (Tour) <span class="text-danger">*</span></label>
+                                    <select name="departure_id" id="departureSelect" class="form-select" required>
+                                        <option value="">-- Chọn tour --</option>
+                                        @foreach($departures as $d)
+                                            <option 
+                                                value="{{ $d->id }}"
+                                                data-price="{{ $d->tour_price ?? 0 }}"
+                                                data-seats="{{ $d->real_remaining_seats ?? $d->remaining_seats }}"
+                                                {{ ($d->status == 'closed') ? 'disabled' : '' }}
+                                            >
+                                                {{ $d->tour_name }} 
+                                                — Giá: {{ number_format($d->tour_price ?? 0, 0, ',', '.') }} đ
+                                                — Còn: {{ $d->real_remaining_seats ?? $d->remaining_seats }} ghế
+                                                {{ ($d->status == 'closed') ? ' (Đã đóng)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-        {{-- SỐ NGƯỜI --}}
-        <div class="mb-3">
-            <label class="fw-bold">Số người</label>
-            <input 
-                type="number" 
-                name="num_people" 
-                id="numPeopleInput" 
-                class="form-control" 
-                min="1" 
-                required
-            >
-            <small id="seatWarning" class="text-danger d-none"></small>
-        </div>
+                                <div class="mb-4">
+                                    <label class="fw-bold text-dark mb-1">Dịch vụ chính (Main Service)</label>
+                                    <div class="service-list" style="max-height: 300px; overflow-y: auto;">
+                                        @foreach($services as $s)
+                                            @php $displayPrice = ($s->price > 0) ? $s->price : ($s->default_price ?? 0); @endphp
+                                            <div class="d-flex align-items-center p-2 border-bottom">
+                                                <input class="form-check-input m-0 me-2 service-checkbox" type="checkbox" name="services[]" value="{{ $s->id }}" id="service_{{ $s->id }}" data-price="{{ $displayPrice }}" style="cursor: pointer;">
+                                                <label class="d-flex justify-content-between w-100" for="service_{{ $s->id }}" style="cursor: pointer;">
+                                                    <span class="text-dark">{{ $s->name }}</span>
+                                                    <span class="text-success fw-bold">{{ number_format($displayPrice, 0, ',', '.') }} đ</span>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <small class="text-muted">* Chọn các dịch vụ đi kèm</small>
+                                </div>
 
-        {{-- TỔNG TIỀN --}}
-        <div class="mb-3">
-            <label class="fw-bold">Tổng tiền</label>
-            <input 
-                type="text" 
-                id="total_price_display" 
-                class="form-control fw-bold text-success" 
-                readonly 
-                value="0 đ"
-            >
-        </div>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label class="fw-bold text-dark mb-1">Ngày đi <span class="text-danger">*</span></label>
+                                        <input type="date" name="start_date" id="start_date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="fw-bold text-dark mb-1">Ngày về <span class="text-danger">*</span></label>
+                                        <input type="date" name="end_date" id="end_date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="fw-bold text-dark mb-1">Thời gian</label>
+                                        <input type="text" id="daysDisplay" class="form-control bg-light fw-bold text-primary" readonly value="1 ngày">
+                                    </div>
+                                </div>
 
-        {{-- THANH TOÁN --}}
-        <div class="mb-3">
-            <label class="fw-bold">Thanh toán</label>
-            <select name="payment_status" class="form-select" required>
-                <option value="unpaid">Chưa thanh toán</option>
-                <option value="partial">Thanh toán một phần</option>
-                <option value="paid">Đã thanh toán</option>
-            </select>
-        </div>
+                                {{-- Danh sách khách hàng chi tiết --}}
+                                <div id="guest-list-container" class="mb-4 d-none">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top">
+                                        <h6 class="text-primary fw-bold text-uppercase mb-0" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                            Danh sách khách hàng (<span id="guest-count-label">0</span> người)
+                                        </h6>
+                                        <div>
+                                            <input type="file" id="excelFile" accept=".xlsx, .xls" class="d-none">
+                                            <button type="button" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="document.getElementById('excelFile').click()">
+                                                <i class="fas fa-file-excel me-1"></i> Nhập Excel
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted d-block mb-3 fst-italic">
+                                        * File Excel mẫu: Cột A: Họ tên | Cột B: SĐT | Cột C: CCCD | Cột D: Giới tính | Cột E: Ngày sinh
+                                    </small>
+                                    <div id="guest-inputs">
+                                        {{-- JS will render inputs here --}}
+                                    </div>
+                                </div>
 
-        {{-- TRẠNG THÁI --}}
-        <div class="mb-3">
-            <label class="fw-bold">Trạng thái</label>
-            <select name="status" class="form-select" required>
-                <option value="pending">Chờ xác nhận</option>
-                <option value="confirmed">Đã xác nhận</option>
-                <option value="cancelled">Đã hủy</option>
-                <option value="completed">Hoàn thành</option>
-            </select>
-        </div>
 
-        {{-- GHI CHÚ --}}
-        <div class="mb-3">
-            <label class="fw-bold">Ghi chú</label>
-            <textarea 
-                name="note" 
-                class="form-control" 
-                rows="3" 
-                placeholder="Nhập ghi chú (nếu có)..."
-            ></textarea>
-        </div>
+                            </div>
 
-        {{-- SUBMIT --}}
-        <div class="text-end">
-            <button type="submit" class="btn btn-primary shadow-sm" name="btn-submit">
-                <i class="fas fa-check-circle"></i> Xác nhận
-            </button>
+                            <!-- Cột phải: Thanh toán & Trạng thái -->
+                            <div class="col-lg-4">
+                                <div class="p-3 rounded-3 bg-light border mb-4">
+                                    <h6 class="text-dark fw-bold mb-3 border-bottom pb-2">Chi tiết thanh toán</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-dark mb-1">Số lượng khách <span class="text-danger">*</span></label>
+                                        <input 
+                                            type="number" 
+                                            name="num_people" 
+                                            id="numPeopleInput" 
+                                            class="form-control text-center fw-bold fs-5" 
+                                            min="1" 
+                                            required
+                                            value="1"
+                                        >
+                                        <small id="seatWarning" class="text-danger d-none mt-1 d-block fw-bold"></small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-dark mb-1">Tổng tiền dự kiến</label>
+                                        <input 
+                                            type="text" 
+                                            id="total_price_display" 
+                                            class="form-control bg-white text-success fw-bold fs-4 text-end" 
+                                            readonly 
+                                            value="0 đ"
+                                        >
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-dark mb-1">Thanh toán</label>
+                                        <select name="payment_status" class="form-select">
+                                            <option value="unpaid">Chưa thanh toán</option>
+                                            <option value="partial">Đặt cọc</option>
+                                            <option value="paid">Đã thanh toán</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-dark mb-1">Trạng thái Booking</label>
+                                        <select name="status" class="form-select">
+                                            <option value="pending">Chờ xác nhận</option>
+                                            <option value="confirmed">Đã xác nhận</option>
+                                            <option value="cancelled">Đã hủy</option>
+                                            <option value="completed">Hoàn thành</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="fw-bold text-dark mb-1">Ghi chú</label>
+                                    <textarea name="note" class="form-control" rows="4" placeholder="Nhập ghi chú..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm" name="btn-submit">
+                                    <i class="fas fa-check-circle me-2"></i> TẠO BOOKING
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 
-{{-- SCRIPT TÍNH GIÁ + CHECK GHẾ --}}
 <script>
     const departureSelect = document.getElementById('departureSelect');
+    const customerSelect  = document.getElementById('customerSelect');
     const numPeopleInput = document.getElementById('numPeopleInput');
     const totalPriceDisplay = document.getElementById('total_price_display');
     const seatWarning = document.getElementById('seatWarning');
+    const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+    const guestInputs = document.getElementById('guest-inputs');
+    const guestCountLabel = document.getElementById('guest-count-label');
+    const guestListContainer = document.getElementById('guest-list-container');
+
+    function renderGuestInputs(num) {
+        guestInputs.innerHTML = '';
+        if (num > 1) {
+            guestListContainer.classList.remove('d-none');
+            guestCountLabel.textContent = num;
+            
+            for (let i = 0; i < num; i++) {
+                const index = i + 1;
+                const html = `
+                    <div class="card mb-3 border bg-light">
+                        <div class="card-body p-3">
+                            <h6 class="card-title fw-bold mb-2 text-dark">Khách hàng #${index}</h6>
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label class="small fw-bold mb-1">Họ tên <span class="text-danger">*</span></label>
+                                    <input type="text" name="guests[${i}][fullname]" class="form-control form-control-sm" required placeholder="Nhập họ tên">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold mb-1">SĐT</label>
+                                    <input type="text" name="guests[${i}][phone]" class="form-control form-control-sm" placeholder="Số điện thoại">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold mb-1">CCCD/CMND</label>
+                                    <input type="text" name="guests[${i}][id_card]" class="form-control form-control-sm" placeholder="CCCD/CMND">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold mb-1">Giới tính <span class="text-danger">*</span></label>
+                                    <select name="guests[${i}][gender]" class="form-select form-select-sm" required>
+                                        <option value="">-- Chọn --</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold mb-1">Ngày sinh</label>
+                                    <input type="date" name="guests[${i}][dob]" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                guestInputs.insertAdjacentHTML('beforeend', html);
+            }
+        } else {
+            guestListContainer.classList.add('d-none');
+        }
+    }
 
     function updateTotalPrice() {
         const selected = departureSelect.options[departureSelect.selectedIndex];
-
         const price = Number(selected?.dataset.price || 0);
         const seats = Number(selected?.dataset.seats || 0);
         const numPeople = Number(numPeopleInput.value || 0);
 
-        // Tính tổng tiền
-        const total = price * numPeople;
+        // Main Service Price (Sum of selected checkboxes)
+        let mainServicePrice = 0;
+        serviceCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                mainServicePrice += Number(cb.dataset.price || 0);
+            }
+        });
+
+        // Calculate Days
+        let days = 1;
+        if (startInput.value && endInput.value) {
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+            if (!isNaN(start) && !isNaN(end)) {
+                 const diffTime = end - start;
+                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                 days = diffDays >= 0 ? diffDays + 1 : 1;
+            }
+        }
+
+
+        
+        // Revised Formula: Total = (TourPrice + MainServicePrice) * Num * Days
+        // "nếu ko chọn dịch vụ thì mặc định là 1" -> Interpreted as: ensure multipliers are at least 1 (or handle 0 services correctly as +0).
+        // Actually, user likely meant: (Tour + Service) * People * Days. If People is empty, default to 1.
+        
+        const effectiveNumPeople = numPeople > 0 ? numPeople : 1;
+        
+        let total = (price + mainServicePrice) * effectiveNumPeople * days;
+        
         totalPriceDisplay.value = total.toLocaleString("vi-VN") + " đ";
 
-        // Kiểm tra ghế trống
         if (numPeople > seats && seats > 0) {
             seatWarning.textContent = `Không đủ ghế. Chỉ còn ${seats} ghế.`;
             seatWarning.classList.remove('d-none');
+            numPeopleInput.classList.add('is-invalid');
+            numPeopleInput.classList.add('text-danger');
         } else {
             seatWarning.textContent = "";
             seatWarning.classList.add('d-none');
+            numPeopleInput.classList.remove('is-invalid');
+            numPeopleInput.classList.remove('text-danger');
         }
     }
 
     departureSelect.addEventListener('change', updateTotalPrice);
-    numPeopleInput.addEventListener('input', updateTotalPrice);
-</script>
+    numPeopleInput.addEventListener('input', function() {
+        updateTotalPrice();
+        const num = parseInt(this.value) || 0;
+        renderGuestInputs(num);
+    });
 
+    
+
+
+    // Days Calculation
+    const startInput = document.getElementById('start_date');
+    const endInput = document.getElementById('end_date');
+    const daysDisplay = document.getElementById('daysDisplay');
+
+    function updateDays() {
+        const start = new Date(startInput.value);
+        const end = new Date(endInput.value);
+        
+        if (startInput.value && endInput.value && !isNaN(start) && !isNaN(end)) {
+            if (end < start) {
+                alert("Ngày về không được nhỏ hơn ngày đi!");
+                endInput.value = startInput.value; // Reset to start date
+                daysDisplay.value = "1 ngày";
+                return;
+            }
+
+            const diffTime = end - start;
+            // Difference in milliseconds
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            // Add 1 to include the start day
+            const days = diffDays >= 0 ? diffDays + 1 : 1;
+            daysDisplay.value = days + " ngày";
+        } else {
+             daysDisplay.value = "--";
+        }
+    }
+
+    startInput.addEventListener('change', function() {
+        updateDays();
+        updateTotalPrice();
+    });
+    endInput.addEventListener('change', function() {
+        updateDays();
+        updateTotalPrice();
+    });
+    serviceCheckboxes.forEach(cb => cb.addEventListener('change', updateTotalPrice));
+
+    updateTotalPrice();
+
+    // Excel Import Logic
+    document.getElementById('excelFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            // Force UTF-8 detection with codepage: 65001
+            const workbook = XLSX.read(data, {type: 'array', codepage: 65001});
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+
+            // Remove header row if needed (assuming row 1 is header)
+            if(jsonData.length > 0) jsonData.shift();
+
+            // Filter empty rows
+            const guests = jsonData.filter(row => row[0]); 
+
+            if (guests.length > 0) {
+                // Get current Num People limit
+                const currentLimit = parseInt(numPeopleInput.value) || 0;
+                
+                if (currentLimit <= 0) {
+                    alert("Vui lòng nhập 'Số lượng khách' trước khi nhập file Excel!");
+                    this.value = '';
+                    return;
+                }
+
+                if (guests.length > currentLimit) {
+                    alert(`File Excel có ${guests.length} khách, nhưng bạn chỉ đăng ký ${currentLimit} người. Hệ thống sẽ chỉ lấy ${currentLimit} khách đầu tiên.`);
+                    guests.length = currentLimit; // Truncate array
+                }
+
+                // Render inputs for current limit (ensure they exist)
+                renderGuestInputs(currentLimit); 
+
+                // Fill data
+                guests.forEach((row, index) => {
+                    // Mapping columns: A=0(Name), B=1(Phone), C=2(ID), D=3(Gender), E=4(DOB)
+                    const nameInput = document.querySelector(`input[name="guests[${index}][fullname]"]`);
+                    const phoneInput = document.querySelector(`input[name="guests[${index}][phone]"]`);
+                    const idInput = document.querySelector(`input[name="guests[${index}][id_card]"]`);
+                    const genderSelect = document.querySelector(`select[name="guests[${index}][gender]"]`);
+                    const dobInput = document.querySelector(`input[name="guests[${index}][dob]"]`);
+
+                    if(nameInput) nameInput.value = row[0] || '';
+                    if(phoneInput) phoneInput.value = row[1] || '';
+                    if(idInput) idInput.value = row[2] || '';
+                    
+                    if(genderSelect && row[3]) {
+                        const gText = String(row[3]).toLowerCase().trim();
+                        if(gText.includes('nam') || gText.includes('male')) genderSelect.value = 'male';
+                        else if(gText.includes('nữ') || gText.includes('female')) genderSelect.value = 'female';
+                        else genderSelect.value = 'other';
+                    }
+
+                    // Format Date if needed (Excel date often works best if text, otherwise needs parsing)
+                    if(dobInput && row[4]) {
+                         // Try to handle Excel serial date if number
+                         if (typeof row[4] === 'number') {
+                             const date = XLSX.SSF.parse_date_code(row[4]);
+                             const y = date.y;
+                             const m = date.m < 10 ? '0'+date.m : date.m;
+                             const d = date.d < 10 ? '0'+date.d : date.d;
+                             dobInput.value = `${y}-${m}-${d}`;
+                         } else {
+                             dobInput.value = row[4];
+                         }
+                    }
+                });
+                
+                alert(`Đã nhập dữ liệu cho ${guests.length} khách hàng!`);
+            } else {
+                alert('Không tìm thấy dữ liệu khách hàng hợp lệ trong file!');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        // Reset input
+        this.value = '';
+    });
+</script>
 @endsection

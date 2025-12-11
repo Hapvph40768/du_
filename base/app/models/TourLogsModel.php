@@ -8,10 +8,12 @@ class TourLogsModel extends BaseModel
     public function getAllLogs()
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*, t.name as tour_name, d.start_date as departure_date, u.username as user_name
         FROM {$this->table} tl
-        JOIN departures d ON tl.departure_id = d.id
-        ORDER BY tl.day_number ASC
+        JOIN tours t ON tl.tour_id = t.id
+        LEFT JOIN departures d ON tl.departure_id = d.id
+        LEFT JOIN users u ON tl.user_id = u.id
+        ORDER BY tl.created_at DESC
         ";
         $this->setQuery($sql);
         return $this->loadAllRows();
@@ -20,9 +22,8 @@ class TourLogsModel extends BaseModel
     public function getLogById($id)
     {
         $sql = "
-        SELECT tl.*, d.date_start, d.date_end
+        SELECT tl.*
         FROM {$this->table} tl
-        JOIN departures d ON tl.departure_id = d.id
         WHERE tl.id=?
         ";
         $this->setQuery($sql);
@@ -31,26 +32,29 @@ class TourLogsModel extends BaseModel
 
     public function addLog($data)
     {
-        $sql = "INSERT INTO {$this->table} (`departure_id`, `day_number`, `note`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO {$this->table} (`tour_id`, `departure_id`, `user_id`, `action`, `message`, `created_at`) VALUES (?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
-            $data['departure_id'],
-            $data['day_number'],
-            $data['note'],
-            $data['created_at'],
-            $data['updated_at']
+            $data['tour_id'],
+            $data['departure_id'] ?? null,
+            $data['user_id'] ?? null,
+            $data['action'] ?? null,
+            $data['message'] ?? null,
+            $data['created_at']
         ]);
     }
 
     public function updateLog($id, $data)
     {
-        $sql = "UPDATE {$this->table} SET `departure_id`=?, `day_number`=?, `note`=?, `updated_at`=? WHERE id=?";
+        // Typically logs are immutable, but if edit is allowed:
+        $sql = "UPDATE {$this->table} SET `tour_id`=?, `departure_id`=?, `user_id`=?, `action`=?, `message`=? WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
-            $data['departure_id'],
-            $data['day_number'],
-            $data['note'],
-            $data['updated_at'],
+            $data['tour_id'],
+            $data['departure_id'] ?? null,
+            $data['user_id'] ?? null,
+            $data['action'] ?? null,
+            $data['message'] ?? null,
             $id
         ]);
     }

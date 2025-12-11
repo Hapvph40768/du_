@@ -115,4 +115,61 @@ class CustomerController extends BaseController
             redirect('error', 'Xóa khách hàng thất bại', 'list-customer');
         }
     }
+
+
+    // ======================================
+    // CLIENT SIDE: PROFILE SETUP
+    // ======================================
+    public function profileSetup()
+    {
+        // Must be logged in
+        if (!isset($_SESSION['user'])) {
+            header('Location: ' . BASE_URL . 'login');
+            exit;
+        }
+        $this->render('client.auth.profile_setup');
+    }
+
+    public function postProfileSetup()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ' . BASE_URL . 'login');
+            exit;
+        }
+
+        $user_id = $_SESSION['user']['id'];
+        
+        $fullname = $_POST['fullname'] ?? '';
+        $phone    = $_POST['phone'] ?? '';
+        $address  = $_POST['address'] ?? '';
+        $gender   = $_POST['gender'] ?? '';
+        $dob      = $_POST['dob'] ?? null;
+        $nationality = $_POST['nationality'] ?? 'Việt Nam';
+
+        $error = [];
+        if (empty($fullname)) $error[] = "Vui lòng nhập họ tên.";
+        if (empty($phone)) $error[] = "Vui lòng nhập số điện thoại.";
+
+        if (!empty($error)) {
+            $this->render('client.auth.profile_setup', ['errors' => $error]);
+            return;
+        }
+
+        // Create customer record
+        $this->customer->addCustomer([
+            'user_id' => $user_id,
+            'fullname' => $fullname,
+            'phone' => $phone,
+            'address' => $address,
+            'gender' => $gender,
+            'dob' => $dob,
+            'nationality' => $nationality,
+            'email' => '', // Optional or fetch from users table if needed
+            'note' => 'Self-registered'
+        ]);
+
+        // Redirect home
+        header('Location: ' . BASE_URL);
+        exit;
+    }
 }

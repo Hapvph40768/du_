@@ -32,54 +32,15 @@
         <div class="mb-3">
             <label for="tour_id" class="form-label fw-bold">Chọn Tour</label>
             <select name="tour_id" id="tour_id" class="form-select" required>
-                @if(is_array($tours))
-                    @foreach($tours as $catKey => $catTours)
-                        <optgroup label="{{ $categories[$catKey] ?? $catKey }}">
-                            @foreach($catTours as $tour)
-                                <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
-                                    {{ $tour->name }}
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    @endforeach
-                @else
-                    @foreach($tours as $tour)
-                        <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
-                            {{ $tour->name }}
-                        </option>
-                    @endforeach
-                @endif
+                @foreach($tours as $tour)
+                    <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
+                        {{ $tour->name }}
+                    </option>
+                @endforeach
             </select>
             @if(isset($_SESSION['errors']['tour_id']))
                 <small class="text-danger">{{ $_SESSION['errors']['tour_id'] }}</small>
             @endif
-        </div>
-
-        {{-- ngày bắt đầu --}}
-        <div class="mb-3">
-            <label for="start_date" class="form-label fw-bold">Ngày bắt đầu</label>
-            <input type="date" class="form-control" name="start_date" value="{{ $detail->start_date }}" required>
-            @if(isset($_SESSION['errors']['start_date']))
-                <small class="text-danger">{{ $_SESSION['errors']['start_date'] }}</small>
-            @endif
-        </div>
-
-        {{-- ngày kết thúc --}}
-        <div class="mb-3">
-            <label for="end_date" class="form-label fw-bold">Ngày kết thúc</label>
-            <input type="date" class="form-control" name="end_date" value="{{ $detail->end_date }}" required>
-            @if(isset($_SESSION['errors']['end_date']))
-                <small class="text-danger">{{ $_SESSION['errors']['end_date'] }}</small>
-            @endif
-            @if(isset($_SESSION['errors']['date_invalid']))
-                <small class="text-danger">{{ $_SESSION['errors']['date_invalid'] }}</small>
-            @endif
-        </div>
-
-        {{-- giá riêng cho departure --}}
-        <div class="mb-3">
-            <label for="price" class="form-label fw-bold">Giá (nếu khác giá tour)</label>
-            <input type="number" class="form-control" name="price" step="1000" value="{{ $detail->price }}" placeholder="Ví dụ: 2000000">
         </div>
 
         {{-- tổng số ghế --}}
@@ -92,17 +53,46 @@
         </div>
 
         {{-- số ghế còn lại (readonly) --}}
-        <div class="mb-3">
-            <label class="form-label fw-bold">Số ghế còn lại</label>
-            <input type="number" class="form-control" value="{{ $detail->remaining_seats }}" readonly>
-            <small class="text-muted">Giá trị này được cập nhật tự động khi có booking.</small>
-        </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label fw-bold text-white mb-1">Ngày khởi hành</label>
+                        @php
+                            $sDate = $detail->start_date ?? $detail->booking_start_date;
+                            $valStart = $sDate ? date('Y-m-d', strtotime($sDate)) : '';
+                        @endphp
+                        <input type="date" class="form-control bg-dark text-white border-secondary" id="start_date" name="start_date" 
+                               value="{{ $valStart }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="start_time" class="form-label fw-bold text-white mb-1">Giờ khởi hành</label>
+                        <input type="time" class="form-control bg-dark text-white border-secondary" id="start_time" name="start_time" 
+                               value="{{ $detail->start_time ?? '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label fw-bold text-white mb-1">Ngày kết thúc</label>
+                        @php
+                            $eDate = $detail->end_date ?? $detail->booking_end_date;
+                            $valEnd = $eDate ? date('Y-m-d', strtotime($eDate)) : '';
+                        @endphp
+                        <input type="date" class="form-control bg-dark text-white border-secondary" id="end_date" name="end_date" 
+                               value="{{ $valEnd }}">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold text-white mb-1">Điểm đón khách (từ Booking)</label>
+                    <div class="form-control bg-dark text-warning border-secondary fst-italic">
+                        <i class="fas fa-map-marked-alt me-2"></i>{{ !empty($detail->pickup_locations_list) ? $detail->pickup_locations_list : 'Chưa có thông tin điểm đón' }}
+                    </div>
+                </div>
 
-        {{-- chi phí guide --}}
-        <div class="mb-3">
-            <label for="guide_price" class="form-label fw-bold">Chi phí cho hướng dẫn viên</label>
-            <input type="number" class="form-control" name="guide_price" step="1000" value="{{ $detail->guide_price }}" placeholder="Ví dụ: 500000">
-        </div>
+                <div class="mb-3">
+                    <label class="fw-bold text-white mb-1">Tổng số ghế</label>
+                    <input type="number" name="total_seats" class="form-control bg-dark text-white border-secondary" required value="{{ $detail->total_seats }}" min="{{ $detail->seats_booked }}">
+                    <div class="form-text text-white-50">Số ghế đã đặt: {{ $detail->seats_booked }}. Tổng ghế không được nhỏ hơn số này.</div>
+                </div>
+
+
 
         {{-- trạng thái --}}
         <div class="mb-3">

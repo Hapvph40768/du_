@@ -12,9 +12,7 @@ class ItineraryModel extends BaseModel
         $sql = "
         SELECT i.*, 
                t.name AS tour_name,
-               d.start_date,
-               d.end_date,
-               d.price AS departure_price,
+               t.price AS departure_price,
                d.status AS departure_status
         FROM {$this->table} i
         JOIN tours t ON i.tour_id = t.id
@@ -31,9 +29,7 @@ class ItineraryModel extends BaseModel
         $sql = "
     SELECT i.*, 
            t.name AS tour_name,
-           d.start_date,
-           d.end_date,
-           d.price AS departure_price,
+           t.price AS departure_price,
            d.status AS departure_status
     FROM {$this->table} i
     JOIN tours t ON i.tour_id = t.id
@@ -51,9 +47,7 @@ class ItineraryModel extends BaseModel
         $sql = "
         SELECT i.*, 
                t.name AS tour_name,
-               d.start_date,
-               d.end_date,
-               d.price AS departure_price,
+               t.price AS departure_price,
                d.status AS departure_status
         FROM {$this->table} i
         JOIN tours t ON i.tour_id = t.id

@@ -5,15 +5,15 @@
 <?php $this->startSection('content'); ?>
 <div class="container-fluid">
  <div class="d-flex justify-content-between align-items-center mb-4">
- <h2 class="text-primary"><i class="fas fa-calendar-alt"></i> Lịch khởi hành</h2>
- <a href="<?php echo \htmlentities(route('add-departure')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-success">
- <i class="fas fa-plus-circle"></i> Thêm lịch khởi hành
+ <h2 class="text-white fw-bold"><i class="fas fa-calendar-alt text-primary"></i> Lịch khởi hành</h2>
+ <a href="<?php echo \htmlentities(route('add-departure')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+ <i class="fas fa-plus-circle me-1"></i> Thêm lịch mới
  </a>
  </div>
 
  <?php /* Thông báo */ ?>
  <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
- <div class="alert alert-danger">
+ <div class="alert alert-danger mb-4">
  <ul class="mb-0">
  <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
  foreach($__currentLoopData as $error): $loop = $this->incrementLoopIndices();  ?>
@@ -23,118 +23,140 @@
  </div>
  <?php endif; ?>
  <?php if(isset($_SESSION['success']) && isset($_GET['msg'])): ?>
- <div class="alert alert-success"><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></div>
+ <div class="alert alert-success mb-4"><?php echo \htmlentities($_SESSION['success']??'', ENT_QUOTES, 'UTF-8', false); ?></div>
  <?php endif; ?>
 
- <div class="table-responsive shadow-sm">
- <table class="table table-striped table-hover align-middle text-center">
- <thead class="table-primary">
- <tr>
- <th>STT</th>
+ <div class="card border-0 shadow-sm">
+ <div class="table-responsive">
+ <table class="table table-hover align-middle">
+ <thead class="table-light">
+ <tr class="text-secondary small text-uppercase">
+ <th style="width: 50px;">STT</th>
  <th>Tên Tour</th>
- <th>Ngày khởi hành</th>
- <th>Ngày kết thúc</th>
- <th>Giá</th>
- <th>Tổng số ghế</th>
- <th>Đã đặt</th>
- <th>Còn lại</th>
- <th>Chi phí Guide</th>
- <th>Trạng thái</th>
- <th>Hành động</th>
+ <th>Giờ khởi hành</th>
+ <th>Ngày đi / về</th>
+ <th>Điểm đón khách</th>
+ <th>Địa điểm</th>
+
+ <th class="text-center">Tổng ghế</th>
+ <th class="text-center">Đã đặt</th>
+ <th class="text-center">Còn lại</th>
+ <th class="text-center">Trạng thái</th>
  </tr>
  </thead>
  <tbody>
  <?php $__empty_1 = true; foreach($departures as $index => $dp): $__empty_1 = false; ?>
- <tr>
- <td><?php echo \htmlentities($index+1??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td class="fw-bold"><?php echo \htmlentities($dp->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities(date('d/m/Y', strtotime($dp->start_date))??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities(date('d/m/Y', strtotime($dp->end_date))??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td class="text-success fw-bold"><?php echo \htmlentities(number_format($dp->price,0,',','.')??'', ENT_QUOTES, 'UTF-8', false); ?> đ</td>
- <td><?php echo \htmlentities($dp->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td><?php echo \htmlentities($dp->total_seats - $dp->remaining_seats??'', ENT_QUOTES, 'UTF-8', false); ?></td>
- <td class="<?php echo \htmlentities($dp->remaining_seats>0?'text-success fw-bold':'text-danger fw-bold'??'', ENT_QUOTES, 'UTF-8', false); ?>">
- <?php echo \htmlentities($dp->remaining_seats??'', ENT_QUOTES, 'UTF-8', false); ?>
+ <tr class="view-departure-row" data-bs-toggle="modal" data-bs-target="#itineraryModal" data-departure-id="<?php echo \htmlentities($dp->id??'', ENT_QUOTES, 'UTF-8', false); ?>" style="cursor: pointer;">
+ <td class="text-muted"><?php echo \htmlentities($index+1??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td>
+ <span class="fw-bold text-dark d-block"><?php echo \htmlentities($dp->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?></span>
+ </td>
+ <td class="text-primary fw-bold">
+ <?php echo \htmlentities(!empty($dp->start_time) ? date('H:i', strtotime($dp->start_time)) : '--'??'', ENT_QUOTES, 'UTF-8', false); ?>
 
  </td>
- <td><?php echo \htmlentities($dp->guide_price ? number_format($dp->guide_price,0,',','.') . ' đ' : 'Không có'??'', ENT_QUOTES, 'UTF-8', false); ?></td>
  <td>
- <?php switch ($dp->status) {
- case ('open'): ?> <span class="badge bg-success">Đang mở</span> <?php break; ?>
- <?php case ('closed'): ?> <span class="badge bg-secondary">Đã đóng</span> <?php break; ?>
- <?php case ('full'): ?> <span class="badge bg-danger">Đầy chỗ</span> <?php break; ?>
- <?php case ('completed'): ?> <span class="badge bg-primary">Hoàn thành</span> <?php break; ?>
- <?php } // end switch ?>
+ <div class="d-flex flex-column">
+ <span class="text-dark fw-medium">
+ <?php 
+ $startDate = $dp->start_date ?? ($dp->booking_start_date ?? null);
+ $endDate = $dp->end_date ?? ($dp->booking_end_date ?? null);
+ 
+ $displayStart = $startDate ? date('d/m/Y', strtotime($startDate)) : '--';
+ ?>
+ <?php echo \htmlentities($displayStart??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </span>
+ <small class="text-muted">
+ <?php echo \htmlentities($endDate ? date('d/m/Y', strtotime($endDate)) : '--'??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </small>
+ </div>
  </td>
  <td>
- <a href="<?php echo \htmlentities(route('list-itinerary/'.$dp->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-sm btn-info me-1">
- <i class="fas fa-list-alt"></i> Xem lịch trình
- </a>
- <a href="<?php echo \htmlentities(route('detail-departure/'.$dp->id)??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-sm btn-warning me-1">
- <i class="fas fa-edit"></i> Sửa
- </a>
- <button type="button" class="btn btn-sm btn-danger"
- onclick="confirmDelete('<?php echo \htmlentities(route('delete-departure/'.$dp->id)??'', ENT_QUOTES, 'UTF-8', false); ?>')">
- <i class="fas fa-trash-alt"></i> Xóa
- </button>
+ <small class="text-primary fst-italic text-wrap" style="max-width: 150px; display: block;">
+ <?php echo \htmlentities(!empty($dp->pickup_locations_list) ? $dp->pickup_locations_list : '-'??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </small>
+ </td>
+ <td>
+ <small class="text-muted d-block">
+ <i class="bi bi-geo-alt-fill me-1 text-danger"></i><?php echo \htmlentities($dp->start_location ?? 'unk'??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </small>
+ <small class="text-muted d-block mt-1">
+ <i class="bi bi-arrow-right me-1"></i><?php echo \htmlentities($dp->destination ?? 'unk'??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </small>
+ </td>
+
+ <td class="text-center"><?php echo \htmlentities($dp->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td class="text-center"><?php echo \htmlentities($dp->booked_guests ?? 0??'', ENT_QUOTES, 'UTF-8', false); ?></td>
+ <td class="text-center">
+ <?php 
+ $booked = $dp->booked_guests ?? 0;
+ $remaining = $dp->total_seats - $booked;
+ ?>
+ <span class="<?php echo \htmlentities($remaining > 0 ? 'text-success fw-bold' : 'text-danger fw-bold'??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <?php echo \htmlentities($remaining??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </span>
+ </td>
+ <td class="text-center">
+ <?php switch ($dp->status) {
+ case ('open'): ?> <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">Đang mở</span> <?php break; ?>
+ <?php case ('closed'): ?> <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill">Đã đóng</span> <?php break; ?>
+ <?php case ('full'): ?> <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill">Đầy chỗ</span> <?php break; ?>
+ <?php case ('completed'): ?> <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">Hoàn thành</span> <?php break; ?>
+ <?php } // end switch ?>
  </td>
  </tr>
  <?php endforeach; if ($__empty_1): ?>
- <tr><td colspan="11" class="text-muted">Chưa có lịch khởi hành nào</td></tr>
+ <tr><td colspan="10" class="text-center text-muted py-5">Chưa có lịch khởi hành nào</td></tr>
  <?php endif; ?>
  </tbody>
  </table>
+ </div>
  </div>
  
  <!-- Itinerary Modal -->
  <div class="modal fade" id="itineraryModal" tabindex="-1" aria-labelledby="itineraryModalLabel" aria-hidden="true">
  <div class="modal-dialog modal-xl modal-dialog-scrollable">
- <div class="modal-content">
- <div class="modal-header">
- <h5 class="modal-title" id="itineraryModalLabel">Chi tiết lịch trình</h5>
- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
- </div>
- <div class="modal-body" id="itineraryModalBody">
- <div class="text-center py-4">
+ <div class="modal-content card-dark border-0">
+ <div class="modal-body text-white p-4" id="itineraryModalBody">
+ <div class="text-center py-5">
  <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
  </div>
- </div>
- <div class="modal-footer">
- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
  </div>
  </div>
  </div>
  </div>
 
  <script>
- (function(){
- function qs(selector, parent) { return (parent||document).querySelector(selector); }
- function qsa(selector, parent) { return Array.from((parent||document).querySelectorAll(selector)); }
+ document.addEventListener('DOMContentLoaded', function() {
+ const modalBody = document.getElementById('itineraryModalBody');
 
- const modalEl = qs('#itineraryModal');
- const modalBody = qs('#itineraryModalBody');
- const bsModal = modalEl ? new bootstrap.Modal(modalEl) : null;
-
- qsa('.btn-view-itinerary').forEach(btn => {
- btn.addEventListener('click', function(){
- const id = this.getAttribute('data-departure-id');
+ document.body.addEventListener('click', function(e) {
+ const row = e.target.closest('.view-departure-row');
+ if (row) {
+ const id = row.getAttribute('data-departure-id');
  if(!id) return;
- // show modal with loader
+ 
+ // Reset & Loader
  modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
- bsModal.show();
 
- fetch('<?php echo \htmlentities(route('list-itinerary')??'', ENT_QUOTES, 'UTF-8', false); ?>/' + id + '?ajax=1')
- .then(r => r.text())
+ fetch('<?php echo \htmlentities(route('ajax-detail-departure')??'', ENT_QUOTES, 'UTF-8', false); ?>/' + id + '?t=' + new Date().getTime())
+ .then(response => response.text())
  .then(html => {
  modalBody.innerHTML = html;
  })
- .catch(err => {
- modalBody.innerHTML = '<div class="alert alert-danger">Không tải được dữ liệu. Vui lòng thử lại.</div>';
- console.error(err);
+ .catch(error => {
+ console.error('Error:', error);
+ modalBody.innerHTML = '<div class="alert alert-danger text-center">Không thể tải thông tin. Vui lòng thử lại.</div>';
+ });
+ }
  });
  });
- });
- })();
  </script>
 </div>
 <?php $this->stopSection(); ?>

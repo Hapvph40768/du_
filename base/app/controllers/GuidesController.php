@@ -16,7 +16,8 @@ class GuidesController extends BaseController
     // 1. Danh sách hướng dẫn viên
     public function listGuide()
     {
-        $guides = $this->guide->getAllGuides();
+        $status = $_GET['status'] ?? null;
+        $guides = $this->guide->getAllGuides($status);
         return $this->render("admin.guides.listGuides", ['guides' => $guides]);
     }
 

@@ -32,8 +32,8 @@
     <form action="{{ route('edit-itinerary/' . $detail->id) }}" method="post" class="bg-light p-4 rounded shadow-sm">
         {{-- Chọn tour --}}
         <div class="mb-3">
-            <label for="tour_id" class="form-label fw-bold">Chọn Tour</label>
-            <select name="tour_id" id="tour_id" class="form-select" required>
+            <label for="tour_id" class="form-label fw-bold">Tour</label>
+            <select name="tour_id" id="tour_id" class="form-select bg-secondary bg-opacity-25" style="pointer-events: none;" required>
                 @foreach($tours as $tour)
                     <option value="{{ $tour->id }}" {{ $tour->id == $detail->tour_id ? 'selected' : '' }}>
                         {{ $tour->name }}
@@ -44,13 +44,19 @@
 
         {{-- Chọn lịch khởi hành --}}
         <div class="mb-3">
-            <label for="departure_id" class="form-label fw-bold">Chọn Lịch khởi hành</label>
-            <select name="departure_id" id="departure_id" class="form-select" required>
+            <label for="departure_id" class="form-label fw-bold">Lịch trình</label>
+            <select name="departure_id" id="departure_id" class="form-select bg-secondary bg-opacity-25" style="pointer-events: none;" required>
                 <option value="">-- Chọn lịch khởi hành --</option>
                 @foreach($departures as $dep)
                     @if($dep->tour_id == $detail->tour_id)
+                        @php
+                             $sDate = $dep->start_date ?? $dep->booking_start_date;
+                             $eDate = $dep->end_date ?? $dep->booking_end_date;
+                             $txtStart = $sDate ? date('d/m/Y', strtotime($sDate)) : '??';
+                             $txtEnd = $eDate ? date('d/m/Y', strtotime($eDate)) : '??';
+                        @endphp
                         <option value="{{ $dep->id }}" {{ $dep->id == $detail->departure_id ? 'selected' : '' }}>
-                            {{ $dep->start_date }} → {{ $dep->end_date }} | Giá: {{ $dep->price }}
+                            #{{ $dep->id }} | {{ $txtStart }} - {{ $txtEnd }}
                         </option>
                     @endif
                 @endforeach
@@ -97,7 +103,13 @@
                 if (dep.tour_id === tourId) {
                     const option = document.createElement('option');
                     option.value = dep.id;
-                    option.text = dep.start_date + ' → ' + dep.end_date + ' | Giá: ' + dep.price;
+                    
+                    const rawStart = dep.start_date || dep.booking_start_date;
+                    const rawEnd = dep.end_date || dep.booking_end_date;
+                    const sDate = rawStart ? new Date(rawStart).toLocaleDateString('vi-VN') : '??';
+                    const eDate = rawEnd ? new Date(rawEnd).toLocaleDateString('vi-VN') : '??';
+
+                    option.text = `#${dep.id} | ${sDate} - ${eDate}`;
                     departureSelect.appendChild(option);
                 }
             });

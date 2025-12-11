@@ -5,15 +5,15 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-primary"><i class="fas fa-cogs"></i> Danh sách Dịch vụ</h1>
-        <a href="{{ route('add-service') }}" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Thêm Dịch vụ
+        <h2 class="text-primary fw-bold"><i class="fas fa-cogs"></i> Danh sách Dịch vụ</h2>
+        <a href="{{ route('add-service') }}" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+            <i class="fas fa-plus-circle me-1"></i> Thêm Dịch vụ
         </a>
     </div>
 
     {{-- Hiển thị thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger mb-4">
             <ul class="mb-0">
                 @foreach($_SESSION['errors'] as $error)
                     <li>{{ $error }}</li>
@@ -25,66 +25,62 @@
 
     {{-- Hiển thị thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success">
+        <div class="alert alert-success mb-4">
             {{ $_SESSION['success'] }}
         </div>
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <div class="table-responsive shadow-sm">
-        <table class="table table-striped table-hover align-middle text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>#</th>
-                    <th>Tên dịch vụ</th>
-                    <th>Gói dịch vụ</th>
-                    <th>Tour</th>
-                    <th>Nhà cung cấp</th>
-                    <th>Giá</th>
-                    <th>Giá mặc định</th>
-                    <th>Tiền tệ</th>
-                    <th>Tùy chọn</th>
-                    <th>Hoạt động</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($services as $s)
+    <div class="card shadow-sm p-3">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+                <thead>
                     <tr>
-                        <td>{{ $s->id }}</td>
-                        <td class="fw-bold">{{ $s->name }}</td>
-                        <td>{{ $s->package_name }}</td>
-                        <td>{{ $s->tour_name ?? '---' }}</td>
-                        <td>{{ $s->supplier_name ?? '---' }}</td>
-                        <td class="text-success">{{ number_format($s->price, 0, ',', '.') }} đ</td>
-                        <td>{{ number_format($s->default_price, 0, ',', '.') }} đ</td>
-                        <td>{{ $s->currency }}</td>
-                        <td>
-                            <span class="badge {{ $s->is_optional ? 'bg-info' : 'bg-secondary' }}">
-                                {{ $s->is_optional ? 'Có' : 'Không' }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge {{ $s->is_active ? 'bg-success' : 'bg-danger' }}">
-                                {{ $s->is_active ? 'Đang hoạt động' : 'Ngừng' }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{{ route('detail-service/' . $s->id) }}" class="btn btn-sm btn-warning me-1">
-                                <i class="fas fa-edit"></i> Sửa
-                            </a>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-service/' . $s->id) }}', '{{ $s->name }}')">
-                                <i class="fas fa-trash-alt"></i> Xóa
-                            </button>
-                        </td>
+                        <th style="width: 50px;">#</th>
+                        <th class="text-start">Tên dịch vụ</th>
+                        <th>Gói</th>
+                        <th>Nhà cung cấp</th>
+                        <th class="text-end">Giá mặc định</th>
+                        <th>Tùy chọn</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 150px;">Hành động</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="11" class="text-muted">Chưa có dịch vụ nào được thêm</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse($services as $s)
+                        <tr>
+                            <td class="text-muted">{{ $s->id }}</td>
+                            <td class="fw-bold text-dark text-start">{{ $s->name }}</td>
+                            <td><span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">{{ $s->package_name }}</span></td>
+                            <td class="text-muted">{{ $s->supplier_name ?? '-' }}</td>
+                            <td class="text-end fw-bold text-primary">{{ number_format($s->default_price, 0, ',', '.') }} đ</td>
+                            <td>
+                                <span class="badge {{ $s->is_optional ? 'bg-info bg-opacity-10 text-info border border-info' : 'bg-secondary bg-opacity-10 text-secondary border border-secondary' }} rounded-pill px-3">
+                                    {{ $s->is_optional ? 'Có' : 'Không' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $s->is_active ? 'bg-success bg-opacity-10 text-success border border-success' : 'bg-danger bg-opacity-10 text-danger border border-danger' }} rounded-pill px-3">
+                                    {{ $s->is_active ? 'Hoạt động' : 'Ngừng' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ route('detail-service/' . $s->id) }}" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <i class="fas fa-edit"></i>Sửa
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete('{{ route('delete-service/' . $s->id) }}', '{{ $s->name }}')">
+                                    <i class="fas fa-trash-alt"></i>Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">Chưa có dịch vụ nào được thêm</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

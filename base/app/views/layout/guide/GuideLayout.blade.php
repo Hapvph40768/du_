@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Admin Panel')</title>
+    <title>@yield('title', 'Guide Panel')</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,93 +10,118 @@
     @include('layout.script')
 
     <style>
+        /* INLINED styles to ensure loading (Copied from AdminLayout) */
+        body { margin: 0; font-family: 'Tahoma'; }
+        .container { width: 980px; margin: 0 auto; }
+        
+        /* LIGHT THEME OVERRIDES */
+        :root {
+            --bg-body: #f8fafc;       /* Slate 50 */
+            --bg-sidebar: #ffffff;    /* White */
+            --bg-card: #ffffff;       /* White */
+            --bg-input: #f1f5f9;      /* Slate 100 */
+            
+            --text-main: #0f172a;     /* Slate 900 */
+            --text-muted: #64748b;    /* Slate 500 */
+            
+            --primary: #2563eb;       /* Blue 600 */
+            --cyan: #0891b2;          /* Cyan 600 */
+            --danger: #ef4444;        /* Red 500 */
+            --success: #10b981;       /* Emerald 500 */
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
         body {
-            background: #f0f2f5;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-body) !important;
+            color: var(--text-main) !important;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
         }
 
-        /* Navbar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1100;
-            padding: 12px 20px;
-            background: #2c3e50;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .sidebar { background: var(--bg-sidebar) !important; border-right: 1px solid #e2e8f0; width: var(--sidebar-width); position: fixed; left: 0; top: 0; bottom: 0; padding: 0; z-index: 1000; box-shadow: 2px 0 12px rgba(0,0,0,0.03); }
+        .sidebar .brand { color: var(--primary); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+        .sidebar .nav-link { color: var(--text-muted); padding: 12px 18px; display: flex; align-items: center; text-decoration: none; transition: all 0.2s; border-radius: 8px; margin-bottom: 4px; font-weight: 500; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: #eff6ff !important; color: var(--primary) !important; }
+        
+        .content { margin-left: var(--sidebar-width); padding: 30px; background-color: var(--bg-body); min-height: 100vh; }
+        
+        /* UTILITIES */
+        /* Keeping class name 'card-dark' for compatibility */
+        .card-dark { background: var(--bg-card); border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        .search-dark { background: var(--bg-input); border: 1px solid #e2e8f0; color: var(--text-main); border-radius: 20px; padding: 8px 20px; width: 300px; transition: all 0.2s; }
+        .search-dark:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        .stats-mini-card { background: var(--bg-card); border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; min-width: 140px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .stats-mini-card .label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+        .stats-mini-card .value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        
+        .filter-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 18px; border-radius: 20px; font-weight: 500; transition: all 0.2s; }
+        .filter-btn:hover { background: #e2e8f0; }
+        .filter-btn.active { background: #fff; color: var(--primary); border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        /* TABLE */
+        .table-dark-custom { color: var(--text-main); background: transparent; width: 100%; border-collapse: separate; border-spacing: 0; }
+        .table-dark-custom th { text-align: left; background-color: #f8fafc !important; color: var(--text-muted); border-bottom: 2px solid #e2e8f0; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; padding: 16px 24px; }
+        .table-dark-custom td { background-color: var(--bg-card) !important; color: var(--text-main) !important; padding: 16px 24px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 0.95rem; font-weight: 500; }
+        .table-dark-custom tr td:first-child { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        .table-dark-custom tr td:last-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .table-dark-custom tr:hover td { background-color: #f8fafc !important; }
 
-        .navbar .navbar-brand {
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
+        /* PROGRESS & DOTS */
+        .table-dark-custom tr { background-color: transparent !important; }
+        .progress-dark { background-color: #e2e8f0; height: 8px; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+        .progress-bar { height: 100%; }
+        .dot-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-success { background-color: var(--success); }
+        .dot-danger { background-color: var(--danger); }
+        
+        .tour-avatar { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #e2e8f0; border: 1px solid #e2e8f0; }
+        .tour-info-cell { display: flex; align-items: center; gap: 12px; }
+        .tour-name { font-weight: 600; display: block; margin-bottom: 2px; color: var(--text-main); }
+        
+        .footer-stat-card { background: var(--bg-card); border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            position: fixed;
-            left: 0;
-            top: 56px;
-            bottom: 0;
-            background: #34495e;
-            padding-top: 20px;
-            overflow-y: auto;
-            transition: all 0.3s;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            border-right: 1px solid #2c3e50;
-        }
+        /* HIDE DEFAULT SCROLLBARS IF UGLY */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: #ecf0f1;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 8px;
-            margin: 4px 12px;
-            transition: all 0.2s;
+        /* Inputs & Selects Override */
+        .form-control-dark, .form-select-dark {
+            background-color: #fff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: var(--text-main) !important;
         }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-            color: #fff;
-            transform: translateX(5px);
+        .form-control-dark:focus, .form-select-dark:focus {
+            background-color: #fff !important;
+            border-color: var(--primary) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
         }
+        .form-control-dark::placeholder { color: #94a3b8; }
 
-        .sidebar a.active {
-            background: #16a085;
-            color: #fff;
-            font-weight: 600;
+        /* COMPATIBILITY OVERRIDES for Dark Mode Classes on Light Theme */
+        .text-white { color: var(--text-main) !important; }
+        .text-white-50 { color: var(--text-muted) !important; }
+        .bg-dark { background-color: #ffffff !important; color: var(--text-main) !important; border: 1px solid #cbd5e1 !important; }
+        
+        /* Restore text-white for buttons and badges */
+        .btn.text-white, .badge.text-white, .bg-primary.text-white, .bg-danger.text-white, .bg-success.text-white, .bg-info.text-white, .bg-warning.text-white {
+            color: #fff !important;
         }
-
-        /* Content */
-        .content {
-            margin-left: 270px;
-            margin-top: 80px;
-            padding: 20px;
+        
+        /* Outline Light compatibility */
+        .btn-outline-light {
+            color: var(--text-muted) !important;
+            border-color: #e2e8f0 !important;
         }
-
-        /* Cards inside content */
-        .content .card {
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-        }
-
-        .content .card:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Scrollbar for sidebar */
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background-color: rgba(255,255,255,0.3);
-            border-radius: 3px;
+        .btn-outline-light:hover {
+            background-color: #f1f5f9 !important;
+            color: var(--primary) !important;
         }
     </style>
 </head>
@@ -108,8 +133,41 @@
 @include('layout.guide.blocks.aside')
 <!-- Content -->
 <div class="content">
+    @yield('content')
+    {{-- Also yield content-main for compatibility in case some views use it --}}
     @yield('content-main')
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Sidebar toggle behavior (Copied from AdminLayout)
+    (function(){
+        const body = document.body;
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        if(!sidebar || !toggle) return;
+
+        function toggleSidebar(){
+            // mobile
+            if(window.innerWidth < 992){
+                sidebar.classList.toggle('show');
+                return;
+            }
+            sidebar.classList.toggle('collapsed');
+            document.querySelector('.content').classList.toggle('sidebar-collapsed');
+        }
+
+        toggle.addEventListener('click', function(e){
+            e.preventDefault(); toggleSidebar();
+        });
+
+        // close on outside click (mobile)
+        document.addEventListener('click', function(e){
+            if(window.innerWidth >= 992) return;
+            if(!sidebar.classList.contains('show')) return;
+            if(e.target.closest('.sidebar') || e.target.closest('#sidebarToggle')) return;
+            sidebar.classList.remove('show');
+        });
+    })();
+</script>
 </body>
 </html>

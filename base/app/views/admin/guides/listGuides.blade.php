@@ -30,19 +30,19 @@
 </div>
 
 @if(isset($_SESSION['success']) && isset($_GET['msg']))
-    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="background: rgba(34, 197, 94, 0.2); border: 1px solid var(--success); color: #fff;">
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
         <i class="bi bi-check-circle me-2"></i> {{ $_SESSION['success'] }}
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 @endif
 
 @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" style="background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: #fff;">
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
         <i class="bi bi-exclamation-circle me-2"></i>
         @foreach($_SESSION['errors'] as $error)
             <span>{{ $error }}</span><br>
         @endforeach
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 @endif
 
@@ -50,9 +50,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="d-flex align-items-center gap-2">
             <span class="text-muted text-uppercase fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">Bộ lọc</span>
-            <button class="filter-btn active">Tất cả</button>
-            <button class="filter-btn">Đang rảnh</button>
-            <button class="filter-btn">Đang dẫn tour</button>
+            <a href="{{ route('list-guides') }}" class="filter-btn text-decoration-none {{ !isset($_GET['status']) ? 'active' : '' }}">Tất cả</a>
+            <a href="{{ route('list-guides') }}?status=active" class="filter-btn text-decoration-none {{ (isset($_GET['status']) && $_GET['status'] == 'active') ? 'active' : '' }}">Đang rảnh</a>
+            <a href="{{ route('list-guides') }}?status=busy" class="filter-btn text-decoration-none {{ (isset($_GET['status']) && $_GET['status'] == 'busy') ? 'active' : '' }}">Đang dẫn tour</a>
         </div>
         
         <div class="d-flex gap-3">
@@ -113,9 +113,11 @@
                     </td>
                     <td>
                         @if($g->status === 'active')
-                            <span class="dot-status dot-success"></span> <span class="text-success small">Đang hoạt động</span>
+                            <span class="dot-status dot-success"></span> <span class="text-success small">Đang rảnh</span>
+                        @elseif($g->status === 'busy')
+                            <span class="dot-status dot-danger"></span> <span class="text-danger small">Đang dẫn tour</span>
                         @else
-                            <span class="dot-status dot-danger"></span> <span class="text-white-50 small">Ngừng hoạt động</span>
+                            <span class="dot-status dot-secondary"></span> <span class="text-white-50 small">Ngừng hoạt động</span>
                         @endif
                     </td>
                     <td class="text-center">

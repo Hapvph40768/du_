@@ -18,9 +18,16 @@ function redirect($key = "",$msg = "",$url ="") {
             unset($_SESSION['errors']);
             break;
     }
-    header('location: ' . BASE_URL . $url."?msg=".$key);die;
+    $separator = (strpos($url, '?') !== false) ? '&' : '?';
+    header('location: ' . BASE_URL . $url . $separator . "msg=" . $key);die;
 }
 
 function route($name) {
     return BASE_URL.$name;
+}
+
+if (!function_exists('e')) {
+    function e($string) {
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8', false);
+    }
 }

@@ -18,8 +18,25 @@ class AttendanceController extends BaseController
     // Danh sách attendance
     public function listAttendance()
     {
-        $attendances = $this->attendance->getAllAttendance();
-        return $this->render('admin.attendance.listAttendance', ['attendances' => $attendances]);
+        $status = $_GET['status'] ?? null;
+        $start_date = $_GET['start_date'] ?? null;
+        $end_date = $_GET['end_date'] ?? null;
+        $tour_id = $_GET['tour_id'] ?? null;
+
+        $attendances = $this->attendance->getAllAttendance($status, $start_date, $end_date, $tour_id);
+        
+        // Fetch tours for dropdown
+        $tourModel = new \App\Models\TourModel();
+        $tours = $tourModel->getAllTours();
+
+        return $this->render('admin.attendance.listAttendance', [
+            'attendances' => $attendances,
+            'currentStatus' => $status,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'tour_id' => $tour_id,
+            'tours' => $tours
+        ]);
     }
 
     // Form thêm attendance
@@ -48,7 +65,7 @@ class AttendanceController extends BaseController
 
         $departure_id       = $_POST['departure_id'] ?? '';
         $customer_id        = $_POST['customer_id'] ?? '';
-        $booking_customer_id= $_POST['booking_customer_id'] ?? null;
+        $booking_customer_id= !empty($_POST['booking_customer_id']) ? $_POST['booking_customer_id'] : null;
         $status             = $_POST['status'] ?? 'present';
         $checkin_time       = $_POST['checkin_time'] ?? null;
         $note               = $_POST['note'] ?? null;
@@ -57,9 +74,7 @@ class AttendanceController extends BaseController
         if (empty($departure_id)) {
             $error['departure_id'] = "Departure không được để trống";
         }
-        if (empty($customer_id)) {
-            $error['customer_id'] = "Customer không được để trống";
-        }
+        // customer_id is optional
         if (!in_array($status, ['present','absent'])) {
             $error['status'] = "Trạng thái không hợp lệ";
         }
@@ -117,7 +132,7 @@ class AttendanceController extends BaseController
 
         $departure_id       = $_POST['departure_id'] ?? '';
         $customer_id        = $_POST['customer_id'] ?? '';
-        $booking_customer_id= $_POST['booking_customer_id'] ?? null;
+        $booking_customer_id= !empty($_POST['booking_customer_id']) ? $_POST['booking_customer_id'] : null;
         $status             = $_POST['status'] ?? 'present';
         $checkin_time       = $_POST['checkin_time'] ?? null;
         $note               = $_POST['note'] ?? null;

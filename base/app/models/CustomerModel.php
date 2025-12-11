@@ -27,6 +27,14 @@ class CustomerModel extends BaseModel
         return $this->loadRow([$id]);
     }
 
+    // Lấy khách hàng theo User ID
+    public function getCustomerByUserId($user_id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE user_id = ?";
+        $this->setQuery($sql);
+        return $this->loadRow([$user_id]);
+    }
+
     // Thêm khách hàng mới
     public function addCustomer($data)
     {

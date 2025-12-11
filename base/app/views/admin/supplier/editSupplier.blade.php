@@ -40,7 +40,7 @@
                 <select name="type" class="form-select" required>
                     <option value="hotel" {{ $detail->type === 'hotel' ? 'selected' : '' }}>Khách sạn</option>
                     <option value="restaurant" {{ $detail->type === 'restaurant' ? 'selected' : '' }}>Nhà hàng</option>
-                    <option value="transport" {{ $detail->type === 'transport' ? 'selected' : '' }}>Vận chuyển</option>
+                    <option value="transport" {{ $detail->type === 'transport' ? 'selected' : '' }}>Xe khách</option>
                     <option value="activity" {{ $detail->type === 'activity' ? 'selected' : '' }}>Hoạt động</option>
                     <option value="other" {{ $detail->type === 'other' ? 'selected' : '' }}>Khác</option>
                 </select>

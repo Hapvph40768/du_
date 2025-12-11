@@ -1,0 +1,235 @@
+@extends('layout.dashboard')
+@section('title', 'Chi tiết Booking')
+@section('active-booking', 'active')
+
+@section('content')
+<div class="page-header mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="text-white mb-1">Chi tiết Booking #{{ $booking->id }}</h1>
+        <p class="text-secondary mb-0">Xem thông tin chi tiết đơn đặt tour.</p>
+    </div>
+    <a href="{{ route('list-booking') }}" class="btn btn-outline-light">
+        <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Cột trái: Thông tin Tour & Khách hàng -->
+    <div class="col-md-8">
+        <!-- Thông tin Tour -->
+        <div class="card-dark p-4 mb-4">
+            <h5 class="text-white mb-4 border-bottom border-light border-opacity-25 pb-3">
+                <i class="bi bi-geo-alt me-2 text-primary"></i>Thông tin Tour
+            </h5>
+            
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 text-secondary fw-medium">Tên Tour:</div>
+                <div class="col-md-8">
+                    <div class="text-white fw-bold fs-5">{{ $booking->tour_name }}</div>
+                    @if(isset($booking->start_date) && isset($booking->end_date))
+                        <div class="small text-secondary mt-1">
+                            <i class="bi bi-clock-history me-1"></i>
+                            {{ (strtotime($booking->end_date) - strtotime($booking->start_date)) / 86400 + 1 }} ngày
+                        </div>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 text-secondary fw-medium">Lịch khởi hành:</div>
+                <div class="col-md-8 text-white">
+                    <span class="me-3"><i class="bi bi-calendar-event me-1"></i> {{ isset($booking->start_date) ? date('d/m/Y', strtotime($booking->start_date)) : '--' }}</span>
+                    <span><i class="bi bi-arrow-right me-1"></i> {{ isset($booking->end_date) ? date('d/m/Y', strtotime($booking->end_date)) : '--' }}</span>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 text-secondary fw-medium">Vị trí đón:</div>
+                <div class="col-md-8 text-white fw-bold">
+                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i> {{ $booking->pickup_location ?? 'Chưa cập nhật' }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 text-secondary fw-medium">Giá tour gốc:</div>
+                <div class="col-md-8 text-white fs-5">{{ number_format($booking->departure_price, 0, ',', '.') }} đ <small class="text-secondary fs-6 fw-normal">/ khách</small></div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-md-4 text-secondary fw-medium">Số lượng khách:</div>
+                <div class="col-md-8 text-white fw-bold fs-5">{{ $booking->num_people }} người</div>
+            </div>
+        </div>
+
+        <!-- Thông tin Dịch vụ -->
+        <div class="card-dark p-4">
+            <h5 class="text-white mb-4 border-bottom border-light border-opacity-25 pb-3">
+                <i class="bi bi-stars me-2 text-warning"></i>Dịch vụ đi kèm
+            </h5>
+            
+            @if(!empty($booking->services))
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover rounded overflow-hidden">
+                        <thead class="table-light text-uppercase text-secondary small">
+                            <tr>
+                                <th class="py-3 ps-3">Tên dịch vụ</th>
+                                <th class="text-center py-3">Số lượng</th>
+                                <th class="text-end py-3">Đơn giá</th>
+                                <th class="text-end py-3 pe-3">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($booking->services as $s)
+                                <tr>
+                                    <td class="py-3 ps-3 fw-medium">{{ $s->service_name }}</td>
+                                    <td class="text-center py-3">{{ $s->quantity }}</td>
+                                    <td class="text-end py-3">{{ number_format($s->price, 0, ',', '.') }} đ</td>
+                                    <td class="text-primary text-end py-3 pe-3 fw-bold">{{ number_format($s->quantity * $s->price, 0, ',', '.') }} đ</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-secondary fst-italic mb-0 p-2">Không có dịch vụ đi kèm.</p>
+            @endif
+        </div>
+
+        <!-- Thông tin Hành khách -->
+        <div class="card-dark p-4 mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-light border-opacity-25 pb-3">
+                <h5 class="text-white mb-0">
+                    <i class="bi bi-people me-2 text-info"></i>Danh sách hành khách
+                </h5>
+                <a href="?url=add-booking-customer&booking_id={{ $booking->id }}" class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-plus-lg me-1"></i>Thêm hành khách
+                </a>
+            </div>
+            
+            @if(!empty($currCustomers) && count($currCustomers) > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover rounded overflow-hidden mb-0">
+                        <thead class="table-light text-uppercase text-secondary small">
+                            <tr>
+                                <th class="py-3 ps-3">Họ tên</th>
+                                <th class="py-3">Giới tính</th>
+                                <th class="py-3">Ngày sinh</th>
+                                <th class="text-end py-3 pe-3">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($currCustomers as $cus)
+                                <tr>
+                                    <td class="py-3 ps-3 fw-medium">{{ $cus->fullname }}</td>
+                                    <td class="py-3">
+                                        @if($cus->gender == 'male') Nam
+                                        @elseif($cus->gender == 'female') Nữ
+                                        @else Khác @endif
+                                    </td>
+                                    <td class="py-3">{{ date('d/m/Y', strtotime($cus->dob)) }}</td>
+                                    <td class="text-end py-3 pe-3">
+                                        <a href="?url=detail-booking-customer/{{ $cus->id }}" class="text-info me-2"><i class="bi bi-pencil"></i></a>
+                                        <a href="?url=delete-booking-customer/{{ $cus->id }}" class="text-danger" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="bi bi-trash"></i></a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-4">
+                    <p class="text-secondary fst-italic mb-3">Chưa có thông tin hành khách nào.</p>
+                    <a href="?url=add-booking-customer&booking_id={{ $booking->id }}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>Điền thông tin khách hàng
+                    </a>
+                </div>
+            @endif
+    </div>
+
+    <!-- Cột phải: Khách hàng & Thanh toán -->
+    <div class="col-md-4">
+        <!-- Trạng thái & Tổng quan -->
+        <div class="card-dark p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-secondary fw-medium">Trạng thái</span>
+                @switch($booking->status)
+                    @case('pending')
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">Chờ xác nhận</span>
+                        @break
+                    @case('confirmed')
+                        <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">Đã xác nhận</span>
+                        @break
+                    @case('cancelled')
+                        <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">Đã hủy</span>
+                        @break
+                    @case('completed')
+                        <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">Hoàn thành</span>
+                        @break
+                @endswitch
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="text-secondary fw-medium">Thanh toán</span>
+                @switch($booking->payment_status)
+                    @case('unpaid')
+                        <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">Chưa thanh toán</span>
+                        @break
+                    @case('partial')
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">Đặt cọc</span>
+                        @break
+                    @case('paid')
+                        <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">Đã thanh toán</span>
+                        @break
+                @endswitch
+            </div>
+
+            <hr class="border-light border-opacity-25 my-3">
+            
+            <div class="d-flex justify-content-between align-items-end">
+                <span class="text-white fs-5 fw-medium">Tổng tiền</span>
+                <span class="text-primary fs-2 fw-bold text-gradient">{{ number_format($booking->total_price, 0, ',', '.') }} <small class="fs-6 text-white-50">đ</small></span>
+            </div>
+        </div>
+
+        <!-- Thông tin Khách hàng -->
+        <div class="card-dark p-4 mb-4">
+            <h5 class="text-white mb-3 border-bottom border-light border-opacity-25 pb-2">
+                <i class="bi bi-person-circle me-2"></i>Khách hàng
+            </h5>
+            
+            <div class="mb-3">
+                <div class="text-secondary small fw-bold text-uppercase mb-1">Họ và tên</div>
+                <div class="text-white fw-bold fs-5">{{ $booking->fullname }}</div>
+            </div>
+
+            <div class="mb-3">
+                <div class="text-secondary small fw-bold text-uppercase mb-1">Số điện thoại</div>
+                <div class="text-white">{{ $booking->phone }}</div>
+            </div>
+
+            <div class="mb-3">
+                <div class="text-secondary small fw-bold text-uppercase mb-1">Email</div>
+                <div class="text-white">{{ $booking->email }}</div>
+            </div>
+            
+            <div class="mt-4 pt-3 border-top border-light border-opacity-25">
+                <a href="{{ route('detail-booking/'.$booking->id) }}" class="btn btn-primary w-100 py-2 fw-medium">
+                    <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa Booking
+                </a>
+            </div>
+        </div>
+
+        <!-- Ghi chú -->
+        @if($booking->note)
+        <div class="card-dark p-4">
+            <h5 class="text-white mb-3 text-warning border-bottom border-light border-opacity-25 pb-2">
+                <i class="bi bi-chat-left-text me-2"></i>Ghi chú
+            </h5>
+            <div class="p-3 rounded" style="background: rgba(255, 255, 255, 0.08); color: #fff;">
+                {{ $booking->note }}
+            </div>
+        </div>
+        @endif
+    </div>
+</div>
+@endsection

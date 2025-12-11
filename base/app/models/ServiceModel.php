@@ -9,10 +9,9 @@ class ServiceModel extends BaseModel
     public function getAllServices()
     {
         $sql = "
-        SELECT s.*, sup.name AS supplier_name, t.name AS tour_name
+        SELECT s.*, sup.name AS supplier_name
         FROM {$this->table} s
         LEFT JOIN suppliers sup ON s.supplier_id = sup.id
-        LEFT JOIN tours t ON s.tour_id = t.id
         ORDER BY s.id DESC
         ";
         $this->setQuery($sql);
@@ -23,10 +22,9 @@ class ServiceModel extends BaseModel
     public function getServiceById($id)
     {
         $sql = "
-        SELECT s.*, sup.name AS supplier_name, t.name AS tour_name
+        SELECT s.*, sup.name AS supplier_name
         FROM {$this->table} s
         LEFT JOIN suppliers sup ON s.supplier_id = sup.id
-        LEFT JOIN tours t ON s.tour_id = t.id
         WHERE s.id=?
         ";
         $this->setQuery($sql);
@@ -37,11 +35,10 @@ class ServiceModel extends BaseModel
     public function addService($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (tour_id, package_name, name, description, type, supplier_id, price, default_price, currency, is_optional, is_active, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (package_name, name, description, type, supplier_id, price, default_price, currency, is_optional, is_active, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
-            $data['tour_id'] ?? null,
             $data['package_name'] ?? null,
             $data['name'],
             $data['description'] ?? null,
@@ -61,11 +58,10 @@ class ServiceModel extends BaseModel
     public function updateService($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        tour_id=?, package_name=?, name=?, description=?, type=?, supplier_id=?, price=?, default_price=?, currency=?, is_optional=?, is_active=?, updated_at=? 
+        package_name=?, name=?, description=?, type=?, supplier_id=?, price=?, default_price=?, currency=?, is_optional=?, is_active=?, updated_at=? 
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
-            $data['tour_id'] ?? null,
             $data['package_name'] ?? null,
             $data['name'],
             $data['description'] ?? null,

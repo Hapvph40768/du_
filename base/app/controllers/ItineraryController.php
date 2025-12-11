@@ -79,6 +79,13 @@ class ItineraryController extends BaseController
         if ($errors) {
             redirect('errors', $errors, 'add-itinerary');
         } else {
+            // Check departure status
+            $departure = $this->departure->getDepartureById($departure_id);
+            if ($departure && $departure->status == 'closed') {
+                redirect('error', "Lịch khởi hành đã đóng, không thể thêm lịch trình.", 'add-itinerary');
+                return;
+            }
+
             $check = $this->itinerary->addItinerary([
                 'tour_id'      => $tour_id,
                 'departure_id' => $departure_id,
@@ -136,6 +143,13 @@ class ItineraryController extends BaseController
             if ($errors) {
                 redirect('errors', $errors, $route);
             } else {
+                // Check departure status
+                $departure = $this->departure->getDepartureById($departure_id);
+                if ($departure && $departure->status == 'closed') {
+                    redirect('error', "Lịch khởi hành đã đóng, không thể sửa lịch trình.", $route);
+                    return;
+                }
+
                 $check = $this->itinerary->updateItinerary($id, [
                     'tour_id'      => $tour_id,
                     'departure_id' => $departure_id,

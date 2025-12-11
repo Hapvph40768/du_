@@ -35,22 +35,13 @@
                 @foreach($bookings as $b)
                     <option value="{{ $b->id }}" {{ $b->id == $detail->booking_id ? 'selected' : '' }}>
                         Booking #{{ $b->id }} - Tour {{ $b->tour_name }}
+                        ({{ date('d/m/Y', strtotime($b->start_date)) }} - {{ date('d/m/Y', strtotime($b->end_date)) }})
                     </option>
                 @endforeach
             </select>
         </div>
 
-        {{-- chọn customer --}}
-        <div class="mb-3">
-            <label class="form-label">Khách hàng</label>
-            <select name="customer_id" class="form-select" required>
-                @foreach($customers as $cus)
-                    <option value="{{ $cus->id }}" {{ $cus->id == $detail->customer_id ? 'selected' : '' }}>
-                        {{ $cus->fullname }} - {{ $cus->phone }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+
 
         {{-- họ tên --}}
         <div class="mb-3">

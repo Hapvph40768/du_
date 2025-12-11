@@ -29,6 +29,19 @@
             </select>
         </div>
 
+        {{-- Service --}}
+        <div class="mb-3">
+            <label for="service_id" class="form-label">Dịch vụ (Tùy chọn)</label>
+            <select name="service_id" id="service_id" class="form-select">
+                <option value="">-- Chọn Dịch vụ --</option>
+                @foreach($services as $s)
+                    <option value="{{ $s->id }}" {{ $s->id == $detail->service_id ? 'selected' : '' }}>
+                        {{ $s->name }} ({{ number_format($s->default_price, 0, ',', '.') }} đ)
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
         {{-- Nội dung yêu cầu --}}
         <div class="mb-3">
             <label for="request" class="form-label">Nội dung yêu cầu</label>

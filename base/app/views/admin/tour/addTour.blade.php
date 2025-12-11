@@ -53,11 +53,7 @@
             <input type="number" class="form-control" name="price" step="1000" placeholder="Ví dụ: 2000000" required>
         </div>
 
-        {{-- thời gian tour --}}
-        <div class="mb-3">
-            <label for="days" class="form-label fw-bold">Số ngày tour</label>
-            <input type="number" class="form-control" name="days" min="1" placeholder="Ví dụ: 3" required>
-        </div>
+
 
         {{-- điểm khởi hành --}}
         <div class="mb-3">
@@ -80,7 +76,11 @@
         {{-- loại tour --}}
         <div class="mb-3">
             <label for="category" class="form-label fw-bold">Loại tour</label>
-            <input type="text" class="form-control" name="category" placeholder="Ví dụ: thiên nhiên, thành phố">
+            <select name="category" class="form-select">
+                <option value="">-- Chọn loại tour --</option>
+                <option value="domestic">Trong nước</option>
+                <option value="international">Quốc tế</option>
+            </select>
         </div>
 
         {{-- trạng thái --}}

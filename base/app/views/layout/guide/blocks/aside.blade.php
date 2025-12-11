@@ -1,13 +1,68 @@
+<div class="sidebar d-flex flex-column h-100">
+    <!-- Brand -->
+    <div class="brand p-3 d-flex align-items-center gap-2">
+        <div class="rounded-circle bg-success d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+            <i class="bi bi-compass"></i>
+        </div>
+        <div class="d-flex flex-column">
+            <span class="text-success fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Portal</span>
+            <span class="text-white fw-bold">Hướng Dẫn Viên</span>
+        </div>
+    </div>
 
-<div class="sidebar d-flex flex-column p-3">
-    <a href="#" class="fs-4 mb-3 text-decoration-none text-white">Guide</a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-        {{-- Attendance --}}
-        <li>
-            <a href="{{ route('list-guide-attendance') }}" class="@yield('active-guide-attendance')">
-                <i class="bi bi-person-badge-fill me-2"></i> Quản lý điểm danh
+    <!-- Navigation -->
+    <div class="sidebar-content flex-grow-1 overflow-auto py-2">
+        <div class="px-3 mb-2 mt-2">
+            <small class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">MENU</small>
+        </div>
+        
+        <nav class="nav flex-column px-2 gap-1">
+            <a href="{{ route('guide-dashboard') }}" class="nav-link @yield('active-dashboard')">
+                <i class="bi bi-speedometer2 me-2"></i> Tổng quan
             </a>
-        </li>
-    </ul>
+            
+            <a href="{{ route('list-guide-attendance') }}" class="nav-link @yield('active-guide-attendance')">
+                <i class="bi bi-clipboard-check me-2"></i> Quản lý điểm danh
+            </a>
+
+            <a href="{{ route('list-guide-customer') }}" class="nav-link @yield('active-guide-customer')">
+                <i class="bi bi-people me-2"></i> Danh sách khách hàng
+            </a>
+
+            <a href="{{ route('list-guide-scr') }}" class="nav-link @yield('active-guide-scr')">
+                <i class="bi bi-file-earmark-text me-2"></i> Yêu cầu dịch vụ
+            </a>
+            
+            <a href="{{ route('list-guide-sr') }}" class="nav-link @yield('active-guide-sr')">
+                <i class="bi bi-star me-2"></i> Yêu cầu đặc biệt
+            </a>
+
+            <a href="{{ route('list-guide-departure') }}" class="nav-link @yield('active-guide-departure')">
+                <i class="bi bi-calendar-range me-2"></i> Lịch khởi hành
+            </a>
+
+            <a href="{{ route('list-guide-tour') }}" class="nav-link @yield('active-guide-tour')">
+                <i class="bi bi-briefcase me-2"></i> Tour được phân công
+            </a>
+
+        </nav>
+        
+    </div>
+
+    <!-- User Profile (Bottom) -->
+    <div class="mt-auto p-3 border-top border-secondary border-opacity-10">
+        <div class="user-block d-flex align-items-center gap-3 p-2 bg-white bg-opacity-10 rounded-3">
+            <div class="avatar-container position-relative">
+                <img src="/public/img/avatar.png" alt="Guide" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle" style="width: 10px; height: 10px;"></span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
+                <span class="text-white fw-bold text-truncate">{{ $_SESSION['user']['username'] ?? 'Guide' }}</span>
+                <small class="text-muted text-truncate">Hướng dẫn viên</small>
+            </div>
+            <a href="{{ route('logout') }}" class="btn btn-sm btn-dark text-white p-1" title="Đăng xuất">
+               <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </div>
 </div>

@@ -8,9 +8,11 @@ class PaymentModel extends BaseModel
     // Lấy tất cả payments
     public function getAllPayments()
     {
-        $sql = "SELECT p.*, b.id AS booking_id
+        $sql = "SELECT p.*, b.id AS booking_id, t.name AS tour_name, b.start_date, b.end_date
                 FROM {$this->table} p
                 JOIN bookings b ON p.booking_id = b.id
+                JOIN departures d ON b.departure_id = d.id
+                JOIN tours t ON d.tour_id = t.id
                 ORDER BY p.id DESC";
         $this->setQuery($sql);
         return $this->loadAllRows();
@@ -42,11 +44,12 @@ class PaymentModel extends BaseModel
     public function addPayment($data)
     {
         $sql = "INSERT INTO {$this->table} 
-        (booking_id, amount, method, transaction_code, status, paid_at, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        (booking_id, booking_service_id, amount, method, transaction_code, status, paid_at, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $this->setQuery($sql);
         return $this->execute([
             $data['booking_id'],
+            $data['booking_service_id'] ?? null,
             $data['amount'],
             $data['method'] ?? 'cash',
             $data['transaction_code'] ?? null,
@@ -61,11 +64,12 @@ class PaymentModel extends BaseModel
     public function updatePayment($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        booking_id=?, amount=?, method=?, transaction_code=?, status=?, paid_at=?, updated_at=? 
+        booking_id=?, booking_service_id=?, amount=?, method=?, transaction_code=?, status=?, paid_at=?, updated_at=? 
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['booking_id'],
+            $data['booking_service_id'] ?? null,
             $data['amount'],
             $data['method'] ?? 'cash',
             $data['transaction_code'] ?? null,

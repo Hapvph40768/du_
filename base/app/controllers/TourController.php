@@ -1,21 +1,39 @@
 <?php
 namespace App\Controllers;
 use App\Models\TourModel;
+use App\Models\TourImageModel;
+
+use App\Models\BookingModel;
 
 class TourController extends BaseController
 {
     protected $tour;
+    protected $tourImage;
+    protected $booking;
 
     public function __construct()
     {
         $this->tour = new TourModel();
+        $this->tourImage = new TourImageModel();
+        $this->booking = new BookingModel();
     }
 
     // Danh sách tour
     public function getTours()
     {
-        $tours = $this->tour->getAllTours();
-        $this->render("admin.tour.listTour", ['tours' => $tours]);
+        $status = $_GET['status'] ?? null;
+        if ($status && in_array($status, ['active', 'inactive'])) {
+            $tours = $this->tour->getToursByStatus($status);
+        } else {
+            $tours = $this->tour->getAllTours();
+        }
+        
+        $revenue = $this->booking->getRevenue(); // Get revenue from paid bookings
+        
+        $this->render("admin.tour.listTour", [
+            'tours' => $tours,
+            'revenue' => $revenue
+        ]);
     }
 
     // Form thêm tour
@@ -39,9 +57,6 @@ public function postTour()
     }
     if (empty($_POST['price'])) {
         $error['price'] = "Giá không được để trống";
-    }
-    if (empty($_POST['days'])) {
-        $error['days'] = "Số ngày không được để trống";
     }
     if (!isset($_POST['status']) || $_POST['status'] === "") {
         $error['status'] = "Trạng thái không được để trống";
@@ -70,7 +85,6 @@ public function postTour()
             'slug'          => $_POST['slug'] ?? null,
             'description'   => $_POST['description'],
             'price'         => $_POST['price'],
-            'days'          => $_POST['days'],
             'start_location'=> $_POST['start_location'] ?? null,
             'destination'   => $_POST['destination'] ?? null,
             'thumbnail'     => $thumbnailPath,
@@ -102,6 +116,11 @@ public function postTour()
     public function detailTour($id)
     {
         $detail = $this->tour->getTourById($id);
+        
+        if (!$detail) {
+            redirect('error', "Tour không tồn tại hoặc đã bị xóa", 'list-tours');
+        }
+
         return $this->render('admin.tour.editTour', compact('detail'));
     }
 
@@ -109,7 +128,14 @@ public function postTour()
     public function showTour($id)
     {
         $detail = $this->tour->getTourById($id);
-        return $this->render('admin.tour.showTour', compact('detail'));
+        
+        if (!$detail) {
+            redirect('error', "Tour không tồn tại hoặc đã bị xóa", 'list-tours');
+        }
+
+        $images = $this->tourImage->getImagesByTourId($id);
+
+        return $this->render('admin.tour.showTour', compact('detail', 'images'));
     }
 
     // Xử lý sửa tour
@@ -128,9 +154,6 @@ public function editTour($id)
         }
         if (empty($_POST['price'])) {
             $error['price'] = "Giá không được để trống";
-        }
-        if (empty($_POST['days'])) {
-            $error['days'] = "Số ngày không được để trống";
         }
         if (!isset($_POST['status']) || $_POST['status'] === "") {
             $error['status'] = "Trạng thái không được để trống";
@@ -161,7 +184,6 @@ public function editTour($id)
                 'slug'          => $_POST['slug'] ?? null,
                 'description'   => $_POST['description'],
                 'price'         => $_POST['price'],
-                'days'          => $_POST['days'],
                 'start_location'=> $_POST['start_location'] ?? null,
                 'destination'   => $_POST['destination'] ?? null,
                 'thumbnail'     => $thumbnailPath,

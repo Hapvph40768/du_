@@ -18,7 +18,20 @@ class GuideAttendanceController extends BaseController
     // Danh sách attendance
     public function listAttendance()
     {
-        $attendances = $this->attendance->getAllAttendance();
+        if (!isset($_SESSION['user'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $guideModel = new \App\Models\GuidesModel();
+        $guide = $guideModel->getGuideByUserId($userId);
+
+        $attendances = [];
+        if ($guide) {
+            $attendances = $this->attendance->getAttendanceByGuide($guide->id);
+        }
+
         return $this->render('guide.guide_attendance.listAttendance', ['attendances' => $attendances]);
     }
 

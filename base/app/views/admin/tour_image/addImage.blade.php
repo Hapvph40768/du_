@@ -1,0 +1,161 @@
+@extends('layout.dashboard')
+@section('title', 'Thêm ảnh tour')
+@section('content')
+
+<div class="container-fluid">
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold mb-0">
+                <i class="fas fa-camera-retro me-2"></i>Thêm ảnh tour
+            </h2>
+            <p class="text-muted mb-0">Tải lên hình ảnh mới cho tour du lịch</p>
+        </div>
+        <a href="{{ route('list-tour-images') }}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    {{-- Alert Messages --}}
+    @if(isset($_SESSION['errors']) && isset($_GET['msg']))
+        <div class="alert alert-danger shadow-sm rounded-3 fade show border-0 border-start border-4 border-danger" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-circle fs-4 me-3 text-danger"></i>
+                <div>
+                    @foreach($_SESSION['errors'] as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-3 px-4">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2"></i>Thông tin ảnh</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    
+                    <form action="{{ route('post-tour-image') }}" method="post" enctype="multipart/form-data">
+                        
+                        {{-- Select Tour --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark text-uppercase small">Chọn Tour <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-map-marked-alt text-muted"></i></span>
+                                <select class="form-select border-start-0 ps-0 bg-light" name="tour_id" required style="height: 48px;">
+                                    <option value="">-- Chọn tour du lịch --</option>
+                                    @foreach($tours as $tour)
+                                        <option value="{{ $tour->id }}">{{ $tour->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            {{-- Image Upload --}}
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold text-dark text-uppercase small">File Ảnh <span class="text-danger">*</span></label>
+                                <div class="file-upload-wrapper p-4 border border-2 border-dashed rounded-3 text-center bg-light hover-bg-white transition-all position-relative">
+                                    <input type="file" class="form-control opacity-0 position-absolute top-0 start-0 w-100 h-100 cursor-pointer" 
+                                           name="image_path" 
+                                           accept="image/*" 
+                                           required 
+                                           onchange="previewImage(this)">
+                                    <div class="z-0">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                        <p class="mb-1 fw-bold text-dark">Kéo thả hoặc click để chọn ảnh</p>
+                                        <small class="text-muted d-block">Định dạng hỗ trợ: JPG, PNG, GIF</small>
+                                    </div>
+                                    <div id="file-name-display" class="mt-3 badge bg-info text-dark d-none"></div>
+                                </div>
+                            </div>
+
+                            {{-- Preview Area (Placeholder mainly) --}}
+                            <div class="col-md-5 d-flex align-items-end">
+                                <div class="w-100 p-2 border rounded-3 bg-white text-center d-flex align-items-center justify-content-center" 
+                                     id="image-preview-box" 
+                                     style="height: 200px; border-style: dashed !important;">
+                                    <span class="text-muted small"><i class="fas fa-image me-1"></i>Preview</span>
+                                    <img id="preview-img" src="#" alt="Preview" class="d-none img-fluid rounded-2 h-100" style="object-fit: contain;">
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Alt Text --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark text-uppercase small">Văn bản thay thế (Alt Text)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-tag text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0 bg-light" name="alt_text" placeholder="Mô tả ngắn gọn về ảnh (tốt cho SEO)" style="height: 48px;">
+                            </div>
+                        </div>
+
+                        {{-- Is Thumbnail --}}
+                        <div class="mb-5">
+                            <div class="form-check form-switch p-0 d-flex align-items-center bg-light rounded-3 p-3 border">
+                                <input class="form-check-input ms-0 me-3 fs-4" type="checkbox" name="is_thumbnail" id="is_thumbnail" value="1" style="cursor: pointer;">
+                                <div>
+                                    <label class="form-check-label fw-bold text-dark cursor-pointer" for="is_thumbnail">Đặt làm ảnh đại diện</label>
+                                    <div class="small text-muted">Ảnh này sẽ hiển thị đầu tiên trong danh sách tour.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Action Buttons --}}
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{{ route('list-tour-images') }}" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-muted border">
+                                Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-shadow-lg transition-all">
+                                <i class="fas fa-save me-2"></i>Lưu hình ảnh
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        const previewBox = document.getElementById('image-preview-box');
+        const previewImg = document.getElementById('preview-img');
+        const defaultText = previewBox.querySelector('span');
+        const fileNameDisplay = document.getElementById('file-name-display');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('d-none');
+                defaultText.classList.add('d-none');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+            
+            // Show filename
+            fileNameDisplay.textContent = input.files[0].name;
+            fileNameDisplay.classList.remove('d-none');
+        } else {
+            previewImg.src = '#';
+            previewImg.classList.add('d-none');
+            defaultText.classList.remove('d-none');
+            fileNameDisplay.classList.add('d-none');
+        }
+    }
+</script>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .transition-all { transition: all 0.3s ease; }
+    .hover-shadow-lg:hover { box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; transform: translateY(-2px); }
+    .hover-bg-white:hover { background-color: #fff !important; }
+</style>
+
+@endsection

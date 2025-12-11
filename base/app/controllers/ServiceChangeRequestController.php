@@ -8,11 +8,13 @@ class ServiceChangeRequestController extends BaseController
 {
     protected $requestModel;
     protected $booking;
+    protected $service;
 
     public function __construct()
     {
         $this->requestModel = new ServiceChangeRequestsModel();
         $this->booking = new BookingModel();
+        $this->service = new \App\Models\ServiceModel();
     }
 
     // 1. Danh sách yêu cầu thay đổi dịch vụ
@@ -28,8 +30,10 @@ class ServiceChangeRequestController extends BaseController
     public function createRequest()
     {
         $bookings = $this->booking->getAllBookings();
+        $services = $this->service->getAllServices();
         return $this->render("admin.service_change_requests.addRequest", [
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'services' => $services
         ]);
     }
 
@@ -41,6 +45,7 @@ class ServiceChangeRequestController extends BaseController
         }
 
         $booking_id = trim($_POST['booking_id'] ?? '');
+        $service_id = trim($_POST['service_id'] ?? '');
         $request    = trim($_POST['request'] ?? '');
         $status     = $_POST['status'] ?? 'pending';
 
@@ -62,6 +67,7 @@ class ServiceChangeRequestController extends BaseController
 
         $check = $this->requestModel->addRequest([
             'booking_id'  => $booking_id,
+            'service_id'  => !empty($service_id) ? $service_id : null,
             'requester_id'=> $_SESSION['user']['id'] ?? null, // ai gửi yêu cầu
             'request'     => $request,
             'status'      => $status
@@ -77,10 +83,12 @@ class ServiceChangeRequestController extends BaseController
     {
         $detail = $this->requestModel->getRequestById($id);
         $bookings = $this->booking->getAllBookings();
+        $services = $this->service->getAllServices();
 
         return $this->render("admin.service_change_requests.editRequest", [
             'detail'   => $detail,
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'services' => $services
         ]);
     }
 
@@ -92,6 +100,7 @@ class ServiceChangeRequestController extends BaseController
         }
 
         $booking_id = trim($_POST['booking_id'] ?? '');
+        $service_id = trim($_POST['service_id'] ?? '');
         $request    = trim($_POST['request'] ?? '');
         $status     = $_POST['status'] ?? 'pending';
 
@@ -115,6 +124,7 @@ class ServiceChangeRequestController extends BaseController
 
         $check = $this->requestModel->updateRequest($id, [
             'booking_id'  => $booking_id,
+            'service_id'  => !empty($service_id) ? $service_id : null,
             'requester_id'=> $_SESSION['user']['id'] ?? null,
             'request'     => $request,
             'status'      => $status,

@@ -19,6 +19,36 @@ class UserModel extends BaseModel
         return $this->loadAllRows();
     }
 
+    public function getCustomersOnly()
+    {
+        $sql = "SELECT u.*, r.name as role_name 
+                FROM {$this->table} u 
+                LEFT JOIN roles r ON u.role_id = r.id 
+                WHERE r.name = 'customer'
+                ORDER BY u.id DESC";
+        $this->setQuery($sql);
+        return $this->loadAllRows();
+    }
+
+    public function getGuidesOnly()
+    {
+        $sql = "SELECT u.*, r.name as role_name 
+                FROM {$this->table} u 
+                LEFT JOIN roles r ON u.role_id = r.id 
+                WHERE r.name = 'guide'
+                ORDER BY u.id DESC";
+        $this->setQuery($sql);
+        return $this->loadAllRows();
+    }
+
+    // Lấy tất cả roles
+    public function getAllRoles()
+    {
+        $sql = "SELECT * FROM roles ORDER BY id ASC";
+        $this->setQuery($sql);
+        return $this->loadAllRows();
+    }
+
     // Lấy user theo ID
     public function getUserById($id)
     {
@@ -45,8 +75,8 @@ class UserModel extends BaseModel
         return $this->execute([
             $data['username'],
             $data['email'] ?? null,
-            password_hash($data['password'], PASSWORD_BCRYPT), // mã hóa mật khẩu
-            $data['role_id'] ?? 1, // mặc định role_id = 1
+            $data['password'], // Controller must hash this
+            $data['role_id'] ?? 1,
             $data['avatar'] ?? null,
             $data['is_active'] ?? 1,
             $data['last_login'] ?? null
@@ -57,13 +87,13 @@ class UserModel extends BaseModel
     public function updateUser($id, $data)
     {
         $sql = "UPDATE {$this->table} SET 
-        username=?, email=?, password=?, role_id=?, avatar=?, is_active=?, last_login=? 
+        username=?, email=?, password=?, role_id=?, avatar=?, is_active=?, last_login=?
         WHERE id=?";
         $this->setQuery($sql);
         return $this->execute([
             $data['username'],
             $data['email'] ?? null,
-            password_hash($data['password'], PASSWORD_BCRYPT),
+            $data['password'], // Controller must hash this
             $data['role_id'] ?? 1,
             $data['avatar'] ?? null,
             $data['is_active'] ?? 1,

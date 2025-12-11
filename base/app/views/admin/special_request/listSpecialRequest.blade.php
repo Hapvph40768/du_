@@ -5,15 +5,15 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-primary"><i class="fas fa-star"></i> Danh sách Yêu cầu đặc biệt</h1>
-        <a href="{{ route('add-special-request') }}" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Thêm Yêu cầu mới
+        <h2 class="text-white fw-bold"><i class="fas fa-star text-primary"></i> Danh sách Yêu cầu đặc biệt</h2>
+        <a href="{{ route('add-special-request') }}" class="btn btn-primary px-4 py-2 rounded-pill fw-bold">
+            <i class="fas fa-plus-circle me-1"></i> Thêm Yêu cầu mới
         </a>
     </div>
 
     {{-- Hiển thị thông báo lỗi --}}
     @if(isset($_SESSION['errors']) && isset($_GET['msg']))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger mb-4">
             <ul class="mb-0">
                 @foreach($_SESSION['errors'] as $error)
                     <li>{{ $error }}</li>
@@ -25,46 +25,54 @@
 
     {{-- Hiển thị thông báo thành công --}}
     @if(isset($_SESSION['success']) && isset($_GET['msg']))
-        <div class="alert alert-success">
+        <div class="alert alert-success mb-4">
             {{ $_SESSION['success'] }}
         </div>
         @php unset($_SESSION['success']) @endphp
     @endif
 
-    <div class="table-responsive shadow-sm">
-        <table class="table table-striped table-hover align-middle text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>#</th>
-                    <th>Khách hàng</th>
-                    <th>Nội dung yêu cầu</th>
-                    <th>Ngày tạo</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($requests as $r)
+    <div class="card-dark p-3">
+        <div class="table-responsive">
+            <table class="table-dark-custom align-middle">
+                <thead>
                     <tr>
-                        <td>{{ $r->id }}</td>
-                        <td class="fw-bold">{{ $r->customer_name }}</td>
-                        <td>{{ strlen($r->request) > 50 ? substr($r->request, 0, 50) . '...' : $r->request }}</td>
-                        <td><span class="text-muted">{{ $r->created_at }}</span></td>
-                        <td>
-                            <a href="{{ route('detail-special-request/' . $r->id) }}" class="btn btn-sm btn-warning me-1">
-                                <i class="fas fa-edit"></i> Sửa
-                            </a>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('{{ route('delete-special-request/' . $r->id) }}', '{{ $r->request }}')">
-                                <i class="fas fa-trash-alt"></i> Xóa
-                            </button>
-                        </td>
+                        <th class="text-center" style="width: 50px;">#</th>
+                        <th>Khách hàng</th>
+                        <th>Nội dung yêu cầu</th>
+                        <th class="text-center">Ngày tạo</th>
+                        <th class="text-center" style="width: 150px;">Hành động</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-muted">Chưa có yêu cầu đặc biệt nào</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse($requests as $r)
+                        <tr>
+                            <td class="text-center text-white-50">{{ $r->id }}</td>
+                            <td class="fw-bold text-white">{{ $r->customer_name }}</td>
+                            <td>
+                                <span class="text-white opacity-75">
+                                    {{ strlen($r->request) > 50 ? substr($r->request, 0, 50) . '...' : $r->request }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-white-50 font-monospace">{{ $r->created_at }}</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('detail-special-request/' . $r->id) }}" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <i class="fas fa-edit"></i>Sửa
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete('{{ route('delete-special-request/' . $r->id) }}', '{{ $r->request }}')">
+                                    <i class="fas fa-trash-alt"></i>Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">Chưa có yêu cầu đặc biệt nào</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
