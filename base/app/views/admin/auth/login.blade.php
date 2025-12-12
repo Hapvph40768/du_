@@ -15,6 +15,12 @@
     </div>
     @endif
 
+    @if(isset($success))
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+         <i class="fas fa-check-circle"></i> {{ $success }}
+    </div>
+    @endif
+
     <form method="POST" action="login">
         <div class="mb-3">
             <label class="form-label">Tên đăng nhập</label>
@@ -37,7 +43,7 @@
                 <input class="form-check-input bg-dark border-secondary" type="checkbox" id="remember">
                 <label class="form-check-label text-muted small" for="remember">Ghi nhớ đăng nhập</label>
             </div>
-            <a href="#" class="text-muted small text-decoration-none">Quên mật khẩu?</a>
+            <a href="forgot-password" class="text-muted small text-decoration-none">Quên mật khẩu?</a>
         </div>
 
         <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">

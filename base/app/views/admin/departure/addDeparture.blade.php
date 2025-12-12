@@ -53,8 +53,8 @@
             </div>
 
             <div class="mb-3">
-                <label for="total_seats" class="fw-bold text-white mb-1">Tổng số chỗ <span class="text-danger">*</span></label>
-                <input type="number" class="form-control bg-dark text-white border-secondary" id="total_seats" name="total_seats" placeholder="Nhập tổng số ghế..." min="1" required>
+                <label for="total_seats" class="fw-bold text-white mb-1">Tổng số chỗ</label>
+                <input type="number" class="form-control bg-dark text-white border-secondary" id="total_seats" name="total_seats" placeholder="Nhập tổng số ghế..." >
                 <small class="text-muted">Khi tạo mới, số ghế còn lại = tổng số ghế.</small>
             </div>
 

@@ -37,6 +37,10 @@ $router->get('login', [App\Controllers\AuthController::class, 'showLogin']);
 $router->post('login', [App\Controllers\AuthController::class, 'login']);
 $router->get('register', [App\Controllers\AuthController::class, 'showRegister']);
 $router->post('register', [App\Controllers\AuthController::class, 'register']);
+$router->get('forgot-password', [App\Controllers\AuthController::class, 'showForgotPassword']);
+$router->post('forgot-password', [App\Controllers\AuthController::class, 'sendResetLink']);
+$router->get('reset-password', [App\Controllers\AuthController::class, 'showResetForm']);
+$router->post('reset-password', [App\Controllers\AuthController::class, 'resetPassword']);
 
 // ===================
 // AUTHENTICATED ROUTES
@@ -90,6 +94,18 @@ $router->group(['before' => 'guide'], function($router) {
 
     // Guide Customers
     $router->get('list-guide-customer', [App\Controllers\GuideCustomerController::class, 'getGuideCustomers']);
+
+    // Guide Tour Logs (Nhật ký hoạt động)
+    $router->get('list-guide-tour-log', [App\Controllers\GuideTourLogController::class, 'listGuideTourLogs']);
+    $router->get('add-guide-tour-log', [App\Controllers\GuideTourLogController::class, 'createGuideTourLog']);
+    $router->post('post-guide-tour-log', [App\Controllers\GuideTourLogController::class, 'postGuideTourLog']);
+    $router->get('detail-guide-tour-log/{id}', [App\Controllers\GuideTourLogController::class, 'detailGuideTourLog']);
+    $router->post('edit-guide-tour-log/{id}', [App\Controllers\GuideTourLogController::class, 'editGuideTourLog']);
+    $router->get('delete-guide-tour-log/{id}', [App\Controllers\GuideTourLogController::class, 'deleteGuideTourLog']);
+    
+    // AJAX
+    $router->get('ajax-get-departure-info/{id}', [App\Controllers\GuideTourLogController::class, 'getDepartureInfo']);
+
 
     // GUIDE DASHBOARD ACTIONS
     $router->post('post-guide-status', [App\Controllers\GuideController::class, 'updateStatus']);

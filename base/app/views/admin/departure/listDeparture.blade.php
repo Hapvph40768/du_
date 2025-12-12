@@ -39,7 +39,6 @@
 
                         <th class="text-center">Tổng ghế</th>
                         <th class="text-center">Đã đặt</th>
-                        <th class="text-center">Còn lại</th>
                         <th class="text-center">Trạng thái</th>
                     </tr>
                 </thead>
@@ -85,15 +84,6 @@
 
                             <td class="text-center">{{ $dp->total_seats }}</td>
                             <td class="text-center">{{ $dp->booked_guests ?? 0 }}</td>
-                            <td class="text-center">
-                                @php
-                                    $booked = $dp->booked_guests ?? 0;
-                                    $remaining = $dp->total_seats - $booked;
-                                @endphp
-                                <span class="{{ $remaining > 0 ? 'text-success fw-bold' : 'text-danger fw-bold' }}">
-                                    {{ $remaining }}
-                                </span>
-                            </td>
                             <td class="text-center">
                                 @switch($dp->status)
                                     @case('open') <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">Đang mở</span> @break

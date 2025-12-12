@@ -46,6 +46,15 @@
             </a>
 
         </nav>
+
+        <div class="px-3 mb-2 mt-4">
+             <small class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">LOGS</small>
+        </div>
+        <nav class="nav flex-column px-2 gap-1">
+             <a href="{{ route('list-guide-tour-log') }}" class="nav-link @yield('active-tour-log')">
+                <i class="bi bi-journal-text me-2"></i> Nhật ký tour
+            </a>
+        </nav>
         
     </div>
 

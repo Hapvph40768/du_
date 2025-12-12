@@ -49,7 +49,7 @@
  <?php /* tổng số ghế */ ?>
  <div class="mb-3">
  <label for="total_seats" class="form-label fw-bold">Tổng số ghế</label>
- <input type="number" class="form-control" name="total_seats" min="1" value="<?php echo \htmlentities($detail->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?>" required placeholder="Ví dụ: 20">
+ <input type="number" class="form-control" name="total_seats" value="<?php echo \htmlentities($detail->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?>" placeholder="Ví dụ: 20">
  <?php if(isset($_SESSION['errors']['total_seats'])): ?>
  <small class="text-danger"><?php echo \htmlentities($_SESSION['errors']['total_seats']??'', ENT_QUOTES, 'UTF-8', false); ?></small>
  <?php endif; ?>
@@ -92,7 +92,7 @@
 
  <div class="mb-3">
  <label class="fw-bold text-white mb-1">Tổng số ghế</label>
- <input type="number" name="total_seats" class="form-control bg-dark text-white border-secondary" required value="<?php echo \htmlentities($detail->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?>" min="<?php echo \htmlentities($detail->seats_booked??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <input type="number" name="total_seats" class="form-control bg-dark text-white border-secondary" value="<?php echo \htmlentities($detail->total_seats??'', ENT_QUOTES, 'UTF-8', false); ?>" >
  <div class="form-text text-white-50">Số ghế đã đặt: <?php echo \htmlentities($detail->seats_booked??'', ENT_QUOTES, 'UTF-8', false); ?>. Tổng ghế không được nhỏ hơn số này.</div>
  </div>
 

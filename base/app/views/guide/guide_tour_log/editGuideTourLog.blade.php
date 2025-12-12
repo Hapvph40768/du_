@@ -1,0 +1,92 @@
+@extends('layout.guide.GuideLayout')
+@section('title', 'Sửa nhật ký tour')
+@section('content')
+
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="text-primary fw-bold mb-0">
+                    <i class="fas fa-edit me-2"></i>Sửa nhật ký tour
+                </h2>
+                <p class="text-muted mb-0">Cập nhật thông tin nhật ký</p>
+            </div>
+            <a href="{{ route('list-guide-tour-log') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại
+            </a>
+        </div>
+
+        @if(isset($_SESSION['errors']) && isset($_GET['msg']))
+            <div class="alert alert-danger shadow-sm mb-4">
+                <ul class="mb-0">
+                    @foreach($_SESSION['errors'] as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <form action="{{ route('edit-guide-tour-log/' . $detail->id) }}" method="post">
+                            
+                            {{-- CHỌN CHUYẾN ĐI --}}
+                            <div class="mb-4">
+                                <label class="fw-bold text-dark mb-2">Chọn chuyến đi <span class="text-danger">*</span></label>
+                                <select class="form-select" name="departure_id" id="departureSelect" required>
+                                    <option value="">-- Chọn chuyến đi --</option>
+                                    @foreach($departures as $dep)
+                                        @php
+                                            $sDate = $dep->start_date ?? ($dep->booking_start_date ?? null);
+                                            $eDate = $dep->end_date ?? ($dep->booking_end_date ?? null);
+                                            $dateStr = ($sDate && $eDate) ? "(".date('d/m/Y', strtotime($sDate)) . " - " . date('d/m/Y', strtotime($eDate)).")" : "";
+                                        @endphp
+                                        <option value="{{ $dep->id }}" {{ $detail->departure_id == $dep->id ? 'selected' : '' }}>
+                                            {{ $dep->tour_name }} {{ $dateStr }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- HÀNH ĐỘNG --}}
+                            <div class="mb-4">
+                                <label class="fw-bold text-dark mb-2">Hành động <span class="text-danger">*</span></label>
+                                <input type="text" name="action" class="form-control" 
+                                    value="{{ $detail->action }}" placeholder="Ví dụ: Cập nhật lịch trình..." required>
+                            </div>
+
+                            {{-- NGƯỜI THỰC HIỆN (Optional) --}}
+                            <div class="mb-4">
+                                <label class="fw-bold text-dark mb-2">Người thực hiện (Tùy chọn)</label>
+                                <select class="form-select" name="user_id" id="userSelect" data-selected="{{ $detail->user_id ?? '' }}">
+                                    <option value="">-- Mặc định (Tôi thực hiện) --</option>
+                                    @foreach($guides as $g)
+                                        <option value="{{ $g->id }}" {{ $detail->user_id == $g->id ? 'selected' : '' }}>
+                                            {{ $g->fullname }} ({{ $g->username }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- MÔ TẢ --}}
+                            <div class="mb-4">
+                                <label class="fw-bold text-dark mb-2">Mô tả chi tiết <span class="text-danger">*</span></label>
+                                <textarea name="message" class="form-control" rows="4" 
+                                    placeholder="Nhập nội dung chi tiết..." required>{{ $detail->message }}</textarea>
+                            </div>
+
+                            <hr class="border-secondary opacity-25 my-4">
+
+                            <div class="text-end">
+                                <button type="submit" name="btn-submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-shadow-lg transition-all">
+                                    <i class="fas fa-save me-2"></i> Cập nhật
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

@@ -1,0 +1,92 @@
+<?php $_shouldextend[1]=1; ?>
+<?php $this->startSection('title', 'Thêm nhật ký tour'); ?>
+<?php $this->startSection('content'); ?>
+
+ <div class="container-fluid">
+ <div class="d-flex justify-content-between align-items-center mb-4">
+ <div>
+ <h2 class="text-primary fw-bold mb-0">
+ <i class="fas fa-book me-2"></i>Thêm nhật ký tour
+ </h2>
+ <p class="text-muted mb-0">Ghi lại hoạt động cho chuyến đi</p>
+ </div>
+ <a href="<?php echo \htmlentities(route('list-guide-tour-log')??'', ENT_QUOTES, 'UTF-8', false); ?>" class="btn btn-warning">
+ <i class="fas fa-arrow-left me-2"></i> Quay lại
+ </a>
+ </div>
+
+ <?php if(isset($_SESSION['errors']) && isset($_GET['msg'])): ?>
+ <div class="alert alert-danger shadow-sm mb-4">
+ <ul class="mb-0">
+ <?php $__currentLoopData = $_SESSION['errors']; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $err): $loop = $this->incrementLoopIndices();  ?>
+ <li><?php echo \htmlentities($err??'', ENT_QUOTES, 'UTF-8', false); ?></li>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </ul>
+ </div>
+ <?php endif; ?>
+
+ <div class="row justify-content-center">
+ <div class="col-lg-8">
+ <div class="card border-0 shadow-sm">
+ <div class="card-body p-4">
+ <form action="<?php echo \htmlentities(route('post-guide-tour-log')??'', ENT_QUOTES, 'UTF-8', false); ?>" method="post">
+ <?php /* CHỌN CHUYẾN ĐI */ ?>
+ <div class="mb-4">
+ <label class="fw-bold text-dark mb-2">Chọn chuyến đi <span class="text-danger">*</span></label>
+ <select class="form-select" name="departure_id" required>
+ <option value="">-- Chọn chuyến đi --</option>
+ <?php $__currentLoopData = $departures; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $dep): $loop = $this->incrementLoopIndices();  ?>
+ <?php 
+ $sDate = $dep->start_date ?? ($dep->booking_start_date ?? null);
+ $eDate = $dep->end_date ?? ($dep->booking_end_date ?? null);
+ $dateStr = ($sDate && $eDate) ? "(".date('d/m/Y', strtotime($sDate)) . " - " . date('d/m/Y', strtotime($eDate)).")" : "";
+ ?>
+ <option value="<?php echo \htmlentities($dep->id??'', ENT_QUOTES, 'UTF-8', false); ?>">
+ <?php echo \htmlentities($dep->tour_name??'', ENT_QUOTES, 'UTF-8', false); ?> <?php echo \htmlentities($dateStr??'', ENT_QUOTES, 'UTF-8', false); ?>
+
+ </option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* HÀNH ĐỘNG */ ?>
+ <div class="mb-4">
+ <label class="fw-bold text-dark mb-2">Hành động <span class="text-danger">*</span></label>
+ <input type="text" name="action" class="form-control" placeholder="Ví dụ: Cập nhật lịch trình, Thay đổi hướng dẫn viên..." required>
+ </div>
+
+ <?php /* NGƯỜI THỰC HIỆN (Optional) */ ?>
+ <div class="mb-4">
+ <label class="fw-bold text-dark mb-2">Người thực hiện (Tùy chọn)</label>
+ <select class="form-select" name="user_id">
+ <option value="">-- Mặc định (Tôi thực hiện) --</option>
+ <?php $__currentLoopData = $guides; $this->addLoop($__currentLoopData);$this->getFirstLoop();
+ foreach($__currentLoopData as $g): $loop = $this->incrementLoopIndices();  ?>
+ <option value="<?php echo \htmlentities($g->id??'', ENT_QUOTES, 'UTF-8', false); ?>"><?php echo \htmlentities($g->fullname??'', ENT_QUOTES, 'UTF-8', false); ?> (<?php echo \htmlentities($g->username??'', ENT_QUOTES, 'UTF-8', false); ?>)</option>
+ <?php endforeach; $this->popLoop(); $loop = $this->getFirstLoop(); ?>
+ </select>
+ </div>
+
+ <?php /* MÔ TẢ */ ?>
+ <div class="mb-4">
+ <label class="fw-bold text-dark mb-2">Mô tả chi tiết <span class="text-danger">*</span></label>
+ <textarea name="message" class="form-control" rows="4" placeholder="Nhập nội dung chi tiết..." required></textarea>
+ </div>
+
+ <hr class="text-muted opacity-25 my-4">
+
+ <div class="text-end">
+ <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm">
+ <i class="fas fa-save me-2"></i> Lưu nhật ký
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+<?php $this->stopSection(); ?>
+<?php if (isset($_shouldextend[1])) { echo $this->runChild('layout.guide.GuideLayout'); } ?>

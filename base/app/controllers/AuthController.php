@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\PasswordResetModel;
 use App\Controllers\BaseController;
 
 class AuthController extends BaseController
@@ -132,6 +133,7 @@ class AuthController extends BaseController
         ]);
     }
 
+
     public function clientDashboard()
     {
         if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
@@ -140,5 +142,87 @@ class AuthController extends BaseController
         }
 
         $this->render('layout.client.ClientLayout', ['user' => $_SESSION['user']]);
+    }
+
+    // Password Recovery
+    public function showForgotPassword()
+    {
+        $this->render('admin.auth.forgot-password');
+    }
+
+    public function sendResetLink()
+    {
+        $email = $_POST['email'] ?? '';
+        
+        $userModel = new UserModel();
+        
+        $user = $userModel->getUserByEmail($email);
+
+        if (!$user) {
+             $this->render('admin.auth.forgot-password', ['error' => 'Email không tồn tại trong hệ thống']);
+             return;
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $resetModel = new PasswordResetModel();
+        $resetModel->createToken($email, $token);
+
+        // Simulate sending email
+        $resetLink = BASE_URL . "reset-password?token=$token&email=" . urlencode($email);
+        
+        $this->render('admin.auth.forgot-password', [
+            'success' => "Đã gửi liên kết xác nhận! (Simulation: <a href='$resetLink'>Click here to reset</a>)"
+        ]);
+    }
+
+    public function showResetForm()
+    {
+        $token = $_GET['token'] ?? '';
+        $email = $_GET['email'] ?? '';
+        
+        $this->render('admin.auth.reset-password', ['token' => $token, 'email' => $email]);
+    }
+
+    public function resetPassword()
+    {
+        $token = $_POST['token'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $passwordConfirmation = $_POST['password_confirmation'] ?? '';
+
+        if ($password !== $passwordConfirmation) {
+             $this->render('admin.auth.reset-password', [
+                 'error' => 'Mật khẩu xác nhận không khớp',
+                 'token' => $token,
+                 'email' => $email
+             ]);
+             return;
+        }
+
+        $resetModel = new PasswordResetModel();
+        $record = $resetModel->getToken($email, $token);
+
+        if (!$record) {
+            $this->render('admin.auth.reset-password', [
+                 'error' => 'Liên kết không hợp lệ hoặc đã hết hạn',
+                 'token' => $token,
+                 'email' => $email
+             ]);
+             return;
+        }
+
+        // Token valid -> Update password
+        $userModel = new UserModel();
+        $user = $userModel->getUserByEmail($email);
+        
+        if ($user) {
+             
+             $userModel->updatePassword($user->id, password_hash($password, PASSWORD_BCRYPT));
+             
+             // Delete token
+             $resetModel->deleteToken($email);
+             
+             $this->render('admin.auth.login', ['error' => 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.']); 
+        }
     }
 }

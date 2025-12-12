@@ -98,7 +98,6 @@
                                             >
                                                 {{ $d->tour_name }} 
                                                 — Giá: {{ number_format($d->tour_price ?? 0, 0, ',', '.') }} đ
-                                                — Còn: {{ $d->real_remaining_seats ?? $d->remaining_seats }} ghế
                                                 {{ ($d->status == 'closed') ? ' (Đã đóng)' : '' }}
                                             </option>
                                         @endforeach

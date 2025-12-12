@@ -46,7 +46,7 @@
         {{-- tổng số ghế --}}
         <div class="mb-3">
             <label for="total_seats" class="form-label fw-bold">Tổng số ghế</label>
-            <input type="number" class="form-control" name="total_seats" min="1" value="{{ $detail->total_seats }}" required placeholder="Ví dụ: 20">
+            <input type="number" class="form-control" name="total_seats" value="{{ $detail->total_seats }}" placeholder="Ví dụ: 20">
             @if(isset($_SESSION['errors']['total_seats']))
                 <small class="text-danger">{{ $_SESSION['errors']['total_seats'] }}</small>
             @endif
@@ -88,7 +88,7 @@
 
                 <div class="mb-3">
                     <label class="fw-bold text-white mb-1">Tổng số ghế</label>
-                    <input type="number" name="total_seats" class="form-control bg-dark text-white border-secondary" required value="{{ $detail->total_seats }}" min="{{ $detail->seats_booked }}">
+                    <input type="number" name="total_seats" class="form-control bg-dark text-white border-secondary" value="{{ $detail->total_seats }}" >
                     <div class="form-text text-white-50">Số ghế đã đặt: {{ $detail->seats_booked }}. Tổng ghế không được nhỏ hơn số này.</div>
                 </div>
 

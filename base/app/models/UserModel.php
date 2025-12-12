@@ -65,6 +65,20 @@ class UserModel extends BaseModel
         return $this->loadRow([$username]);
     }
 
+    public function getUserByEmail($email)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE email=?";
+        $this->setQuery($sql);
+        return $this->loadRow([$email]);
+    }
+
+    public function updatePassword($id, $newPassword)
+    {
+        $sql = "UPDATE {$this->table} SET password = ? WHERE id = ?";
+        $this->setQuery($sql);
+        return $this->execute([$newPassword, $id]);
+    }
+
     // Thêm user mới
     public function createUser($data)
     {

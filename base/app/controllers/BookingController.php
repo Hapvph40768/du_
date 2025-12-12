@@ -110,7 +110,7 @@ class BookingController extends BaseController
             $error['departure_id'] = "Lịch khởi hành không tồn tại";
         } elseif ($departure->status == 'closed') {
             $error['departure_id'] = "Lịch khởi hành này đã đóng, không thể đặt chỗ.";
-        } elseif ($num_people > $departure->remaining_seats) {
+        } elseif ($departure->total_seats > 0 && $departure->remaining_seats !== null && $num_people > $departure->remaining_seats) {
             $error['num_people'] = "Chỉ còn {$departure->remaining_seats} ghế trống";
         }
 
@@ -297,7 +297,7 @@ class BookingController extends BaseController
             // Chỉ tính ghế tăng thêm
             $diff = $num_people - $oldBooking->num_people;
 
-            if ($diff > 0 && $diff > $departure->remaining_seats) {
+            if ($diff > 0 && $departure->total_seats > 0 && $departure->remaining_seats !== null && $diff > $departure->remaining_seats) {
                 $error['num_people'] = "Không đủ ghế để tăng. Chỉ còn {$departure->remaining_seats} ghế trống.";
             }
         }

@@ -24,13 +24,14 @@ class TourGuideModel extends BaseModel
     public function getAssignedTours($guide_id)
     {
         $sql = "
-        SELECT tg.*, t.name AS tour_name, d.id as id, d.tour_id, d.start_date, d.end_date, d.status AS departure_status, t.thumbnail,
+        SELECT tg.*, t.name AS tour_name, g.fullname as guide_name, d.id as id, d.tour_id, d.start_date, d.end_date, d.status AS departure_status, t.thumbnail,
                (SELECT COALESCE(SUM(b.num_people), 0) FROM bookings b WHERE b.departure_id = d.id AND b.status IN ('confirmed', 'pending_payment', 'completed', 'pending')) as booked_guests,
                (SELECT MIN(b.start_date) FROM bookings b WHERE b.departure_id = d.id) as booking_start_date,
                (SELECT MAX(b.end_date) FROM bookings b WHERE b.departure_id = d.id) as booking_end_date
         FROM {$this->table} tg
         JOIN departures d ON tg.departure_id = d.id
         JOIN tours t ON d.tour_id = t.id
+        JOIN guides g ON tg.guide_id = g.id
         WHERE tg.guide_id = ?
         ORDER BY d.start_date DESC
         ";
@@ -163,6 +164,18 @@ class TourGuideModel extends BaseModel
         }
 
         return false;
+    }
+
+    public function getGuidesByDeparture($departureId)
+    {
+        $sql = "
+        SELECT g.id, g.fullname, g.username, g.phone, tg.role
+        FROM guides g
+        JOIN tour_guides tg ON g.id = tg.guide_id
+        WHERE tg.departure_id = ?
+        ";
+        $this->setQuery($sql);
+        return $this->loadAllRows([$departureId]);
     }
 }
 ?>

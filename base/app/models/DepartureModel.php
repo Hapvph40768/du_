@@ -30,6 +30,8 @@ class DepartureModel extends BaseModel
         SELECT d.*, 
                t.name AS tour_name, t.price AS tour_price, 
                t.start_location, t.destination,
+               (SELECT COALESCE(SUM(b.num_people), 0) FROM bookings b WHERE b.departure_id = d.id AND b.status IN ('confirmed', 'pending_payment', 'completed', 'pending')) as booked_guests,
+               (d.total_seats - (SELECT COALESCE(SUM(b.num_people), 0) FROM bookings b WHERE b.departure_id = d.id AND b.status IN ('confirmed', 'pending_payment', 'completed', 'pending'))) as real_remaining_seats,
                (SELECT GROUP_CONCAT(DISTINCT b.pickup_location SEPARATOR ', ') FROM bookings b WHERE b.departure_id = d.id AND b.pickup_location IS NOT NULL AND b.pickup_location != '') as pickup_locations_list,
                (SELECT MIN(b.start_date) FROM bookings b WHERE b.departure_id = d.id) as booking_start_date,
                (SELECT MAX(b.end_date) FROM bookings b WHERE b.departure_id = d.id) as booking_end_date
@@ -43,7 +45,7 @@ class DepartureModel extends BaseModel
 
     public function addDeparture($data)
     {
-        $total = $data['total_seats'];
+        $total = $data['total_seats']; // can be null
 
         $sql = "INSERT INTO {$this->table} 
         (tour_id, start_date, end_date, start_time, total_seats, seats_booked, remaining_seats,
@@ -58,7 +60,7 @@ class DepartureModel extends BaseModel
             $data['start_time'] ?? null,
             $total,
             0,              // seats_booked = 0
-            $total,         // remaining_seats = total
+            $total,         // remaining_seats = total (null if total is null)
             $data['status'] ?? 'open',
             date("Y-m-d H:i:s"),
             date("Y-m-d H:i:s")
@@ -70,13 +72,20 @@ class DepartureModel extends BaseModel
         $current = $this->getDepartureById($id);
         $bookedSeats = $current->seats_booked;
 
-        $newTotal = $data['total_seats'] ?? $current->total_seats;
+        // If 'total_seats' key exists in data, use it (can be null). Else use current.
+        // Careful: if $data does not contain 'total_seats', we assume we keep current.
+        // But Controller passes it.
+        $newTotal = array_key_exists('total_seats', $data) ? $data['total_seats'] : $current->total_seats;
 
-        if ($newTotal < $bookedSeats) {
-            return false; // không được giảm tổng ghế nhỏ hơn ghế đã đặt
+        if ($newTotal !== null && $newTotal < $bookedSeats) {
+            return false; // không được giảm tổng ghế nhỏ hơn ghế đã đặt (chỉ check khi có giới hạn)
         }
 
-        $newRemaining = $newTotal - $bookedSeats;
+        if ($newTotal === null) {
+            $newRemaining = null; // Unlimited
+        } else {
+            $newRemaining = $newTotal - $bookedSeats;
+        }
 
         $sql = "UPDATE {$this->table} SET 
         tour_id=?, start_date=?, end_date=?, start_time=?, total_seats=?, seats_booked=?, 

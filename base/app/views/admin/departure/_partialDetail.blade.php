@@ -50,8 +50,8 @@
                     </div>
                     <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-10 pb-2 mb-2">
                         <span class="text-white-50">Còn trống:</span>
-                        <span class="fw-bold text-end {{ ($departure->total_seats - ($departure->seats_booked ?? 0)) > 0 ? 'text-success' : 'text-danger' }}">
-                            {{ $departure->total_seats - ($departure->seats_booked ?? 0) }} ghế
+                        <span class="fw-bold text-end {{ ($departure->total_seats - ($departure->booked_guests ?? 0)) > 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $departure->total_seats - ($departure->booked_guests ?? 0) }} ghế
                         </span>
                     </div>
                 </div>

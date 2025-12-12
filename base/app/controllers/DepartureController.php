@@ -38,18 +38,22 @@ class DepartureController extends BaseController
         $start_date  = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
         $end_date    = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
         $start_time  = !empty($_POST['start_time']) ? $_POST['start_time'] : null;
-        $total_seats = $_POST['total_seats'] ?? '';   // dùng total_seats
+        // Chuyển rỗng thành null
+        $total_seats = (isset($_POST['total_seats']) && $_POST['total_seats'] !== '') ? $_POST['total_seats'] : null;
         $status      = $_POST['status'] ?? 'open';
 
         // validate
         if (empty($tour_id)) {
             $error['tour_id'] = "Tên tour không được để trống";
         }
-        // Dates are optional now
         
-        if (empty($total_seats) || !is_numeric($total_seats) || $total_seats <= 0) {
-            $error['total_seats'] = "Số ghế không hợp lệ";
+        // Chỉ validate số nếu total_seats KHÔNG null
+        if ($total_seats !== null) {
+            if (!is_numeric($total_seats) || $total_seats <= 0) {
+                $error['total_seats'] = "Số ghế không hợp lệ";
+            }
         }
+        
         if (!in_array($status, ['open', 'closed', 'full'])) {
             $error['status'] = "Trạng thái không hợp lệ";
         }
@@ -63,7 +67,7 @@ class DepartureController extends BaseController
                 'end_date'        => $end_date,
                 'start_time'      => $start_time,
                 'total_seats'     => $total_seats,
-                'remaining_seats' => $total_seats, // khi tạo mới remaining = total
+                // Model sẽ tự xử lý remaining_seats
                 'status'          => $status,
                 'created_at'      => date('Y-m-d H:i:s'),
                 'updated_at'      => date('Y-m-d H:i:s'),
@@ -121,17 +125,21 @@ class DepartureController extends BaseController
             $start_date  = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
             $end_date    = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
             $start_time  = !empty($_POST['start_time']) ? $_POST['start_time'] : null;
-            $total_seats = $_POST['total_seats'] ?? '';   // dùng total_seats
+            // Chuyển rỗng thành null
+            $total_seats = (isset($_POST['total_seats']) && $_POST['total_seats'] !== '') ? $_POST['total_seats'] : null;
             $status      = $_POST['status'] ?? 'open';
 
             if (empty($tour_id)) {
                 $error['tour_id'] = "Tên tour không được để trống";
             }
-            // Dates are optional now
             
-            if (empty($total_seats) || !is_numeric($total_seats) || $total_seats <= 0) {
-                $error['total_seats'] = "Số ghế không hợp lệ";
+            // Chỉ validate số nếu total_seats KHÔNG null
+            if ($total_seats !== null) {
+                if (!is_numeric($total_seats) || $total_seats <= 0) {
+                    $error['total_seats'] = "Số ghế không hợp lệ";
+                }
             }
+
             if (!in_array($status, ['open', 'closed', 'full'])) {
                 $error['status'] = "Trạng thái không hợp lệ";
             }
@@ -148,22 +156,26 @@ class DepartureController extends BaseController
             $bookedSeats = $detail->seats_booked;
 
             // kiểm tra tổng ghế mới không nhỏ hơn số ghế đã đặt
-            if (is_numeric($total_seats) && $total_seats < $bookedSeats) {
+            // CHỈ kiểm tra nếu total_seats KHÔNG null
+            if ($total_seats !== null && is_numeric($total_seats) && $total_seats < $bookedSeats) {
                 $error['total_seats'] = "Tổng số ghế không được nhỏ hơn số ghế đã đặt ($bookedSeats).";
             }
 
             if (count($error) > 0) {
                 redirect('errors', $error, $route);
             } else {
-                $newRemaining = max(0, $total_seats - $bookedSeats);
-
+                // Calculation moved to Model to be safer or keep generic here
+                // But Model update function expects generic data, let's let Model handle logic or prep here.
+                // Model updateDeparture logic was: $newTotal - $bookedSeats.
+                // If $total_seats is null, we pass it as null.
+                
                 $check = $this->departure->updateDeparture($id, [
                     'tour_id'         => $tour_id,
                     'start_date'      => $start_date,
                     'end_date'        => $end_date,
                     'start_time'      => $start_time,
                     'total_seats'     => $total_seats,
-                    'remaining_seats' => $newRemaining,
+                    // 'remaining_seats' => ... Model will calculate this
                     'status'          => $status,
                     'updated_at'      => date('Y-m-d H:i:s'),
                 ]);
